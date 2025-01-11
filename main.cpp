@@ -1,66 +1,73 @@
-#include <cctype>
+// 18ms beat 70%
 #include <climits>
 #include <cmath>
+#include <cstddef>
 #include <iostream>
+#include <stack>
 #include <unordered_map>
 #include <vector>
 
 using namespace std;
 
 class Solution {
+    struct charInfoSt {
+        int index;
+        char c;
+    };
+    struct stateSt {
+        string state;
+        int leftBoundary;
+    };
 
 public:
-  int getTargetStateByChar(char c) {
-    if (c == ' ') {
-      return 0;
-    } else if (isdigit(c)) {
-      return 1;
-    } else if (c == '-' || c == '+') {
-      return 2;
-    } else {
-      return 3;
-    }
-    return -1;
-  }
+    int longestValidParentheses(string s) {
+        vector<int> result{0, 0};
+        stack<charInfoSt> matchInfoStk;
+        vector<stateSt> stateVec(s.size(), {"Pending", -1});
+        unordered_map<int, int> boundaryMap;
+        vector<int> resultIndex = {0, 0};
+        for (int i = 0; i < s.size(); i++) {
+            char curChar = s[i];
+            if (s[i] == '(') {
+                matchInfoStk.push({i, curChar});
+            } else { // 下面都是右括号的判断
+                if (!matchInfoStk.empty()) {
+                    charInfoSt curMatchLeftState =
+                            matchInfoStk
+                                    .top(); // 一定是 '(', ')' 要么不会插入, 要么直接弹出来
+                    matchInfoStk.pop();
+                    stateSt curElem;
+                    stateSt leftOfCurLeft = stateVec[curMatchLeftState.index - 1];
+                    stateSt curLeft = stateVec[curMatchLeftState.index];
 
-  int myAtoi(string s) {
-    unordered_map<string, vector<string>> stateTable = {
-        {"s_start", {"s_start", "s_number", "s_sign", "s_end"}},
-        {"s_number", {"s_end", "s_number", "s_end", "s_end"}},
-        {"s_sign", {"s_end", "s_number", "s_end", "s_end"}},
-        {"s_end", {"s_end", "s_end", "s_end", "s_end"}}};
-    string curState = "s_start";
-    string nextState = "";
-    long long result = 0;
-    int signMark = 1;
-    for (char c : s) {
-      int targetState = getTargetStateByChar(c);
-      curState = stateTable[curState][targetState];
-      if (curState == "s_start") {
-        continue;
-      } else if (curState == "s_number") {
-        result = 10 * result + c - '0';
-        if (signMark * result > INT_MAX) {
-          return INT_MAX;
-        }
-        if (signMark * result < INT_MIN) {
-          return INT_MIN;
-        }
-      } else if (curState == "s_sign") {
-        if (c == '-') {
-          signMark = -1;
-        }
-      } else if (curState == "s_end") {
-        break;
-      }
-    }
+                    int curLeftBoundary = -1;
+                    if (curMatchLeftState.index > 0) { // 当前不是第一个
+                        if (leftOfCurLeft.state == "Valid") {
+                            curLeftBoundary = leftOfCurLeft.leftBoundary;
+                        } else {
+                            curLeftBoundary = curMatchLeftState.index;
+                        }
+                    } else { // 当前的left 是第一个
+                        curLeftBoundary = 0;
+                    }
 
-    return signMark * result;
-  }
+                    curLeft = {"Valid", curLeftBoundary};
+                    stateVec[i] = {"Valid", curLeftBoundary};
+                    if (i - curLeftBoundary > result[1] - result[0]) {
+                        result = {curLeftBoundary, i};
+                    }
+                } else {
+                    stateVec[i] = {"Invalid", -1};
+                }
+            }
+        }
+        return result[1] - result[0] + 1;
+    }
 };
 
 int main() {
-  Solution s;
-  cout << s.myAtoi("2147483646") << endl;
-  return 0;
+    Solution s;
+    cout << s.longestValidParentheses("(()") << endl;
+    cout << s.longestValidParentheses(")()())") << endl;
+    return 0;
 }
