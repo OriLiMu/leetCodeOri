@@ -80,6 +80,7 @@ def create_leetcode_file(problem_number):
             target.write(content)
             
         print(f"成功创建文件: {new_filename}")
+        os.system('nvim ' + new_filename)
         
     except Exception as e:
         print(f"创建文件时出错: {e}")

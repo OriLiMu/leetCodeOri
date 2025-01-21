@@ -1,4 +1,4 @@
-// 18ms beat 70%
+#include <algorithm>
 #include <climits>
 #include <cmath>
 #include <cstddef>

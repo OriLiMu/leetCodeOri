@@ -1,73 +1,51 @@
-// 18ms beat 70%
+#include <algorithm>
 #include <climits>
 #include <cmath>
 #include <cstddef>
 #include <iostream>
-#include <stack>
-#include <unordered_map>
 #include <vector>
 
 using namespace std;
 
 class Solution {
-    struct charInfoSt {
-        int index;
-        char c;
-    };
-    struct stateSt {
-        string state;
-        int leftBoundary;
-    };
-
 public:
-    int longestValidParentheses(string s) {
-        vector<int> result{0, 0};
-        stack<charInfoSt> matchInfoStk;
-        vector<stateSt> stateVec(s.size(), {"Pending", -1});
-        unordered_map<int, int> boundaryMap;
-        vector<int> resultIndex = {0, 0};
-        for (int i = 0; i < s.size(); i++) {
-            char curChar = s[i];
-            if (s[i] == '(') {
-                matchInfoStk.push({i, curChar});
-            } else { // 下面都是右括号的判断
-                if (!matchInfoStk.empty()) {
-                    charInfoSt curMatchLeftState =
-                            matchInfoStk
-                                    .top(); // 一定是 '(', ')' 要么不会插入, 要么直接弹出来
-                    matchInfoStk.pop();
-                    stateSt curElem;
-                    stateSt leftOfCurLeft = stateVec[curMatchLeftState.index - 1];
-                    stateSt curLeft = stateVec[curMatchLeftState.index];
+    vector<vector<char>> phoneMap = {{'a', 'b', 'c'},
+                                     {'d', 'e', 'f'},
+                                     {'g', 'h', 'i'},
+                                     {'j', 'k', 'l'},
+                                     {'m', 'n', 'o'},
+                                     {'p', 'q', 'r', 's'},
+                                     {'t', 'u', 'v'},
+                                     {'w', 'x', 'y', 'z'}};
 
-                    int curLeftBoundary = -1;
-                    if (curMatchLeftState.index > 0) { // 当前不是第一个
-                        if (leftOfCurLeft.state == "Valid") {
-                            curLeftBoundary = leftOfCurLeft.leftBoundary;
-                        } else {
-                            curLeftBoundary = curMatchLeftState.index;
-                        }
-                    } else { // 当前的left 是第一个
-                        curLeftBoundary = 0;
-                    }
-
-                    curLeft = {"Valid", curLeftBoundary};
-                    stateVec[i] = {"Valid", curLeftBoundary};
-                    if (i - curLeftBoundary > result[1] - result[0]) {
-                        result = {curLeftBoundary, i};
-                    }
-                } else {
-                    stateVec[i] = {"Invalid", -1};
-                }
+    void getString(string remainDigit, vector<string> &result, string curStr) {
+        if (remainDigit.size() == 0) {
+            result.push_back(curStr);
+            return;
+        } else {
+            int c = remainDigit[0] - '2';
+            remainDigit = remainDigit.substr(1);
+            for (int i = 0; i < phoneMap[c].size(); i++) {
+                string tmp(curStr);
+                tmp.push_back(phoneMap[c][i]);
+                getString(remainDigit, result, tmp);
             }
         }
-        return result[1] - result[0] + 1;
+    }
+
+    vector<string> letterCombinations(string digits) {
+        if (digits.empty()) return {};
+        vector<string> res;
+        getString(digits, res, "");
+        return res;
     }
 };
 
 int main() {
     Solution s;
-    cout << s.longestValidParentheses("(()") << endl;
-    cout << s.longestValidParentheses(")()())") << endl;
+    vector<string> res = s.letterCombinations("23");
+    for (auto &str: res) {
+        cout << str << endl;
+    }
     return 0;
 }
