@@ -1,7 +1,5 @@
 #include <iostream>
 
-using namespace std;
-
 // nested way
 struct ListNode {
   int val;
@@ -19,7 +17,7 @@ public:
     } else if (list2 == nullptr) {
       return list1;
     } else if (list1->val < list2->val) {
-      list1->next = mergeTwoLists(list1->next, list2);
+      list1->next = mergeToLists(list1->next, list2);
       return list1;
     } else {
       list2->next = mergeTwoLists(list1, list2->next);
@@ -58,14 +56,4 @@ public:
   }
 };
 
-int main(int argc, char *argv[]) {
-  ListNode *list1 = new ListNode(1, new ListNode(2, new ListNode(4)));
-  ListNode *list2 = new ListNode(1, new ListNode(3, new ListNode(4)));
-  SolutionIteration solution;
-  ListNode *result = solution.mergeTwoLists(list1, list2);
-  while (result) {
-    cout << result->val << " ";
-    result = result->next;
-  }
-  return 0;
-}
+int main(int argc, char *argv[]) { return 0; }

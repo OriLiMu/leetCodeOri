@@ -16,7 +16,7 @@ public:
     int curDividend = dividend;
     bool reachMax = false;
     int curIndex = 1;
-    int curDivisor = divisor;
+    int curDivisor = 1;
 
     if (dividend < divisor) {
       return 0;
@@ -27,7 +27,7 @@ public:
 
     // find max divisor
     while (curDividend - curDivisor > 0) {
-      if (expVec.size() < curIndex + 1) {
+      if (expVec.size() < curIndex) {
         expVec.push_back({curIndex, curDivisor, 0});
       }
       curIndex++;
@@ -52,7 +52,7 @@ public:
     int result = 0;
     for (vector<int> vec : expVec) {
       for (int i = 0; i < vec[2]; i++) {
-        result += vec[0];
+        result += vec[1];
       }
     }
 
