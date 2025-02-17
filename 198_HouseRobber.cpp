@@ -71,4 +71,9 @@ public:
   }
 };
 
-int main() { Solution s; }
+int main() {
+  Solution s;
+  vector<int> v = {1, 2, 3, 1};
+  cout << s.rob(v) << endl;
+  return 0;
+}

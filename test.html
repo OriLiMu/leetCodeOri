@@ -1,0 +1,2777 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@LeetCode" />
+    <meta
+      property="og:image"
+      content="https://static.leetcode-cn.com/cn-legacy-assets/images/LeetCode_Sharing.png"
+    />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content="力扣 LeetCode" />
+    <title>20. 有效的括号 - 力扣（LeetCode）</title>
+    <meta name="robots" content="index,follow" />
+    <meta
+      name="description"
+      content='20. 有效的括号 - 给定一个只包括 &#x27;(&#x27;，&#x27;)&#x27;，&#x27;{&#x27;，&#x27;}&#x27;，&#x27;[&#x27;，&#x27;]&#x27; 的字符串 s ，判断字符串是否有效。
+
+有效字符串需满足：
+
+ 1. 左括号必须用相同类型的右括号闭合。
+ 2. 左括号必须以正确的顺序闭合。
+ 3. 每个右括号都有一个对应的相同类型的左括号。
+
+ 
+
+示例 1：
+
+输入：s = "()"
+
+输出：true
+
+示例 2：
+
+输入：s = "()[]{}"
+
+输出：true
+
+示例 3：
+
+输入：s = "(]"
+
+输出：false
+
+示例 4：
+
+输入：s = "([])"
+
+输出：true
+
+ 
+
+提示：
+
+ * 1 &lt;= s.length &lt;= 104
+ * s 仅由括号 &#x27;()[]{}&#x27; 组成'
+    />
+    <meta property="og:title" content="20. 有效的括号 - 力扣（LeetCode）" />
+    <meta
+      property="og:description"
+      content='20. 有效的括号 - 给定一个只包括 &#x27;(&#x27;，&#x27;)&#x27;，&#x27;{&#x27;，&#x27;}&#x27;，&#x27;[&#x27;，&#x27;]&#x27; 的字符串 s ，判断字符串是否有效。
+
+有效字符串需满足：
+
+ 1. 左括号必须用相同类型的右括号闭合。
+ 2. 左括号必须以正确的顺序闭合。
+ 3. 每个右括号都有一个对应的相同类型的左括号。
+
+ 
+
+示例 1：
+
+输入：s = "()"
+
+输出：true
+
+示例 2：
+
+输入：s = "()[]{}"
+
+输出：true
+
+示例 3：
+
+输入：s = "(]"
+
+输出：false
+
+示例 4：
+
+输入：s = "([])"
+
+输出：true
+
+ 
+
+提示：
+
+ * 1 &lt;= s.length &lt;= 104
+ * s 仅由括号 &#x27;()[]{}&#x27; 组成'
+    />
+    <meta
+      property="og:url"
+      content="https://leetcode.cn/problems/valid-parentheses/description"
+    />
+    <meta name="next-head-count" content="13" />
+    <script type="text/javascript"></script>
+    <link
+      rel="preload"
+      href="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/css/91e68fb56e45d54f.css"
+      as="style"
+    />
+    <link
+      rel="stylesheet"
+      href="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/css/91e68fb56e45d54f.css"
+      data-n-g=""
+    />
+    <link
+      rel="preload"
+      href="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/css/475df35ae25a1145.css"
+      as="style"
+    />
+    <link
+      rel="stylesheet"
+      href="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/css/475df35ae25a1145.css"
+      data-n-p=""
+    />
+    <noscript data-n-css=""></noscript>
+    <script
+      defer=""
+      nomodule=""
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/webpack-19051f822652ea94.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/framework-f4a03e6ac5f7da26.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/main-2c596989963adf64.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/pages/_app-cb09ca5a0b6dc9f8.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/328748d6-d2d74d5e153901f7.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/c829854d-34010699e6a7106d.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/ee9ce975-e94cb3ef681fde4f.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/e6848cf3-6b0905635fe622ac.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/c46d6b60-8a1f5f7d1a9c2ea8.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/c6bbd088-383fc16cab45e30c.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/f5d5890c-d16508d17cd681fc.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/2cca2479-474c18f110fb1328.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/e7372cb8-50bffdf9df1b14ed.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/d3048c20-bbe87a1296fda966.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/7dfef39c-fc283c9105777c4e.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/bee240a3-7e882761af57310f.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/4b358913-400cf4a052465ca9.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/ea88be26-1c70e31ba8a3c741.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/469a8bf9-4d92827c05662522.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/37bf9728-22fbe9f190fe6b48.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/82c1d43a-98d5ab2cbf9f0e6d.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/cf44d55e-59ea769670193768.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/175675d1-0aebcbf46bfe9de2.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/599b58c7-b525b44cd5bb053d.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/4ad82c5e-60558b2c6c86eac4.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/60d8647c-e04a9293d8b3e552.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/74c95677-4bfed866935b2548.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/8740-82d3b9fb02874e2f.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/2569-8c3672b1da83aeaf.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/3025-e675c3f495c6c00b.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/67-29cf5d95225cd86f.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/6897-d1f68bb79f7b3016.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/8774-bb88d92c8e997441.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/48-486d0f9541d0d869.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/3268-c7dda3c013687734.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/1583-07c082bb195d1570.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/3229-862368f37badcc10.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/5011-45c7ac8754841be2.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/4547-430b5ffc72028809.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/9380-9b55aae0a365b8a3.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/7468-c5611594340ebeaa.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/472-133539e7e340ebe1.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/5537-cb5121ff7ac661ec.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/1993-b7a9c9875c165679.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/5902-fbed610e191da3a0.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/7605-2bf059bcbe45b8d0.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/4693-dd610144e7b89bd6.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/7782-3f35a8d77a021ec3.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/8841-b9b4e65094015430.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/2485-80fdf8c94366729e.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/9691-97477329cbafd898.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/8685-e884ca36e4fcc845.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/949-0ed34b1cefd1ee47.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/7447-fc5a8416e028b0ac.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/3135-6183dda7705d4406.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/1818-25bb7a770c70a4c2.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/6115-bbc7c4851a290702.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/1062-b3ffa0fe472141d2.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/242-a1598cee9ea86623.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/6508-4c8a6711f70b0680.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/9212-9b9a31f481d97f83.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/34-0c611ce385d6a441.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/486-034c5ec243d1b2dd.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/1307-9e4fc7be6b898636.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/4546-f293b73c001abf85.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/4412-026854274b34a024.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/3159-7a565fac373caa86.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/5985-36bfa2ba0b4a8565.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/1189-c8c74c2d21f325ef.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/5791-d8b53a62071e8984.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/3494-11ac851576077118.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/2737-7d5d06cebc04ea2e.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/6648-3c64eff703309228.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/9992-1b4238d7041a9049.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/5678-4ba963d2c2105625.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/519-05a132d02c20bf24.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/8846-bb974dd2063caf77.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/chunks/pages/problems/%5Bslug%5D/%5B%5B...tab%5D%5D-264751578ce25f53.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/LeHEpgXuEDRFbGHXTRXan/_buildManifest.js"
+      defer=""
+    ></script>
+    <script
+      src="https://static.leetcode.cn/cn-frontendx-assets/production/_next/static/LeHEpgXuEDRFbGHXTRXan/_ssgManifest.js"
+      defer=""
+    ></script>
+  </head>
+  <body>
+    <div id="__next">
+      <script>
+        !(function () {
+          try {
+            var d = document.documentElement,
+              c = d.classList;
+            c.remove("light", "dark");
+            var e = localStorage.getItem("lc-theme");
+            if ("system" === e || (!e && true)) {
+              var t = "(prefers-color-scheme: dark)",
+                m = window.matchMedia(t);
+              if (m.media !== t || m.matches) {
+                d.style.colorScheme = "dark";
+                c.add("dark");
+              } else {
+                d.style.colorScheme = "light";
+                c.add("light");
+              }
+            } else if (e) {
+              c.add(e || "");
+            }
+            if (e === "light" || e === "dark") d.style.colorScheme = e;
+          } catch (e) {}
+        })();
+      </script>
+      <script lang="javascript">
+            (() => {
+              const style = document.createElement('style')
+              style.className = 'qd-description-style'
+              style.innerHTML = `
+                .elfjS pre{border-color:var(--border-tertiary);border-left-width:2px;color:var(--text-secondary);font-family:Menlo,sans-serif;font-size:.875rem;line-height:1.25rem;margin-bottom:1rem;margin-top:1rem;overflow:visible;padding-left:1rem;white-space:pre-wrap}.elfjS pre strong{--tw-text-opacity:1;color:rgb(38 38 38/var(--tw-text-opacity))}.dark .elfjS pre strong{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity))}.elfjS a{--tw-text-opacity:1;color:rgb(0 122 255/var(--tw-text-opacity))}.dark .elfjS a{--tw-text-opacity:1;color:rgb(10 132 255/var(--tw-text-opacity))}.elfjS ul{list-style-type:disc}.elfjS ol,.elfjS ul{margin-bottom:1rem;margin-left:1rem;margin-right:1rem}.elfjS ol{list-style-type:decimal}.elfjS li{margin-bottom:.75rem}.elfjS p{margin-bottom:1rem}.elfjS code{background-color:#000a2008;border-color:#0000000d;border-radius:5px;border-width:1px;color:#262626bf;font-family:Menlo,sans-serif;font-size:.75rem;line-height:1rem;padding:.125rem;white-space:pre-wrap}.dark .elfjS code{background-color:#ffffff12;border-color:#f7faff1f;color:#eff1f6bf}.elfjS blockquote{border-color:#0000000d;border-left-width:4px;color:#262626bf;padding-left:1rem}.dark .elfjS blockquote{border-color:#f7faff1f;color:#eff1f6bf}.content-example-testcase{--tw-text-opacity:1;color:rgb(38 38 38/var(--tw-text-opacity));font-size:1rem;font-weight:500;line-height:1.5rem;margin-bottom:1rem}.dark .content-example-testcase{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity))}.elfjS img{height:auto!important;max-width:100%}.elfjS .exRnx{--tw-text-opacity:1;color:rgb(38 38 38/var(--tw-text-opacity));font-size:1rem;font-weight:500;line-height:1.5rem;margin-bottom:1rem}:is(.dKYIq .elfjS .exRnx){--tw-text-opacity:1;color:rgb(38 38 38/var(--tw-text-opacity))}.example-block{border-color:var(--border-tertiary);border-left-width:2px;color:var(--text-secondary);font-size:14px;margin-bottom:1rem;margin-top:1rem;overflow:visible;padding-left:1rem}.example-block pre{border-left-width:0;border-style:none;padding-left:0}.example-block .example-io{font-family:Menlo,sans-serif;font-size:.85rem}.example-block pre.example-io{overflow:auto;white-space:pre}.elfjS table{--tw-text-opacity:1;border-radius:.5rem;border-style:hidden;box-shadow:0 0 0 1px #e5e5e5;color:rgb(38 38 38/var(--tw-text-opacity));margin-bottom:.75rem}.dark .elfjS table{--tw-border-opacity:1;--tw-text-opacity:1;border-color:rgb(74 74 74/var(--tw-border-opacity));box-shadow:0 0 0 1px #424242;color:rgb(255 255 255/var(--tw-text-opacity))}.elfjS table th{--tw-border-opacity:1;background-color:#000a200d;border-color:rgb(223 223 223/var(--tw-border-opacity));border-width:1px;font-weight:500;padding:.5rem .625rem}.elfjS table th:first-child{border-top-left-radius:.5rem}.elfjS table th:last-child{border-top-right-radius:.5rem}.dark .elfjS table th{--tw-border-opacity:1;background-color:#ffffff1a;border-color:rgb(74 74 74/var(--tw-border-opacity))}.elfjS table td{--tw-border-opacity:1;border-color:rgb(223 223 223/var(--tw-border-opacity));border-width:1px;padding:.5rem .625rem}.dark .elfjS table td{--tw-border-opacity:1;border-color:rgb(74 74 74/var(--tw-border-opacity))}.elfjS .language-md .table{display:inline!important}
+        /*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8uL21vZHVsZXMvcHJvYmxlbXMvY29tcG9uZW50cy9kZXNjcmlwdGlvbi9Db250ZW50L0hUTUxDb250ZW50Lmlzby5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0UsV0FBQSxtQ0FBOEgsQ0FBOUgscUJBQThILENBQTlILDJCQUE4SCxDQUE5SCw0QkFBOEgsQ0FBOUgsaUJBQThILENBQTlILG1CQUE4SCxDQUE5SCxrQkFBOEgsQ0FBOUgsZUFBOEgsQ0FBOUgsZ0JBQThILENBQTlILGlCQUE4SCxDQUE5SCxvQkFBOEgsQ0FJOUgsa0JBQUEsbUJBQW1CLENBQW5CLDBDQUFtQixDQUluQix3QkFBQSxtQkFBd0IsQ0FBeEIsNkNBQXdCLENBSXhCLFNBQUEsbUJBQWtCLENBQWxCLDJDQUFrQixDQUlsQixlQUFBLG1CQUF1QixDQUF2Qiw0Q0FBdUIsQ0FJdkIsVUFBQSxvQkFBMEIsQ0FJMUIsb0JBSkEsa0JBQTBCLENBQTFCLGdCQUEwQixDQUExQixpQkFJNkIsQ0FBN0IsVUFBQSx1QkFBNkIsQ0FJN0IsVUFBQSxvQkFBVyxDQUlYLFNBQUEsa0JBQVcsQ0FJWCxZQUFBLDBCQUFrSCxDQUFsSCxzQkFBa0gsQ0FBbEgsaUJBQWtILENBQWxILGdCQUFrSCxDQUFsSCxlQUFrSCxDQUFsSCw0QkFBa0gsQ0FBbEgsZ0JBQWtILENBQWxILGdCQUFrSCxDQUFsSCxlQUFrSCxDQUFsSCxvQkFBa0gsQ0FJbEgsa0JBQUEsMEJBQTZELENBQTdELHNCQUE2RCxDQUE3RCxlQUE2RCxDQUk3RCxrQkFBQSxzQkFBb0QsQ0FBcEQscUJBQW9ELENBQXBELGVBQW9ELENBQXBELGlCQUFvRCxDQUlwRCx3QkFBQSxzQkFBOEMsQ0FBOUMsZUFBOEMsQ0FJOUMsMEJBQUEsbUJBQThDLENBQTlDLDBDQUE4QyxDQUE5QyxjQUE4QyxDQUE5QyxlQUE4QyxDQUE5QyxrQkFBOEMsQ0FBOUMsa0JBQThDLENBSTlDLGdDQUFBLG1CQUF3QixDQUF4Qiw2Q0FBd0IsQ0FHMUIsV0FFRSxxQkFBdUIsQ0FEdkIsY0FFRixDQUdFLGNBQUEsbUJBQWdFLENBQWhFLDBDQUFnRSxDQUFoRSxjQUFnRSxDQUFoRSxlQUFnRSxDQUFoRSxrQkFBZ0UsQ0FBaEUsa0JBQWdFLENBQWhFLDBCQUFBLG1CQUFnRSxDQUFoRSwwQ0FBZ0UsQ0FJaEUsZUFBQSxtQ0FBbUcsQ0FBbkcscUJBQW1HLENBQW5HLDJCQUFtRyxDQUFuRyxjQUFtRyxDQUFuRyxrQkFBbUcsQ0FBbkcsZUFBbUcsQ0FBbkcsZ0JBQW1HLENBQW5HLGlCQUFtRyxDQUVqRyxtQkFBQSxtQkFBa0MsQ0FBbEMsaUJBQWtDLENBQWxDLGNBQWtDLENBR2xDLDJCQUFBLDRCQUFnQyxDQUFoQyxnQkFBZ0MsQ0FHaEMsOEJBQUEsYUFBbUMsQ0FBbkMsZUFBbUMsQ0FJdkMsYUFFRSxtQkFBaUQsQ0FBakQsbUJBQWlELENBQWpELG1CQUFpRCxDQURqRCw0QkFBNkIsQ0FDN0IsMENBQWlELENBQWpELG9CQUNGLENBRUEsbUJBRUUscUJBQTJDLENBQTNDLG1CQUEyQyxDQUEzQyxtREFBMkMsQ0FEM0MsNEJBQTZCLENBQzdCLDZDQUNGLENBR0UsZ0JBQUEscUJBQW1FLENBQW5FLDBCQUFtRSxDQUFuRSxzREFBbUUsQ0FBbkUsZ0JBQW1FLENBQW5FLGVBQW1FLENBQW5FLHFCQUFtRSxDQUluRSw0QkFBQSw0QkFBb0IsQ0FJcEIsMkJBQUEsNkJBQW9CLENBSXBCLHNCQUFBLHFCQUF3QyxDQUF4QywwQkFBd0MsQ0FBeEMsbURBQXdDLENBSXhDLGdCQUFBLHFCQUE2QyxDQUE3QyxzREFBNkMsQ0FBN0MsZ0JBQTZDLENBQTdDLHFCQUE2QyxDQUk3QyxzQkFBQSxxQkFBeUIsQ0FBekIsbURBQXlCLENBRzNCLDJCQUtFLHdCQUNGIiwic291cmNlc0NvbnRlbnQiOlsiLmh0bWwgcHJlIHtcbiAgQGFwcGx5IGJvcmRlci1ib3JkZXItdGVydGlhcnkgZm9udC1tZW5sbyB0ZXh0LXRleHQtc2Vjb25kYXJ5IG15LTQgb3ZlcmZsb3ctdmlzaWJsZSB3aGl0ZXNwYWNlLXByZS13cmFwIGJvcmRlci1sLTIgcGwtNCB0ZXh0LXNtO1xufVxuXG4uaHRtbCBwcmUgc3Ryb25nIHtcbiAgQGFwcGx5IHRleHQtbGFiZWwtMTtcbn1cblxuOmdsb2JhbCguZGFyaykgLmh0bWwgcHJlIHN0cm9uZyB7XG4gIEBhcHBseSB0ZXh0LWRhcmstbGFiZWwtMTtcbn1cblxuLmh0bWwgYSB7XG4gIEBhcHBseSB0ZXh0LWJsdWUtcztcbn1cblxuOmdsb2JhbCguZGFyaykgLmh0bWwgYSB7XG4gIEBhcHBseSB0ZXh0LWRhcmstYmx1ZS1zO1xufVxuXG4uaHRtbCB1bCB7XG4gIEBhcHBseSBteC00IG1iLTQgbGlzdC1kaXNjO1xufVxuXG4uaHRtbCBvbCB7XG4gIEBhcHBseSBteC00IG1iLTQgbGlzdC1kZWNpbWFsO1xufVxuXG4uaHRtbCBsaSB7XG4gIEBhcHBseSBtYi0zO1xufVxuXG4uaHRtbCBwIHtcbiAgQGFwcGx5IG1iLTQ7XG59XG5cbi5odG1sIGNvZGUge1xuICBAYXBwbHkgYm9yZGVyLWRpdmlkZXItMyBiZy1maWxsLTQgZm9udC1tZW5sbyB0ZXh0LWxhYmVsLTIgd2hpdGVzcGFjZS1wcmUtd3JhcCByb3VuZGVkIGJvcmRlciBweC0wLjUgcHktMC41IHRleHQteHM7XG59XG5cbjpnbG9iYWwoLmRhcmspIC5odG1sIGNvZGUge1xuICBAYXBwbHkgYm9yZGVyLWRhcmstZGl2aWRlci0zIGJnLWRhcmstZmlsbC00IHRleHQtZGFyay1sYWJlbC0yO1xufVxuXG4uaHRtbCBibG9ja3F1b3RlIHtcbiAgQGFwcGx5IGJvcmRlci1kaXZpZGVyLTMgdGV4dC1sYWJlbC0yIGJvcmRlci1sLTQgcGwtNDtcbn1cblxuOmdsb2JhbCguZGFyaykgLmh0bWwgYmxvY2txdW90ZSB7XG4gIEBhcHBseSBib3JkZXItZGFyay1kaXZpZGVyLTMgdGV4dC1kYXJrLWxhYmVsLTI7XG59XG5cbjpnbG9iYWwoLmNvbnRlbnQtZXhhbXBsZS10ZXN0Y2FzZSkge1xuICBAYXBwbHkgdGV4dC1sYWJlbC0xIG1iLTQgdGV4dC1iYXNlIGZvbnQtbWVkaXVtO1xufVxuXG46Z2xvYmFsKC5kYXJrIC5jb250ZW50LWV4YW1wbGUtdGVzdGNhc2UpIHtcbiAgQGFwcGx5IHRleHQtZGFyay1sYWJlbC0xO1xufVxuXG4uaHRtbCBpbWcge1xuICBtYXgtd2lkdGg6IDEwMCU7XG4gIGhlaWdodDogYXV0byAhaW1wb3J0YW50O1xufVxuXG4uaHRtbCAuZXhhbXBsZSB7XG4gIEBhcHBseSB0ZXh0LWxhYmVsLTEgZGFyazp0ZXh0LWxhYmVsLTEgbWItNCB0ZXh0LWJhc2UgZm9udC1tZWRpdW07XG59XG5cbjpnbG9iYWwoLmV4YW1wbGUtYmxvY2spIHtcbiAgQGFwcGx5IGJvcmRlci1ib3JkZXItdGVydGlhcnkgdGV4dC10ZXh0LXNlY29uZGFyeSBteS00IG92ZXJmbG93LXZpc2libGUgYm9yZGVyLWwtMiBwbC00IHRleHQtWzE0cHhdO1xuICBwcmUge1xuICAgIEBhcHBseSBib3JkZXItbC0wIGJvcmRlci1ub25lIHBsLTA7XG4gIH1cbiAgOmdsb2JhbCguZXhhbXBsZS1pbykge1xuICAgIEBhcHBseSBmb250LW1lbmxvIHRleHQtWzAuODVyZW1dO1xuICB9XG4gIHByZTpnbG9iYWwoLmV4YW1wbGUtaW8pIHtcbiAgICBAYXBwbHkgb3ZlcmZsb3ctYXV0byB3aGl0ZXNwYWNlLXByZTtcbiAgfVxufVxuXG4uaHRtbCB0YWJsZSB7XG4gIGJveC1zaGFkb3c6IDAgMCAwIDFweCAjZTVlNWU1O1xuICBAYXBwbHkgdGV4dC1sYWJlbC0xIG1iLTMgcm91bmRlZC1sZyBib3JkZXItaGlkZGVuO1xufVxuXG46Z2xvYmFsKC5kYXJrKSAuaHRtbCB0YWJsZSB7XG4gIGJveC1zaGFkb3c6IDAgMCAwIDFweCAjNDI0MjQyO1xuICBAYXBwbHkgYm9yZGVyLWRhcmstZ3JheS00IHRleHQtZGFyay1sYWJlbC0xO1xufVxuXG4uaHRtbCB0YWJsZSB0aCB7XG4gIEBhcHBseSBib3JkZXItZ3JheS00IGJnLWZpbGwtMyBib3JkZXItWzFweF0gcHgtMi41IHB5LTIgZm9udC1tZWRpdW07XG59XG5cbi5odG1sIHRhYmxlIHRoOmZpcnN0LWNoaWxkIHtcbiAgQGFwcGx5IHJvdW5kZWQtdGwtbGc7XG59XG5cbi5odG1sIHRhYmxlIHRoOmxhc3QtY2hpbGQge1xuICBAYXBwbHkgcm91bmRlZC10ci1sZztcbn1cblxuOmdsb2JhbCguZGFyaykgLmh0bWwgdGFibGUgdGgge1xuICBAYXBwbHkgYm9yZGVyLWRhcmstZ3JheS00IGJnLWRhcmstZmlsbC0zO1xufVxuXG4uaHRtbCB0YWJsZSB0ZCB7XG4gIEBhcHBseSBib3JkZXItZ3JheS00IGJvcmRlci1bMXB4XSBweC0yLjUgcHktMjtcbn1cblxuOmdsb2JhbCguZGFyaykgLmh0bWwgdGFibGUgdGQge1xuICBAYXBwbHkgYm9yZGVyLWRhcmstZ3JheS00O1xufVxuXG4uaHRtbCA6Z2xvYmFsKC5sYW5ndWFnZS1tZCAudGFibGUpIHtcbiAgLypcbiAgICBGSVhNRTogdGFpbHdpbmQtY3NzIGAudGFibGVgIGNvbmZsaWN0IHdpdGggaGlnaGxpZ2h0LmpzIGAudGFibGVgLFxuICAgICAgICAgICB3aGljaCBqdXN0IGhhdmUgZGlmZmVyZW50IG1lYW5pbmdzIGJ1dCB3aXRoIHRoZSBzYW1lIG5hbWVcbiAgICAgKi9cbiAgZGlzcGxheTogaW5saW5lICFpbXBvcnRhbnQ7XG59XG4iXSwic291cmNlUm9vdCI6IiJ9 */
+              `
+              document.body.appendChild(style)
+            })()
+      </script>
+      <div class="hidden">
+        <div class="hidden">
+          <div class="swiper-autoheight"></div>
+          <div class="swiper-autoheight"></div>
+          <div class="gap-8"></div>
+          <div class="gap-8"></div>
+          <div class="gap-6"></div>
+          <div class="gap-6"></div>
+          <div class="pt-3"></div>
+          <div class="pt-3"></div>
+          <div class="space-y-1.5"></div>
+          <div class="space-y-1.5"></div>
+          <div role="rowgroup"></div>
+          <div role="rowgroup"></div>
+          <div role="table"></div>
+          <div role="table"></div>
+        </div>
+      </div>
+      <div
+        class="flex h-[100vh] min-w-[360px] flex-col text-label-1 dark:text-dark-label-1 overflow-x-auto"
+      >
+        <div
+          class="h-[100vh] bg-gray-2 dark:bg-dark-layer-bg min-w-[1000px]"
+        ></div>
+      </div>
+      <div
+        role="region"
+        aria-label="Notifications (F8)"
+        tabindex="-1"
+        style="pointer-events: none"
+      >
+        <ol
+          tabindex="-1"
+          class="z-message pointer-events-none fixed left-0 top-0 flex max-h-screen w-full flex-col-reverse items-center gap-4 p-4"
+        ></ol>
+      </div>
+    </div>
+    <script id="__NEXT_DATA__" type="application/json">
+      {
+        "props": {
+          "pageProps": {
+            "isRobotVisit": false,
+            "isMobile": false,
+            "dehydratedState": {
+              "mutations": [],
+              "queries": [
+                {
+                  "state": {
+                    "data": {
+                      "userStatus": {
+                        "isSignedIn": true,
+                        "isPremium": false,
+                        "username": "origami",
+                        "realName": "origami",
+                        "avatar": "https://assets.leetcode.cn/aliyun-lc-upload/users/origami/avatar_1721756641.png",
+                        "userSlug": "origami",
+                        "isAdmin": false,
+                        "checkedInToday": true,
+                        "useTranslation": true,
+                        "premiumExpiredAt": 946684821504,
+                        "isTranslator": false,
+                        "isSuperuser": false,
+                        "isPhoneVerified": true,
+                        "isVerified": true,
+                        "completedFeatureGuides": [
+                          "QUESTION_DETAIL_TOUR",
+                          "NEW_QD_DETAIL_TOUR",
+                          "NEW_IDE_DYNAMIC_LAYOUT_V2"
+                        ]
+                      },
+                      "jobsMyCompany": null
+                    },
+                    "dataUpdateCount": 1,
+                    "dataUpdatedAt": 1739825160270,
+                    "error": null,
+                    "errorUpdateCount": 0,
+                    "errorUpdatedAt": 0,
+                    "fetchFailureCount": 0,
+                    "fetchFailureReason": null,
+                    "fetchMeta": null,
+                    "isInvalidated": false,
+                    "status": "success",
+                    "fetchStatus": "idle"
+                  },
+                  "queryKey": ["globalData", {}],
+                  "queryHash": "[\"globalData\",{}]"
+                },
+                {
+                  "state": {
+                    "data": {
+                      "languageList": [
+                        { "id": 0, "name": "cpp", "verboseName": "C++" },
+                        { "id": 1, "name": "java", "verboseName": "Java" },
+                        { "id": 2, "name": "python", "verboseName": "Python" },
+                        {
+                          "id": 11,
+                          "name": "python3",
+                          "verboseName": "Python3"
+                        },
+                        { "id": 3, "name": "mysql", "verboseName": "MySQL" },
+                        {
+                          "id": 14,
+                          "name": "mssql",
+                          "verboseName": "MS SQL Server"
+                        },
+                        {
+                          "id": 15,
+                          "name": "oraclesql",
+                          "verboseName": "Oracle"
+                        },
+                        { "id": 4, "name": "c", "verboseName": "C" },
+                        { "id": 5, "name": "csharp", "verboseName": "C#" },
+                        {
+                          "id": 6,
+                          "name": "javascript",
+                          "verboseName": "JavaScript"
+                        },
+                        {
+                          "id": 20,
+                          "name": "typescript",
+                          "verboseName": "TypeScript"
+                        },
+                        { "id": 8, "name": "bash", "verboseName": "Bash" },
+                        { "id": 19, "name": "php", "verboseName": "PHP" },
+                        { "id": 9, "name": "swift", "verboseName": "Swift" },
+                        { "id": 13, "name": "kotlin", "verboseName": "Kotlin" },
+                        { "id": 24, "name": "dart", "verboseName": "Dart" },
+                        { "id": 10, "name": "golang", "verboseName": "Go" },
+                        { "id": 7, "name": "ruby", "verboseName": "Ruby" },
+                        { "id": 12, "name": "scala", "verboseName": "Scala" },
+                        { "id": 18, "name": "rust", "verboseName": "Rust" },
+                        { "id": 21, "name": "racket", "verboseName": "Racket" },
+                        { "id": 22, "name": "erlang", "verboseName": "Erlang" },
+                        { "id": 23, "name": "elixir", "verboseName": "Elixir" },
+                        {
+                          "id": 25,
+                          "name": "pythondata",
+                          "verboseName": "Pandas"
+                        },
+                        {
+                          "id": 28,
+                          "name": "postgresql",
+                          "verboseName": "PostgreSQL"
+                        },
+                        {
+                          "id": 29,
+                          "name": "cangjie",
+                          "verboseName": "Cangjie"
+                        }
+                      ],
+                      "statusList": [
+                        { "id": 10, "name": "执行通过" },
+                        { "id": 11, "name": "错误解答" },
+                        { "id": 12, "name": "超出内存限制" },
+                        { "id": 13, "name": "超出输出限制" },
+                        { "id": 14, "name": "超出时间限制" },
+                        { "id": 15, "name": "执行出错" },
+                        { "id": 16, "name": "内部出错" },
+                        { "id": 20, "name": "编译出错" },
+                        { "id": 30, "name": "超时" }
+                      ],
+                      "question": {
+                        "title": "Valid Parentheses",
+                        "titleSlug": "valid-parentheses",
+                        "questionId": "20",
+                        "questionFrontendId": "20",
+                        "questionTitle": "Valid Parentheses",
+                        "translatedTitle": "有效的括号",
+                        "content": "\u003cp\u003eGiven a string \u003ccode\u003es\u003c/code\u003e containing just the characters \u003ccode\u003e\u0026#39;(\u0026#39;\u003c/code\u003e, \u003ccode\u003e\u0026#39;)\u0026#39;\u003c/code\u003e, \u003ccode\u003e\u0026#39;{\u0026#39;\u003c/code\u003e, \u003ccode\u003e\u0026#39;}\u0026#39;\u003c/code\u003e, \u003ccode\u003e\u0026#39;[\u0026#39;\u003c/code\u003e and \u003ccode\u003e\u0026#39;]\u0026#39;\u003c/code\u003e, determine if the input string is valid.\u003c/p\u003e\n\n\u003cp\u003eAn input string is valid if:\u003c/p\u003e\n\n\u003col\u003e\n\t\u003cli\u003eOpen brackets must be closed by the same type of brackets.\u003c/li\u003e\n\t\u003cli\u003eOpen brackets must be closed in the correct order.\u003c/li\u003e\n\t\u003cli\u003eEvery close bracket has a corresponding open bracket of the same type.\u003c/li\u003e\n\u003c/ol\u003e\n\n\u003cp\u003e\u0026nbsp;\u003c/p\u003e\n\u003cp\u003e\u003cstrong class=\"example\"\u003eExample 1:\u003c/strong\u003e\u003c/p\u003e\n\n\u003cdiv class=\"example-block\"\u003e\n\u003cp\u003e\u003cstrong\u003eInput:\u003c/strong\u003e \u003cspan class=\"example-io\"\u003es = \u0026quot;()\u0026quot;\u003c/span\u003e\u003c/p\u003e\n\n\u003cp\u003e\u003cstrong\u003eOutput:\u003c/strong\u003e \u003cspan class=\"example-io\"\u003etrue\u003c/span\u003e\u003c/p\u003e\n\u003c/div\u003e\n\n\u003cp\u003e\u003cstrong class=\"example\"\u003eExample 2:\u003c/strong\u003e\u003c/p\u003e\n\n\u003cdiv class=\"example-block\"\u003e\n\u003cp\u003e\u003cstrong\u003eInput:\u003c/strong\u003e \u003cspan class=\"example-io\"\u003es = \u0026quot;()[]{}\u0026quot;\u003c/span\u003e\u003c/p\u003e\n\n\u003cp\u003e\u003cstrong\u003eOutput:\u003c/strong\u003e \u003cspan class=\"example-io\"\u003etrue\u003c/span\u003e\u003c/p\u003e\n\u003c/div\u003e\n\n\u003cp\u003e\u003cstrong class=\"example\"\u003eExample 3:\u003c/strong\u003e\u003c/p\u003e\n\n\u003cdiv class=\"example-block\"\u003e\n\u003cp\u003e\u003cstrong\u003eInput:\u003c/strong\u003e \u003cspan class=\"example-io\"\u003es = \u0026quot;(]\u0026quot;\u003c/span\u003e\u003c/p\u003e\n\n\u003cp\u003e\u003cstrong\u003eOutput:\u003c/strong\u003e \u003cspan class=\"example-io\"\u003efalse\u003c/span\u003e\u003c/p\u003e\n\u003c/div\u003e\n\n\u003cp\u003e\u003cstrong class=\"example\"\u003eExample 4:\u003c/strong\u003e\u003c/p\u003e\n\n\u003cdiv class=\"example-block\"\u003e\n\u003cp\u003e\u003cstrong\u003eInput:\u003c/strong\u003e \u003cspan class=\"example-io\"\u003es = \u0026quot;([])\u0026quot;\u003c/span\u003e\u003c/p\u003e\n\n\u003cp\u003e\u003cstrong\u003eOutput:\u003c/strong\u003e \u003cspan class=\"example-io\"\u003etrue\u003c/span\u003e\u003c/p\u003e\n\u003c/div\u003e\n\n\u003cp\u003e\u0026nbsp;\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eConstraints:\u003c/strong\u003e\u003c/p\u003e\n\n\u003cul\u003e\n\t\u003cli\u003e\u003ccode\u003e1 \u0026lt;= s.length \u0026lt;= 10\u003csup\u003e4\u003c/sup\u003e\u003c/code\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ccode\u003es\u003c/code\u003e consists of parentheses only \u003ccode\u003e\u0026#39;()[]{}\u0026#39;\u003c/code\u003e.\u003c/li\u003e\n\u003c/ul\u003e\n",
+                        "translatedContent": "\u003cp\u003e给定一个只包括 \u003ccode\u003e'('\u003c/code\u003e，\u003ccode\u003e')'\u003c/code\u003e，\u003ccode\u003e'{'\u003c/code\u003e，\u003ccode\u003e'}'\u003c/code\u003e，\u003ccode\u003e'['\u003c/code\u003e，\u003ccode\u003e']'\u003c/code\u003e\u0026nbsp;的字符串 \u003ccode\u003es\u003c/code\u003e ，判断字符串是否有效。\u003c/p\u003e\n\n\u003cp\u003e有效字符串需满足：\u003c/p\u003e\n\n\u003col\u003e\n\t\u003cli\u003e左括号必须用相同类型的右括号闭合。\u003c/li\u003e\n\t\u003cli\u003e左括号必须以正确的顺序闭合。\u003c/li\u003e\n\t\u003cli\u003e每个右括号都有一个对应的相同类型的左括号。\u003c/li\u003e\n\u003c/ol\u003e\n\n\u003cp\u003e\u0026nbsp;\u003c/p\u003e\n\n\u003cp\u003e\u003cstrong class=\"example\"\u003e示例 1：\u003c/strong\u003e\u003c/p\u003e\n\n\u003cdiv class=\"example-block\"\u003e\n\u003cp\u003e\u003cspan class=\"example-io\"\u003e\u003cb\u003e输入：\u003c/b\u003es = \"()\"\u003c/span\u003e\u003c/p\u003e\n\n\u003cp\u003e\u003cspan class=\"example-io\"\u003e\u003cb\u003e输出：\u003c/b\u003etrue\u003c/span\u003e\u003c/p\u003e\n\u003c/div\u003e\n\n\u003cp\u003e\u003cstrong class=\"example\"\u003e示例 2：\u003c/strong\u003e\u003c/p\u003e\n\n\u003cdiv class=\"example-block\"\u003e\n\u003cp\u003e\u003cspan class=\"example-io\"\u003e\u003cb\u003e输入：\u003c/b\u003es = \"()[]{}\"\u003c/span\u003e\u003c/p\u003e\n\n\u003cp\u003e\u003cspan class=\"example-io\"\u003e\u003cb\u003e输出：\u003c/b\u003etrue\u003c/span\u003e\u003c/p\u003e\n\u003c/div\u003e\n\n\u003cp\u003e\u003cstrong class=\"example\"\u003e示例 3：\u003c/strong\u003e\u003c/p\u003e\n\n\u003cdiv class=\"example-block\"\u003e\n\u003cp\u003e\u003cspan class=\"example-io\"\u003e\u003cb\u003e输入：\u003c/b\u003es = \"(]\"\u003c/span\u003e\u003c/p\u003e\n\n\u003cp\u003e\u003cspan class=\"example-io\"\u003e\u003cb\u003e输出：\u003c/b\u003efalse\u003c/span\u003e\u003c/p\u003e\n\u003c/div\u003e\n\n\u003cp\u003e\u003cstrong class=\"example\"\u003e示例 4：\u003c/strong\u003e\u003c/p\u003e\n\n\u003cdiv class=\"example-block\"\u003e\n\u003cp\u003e\u003cspan class=\"example-io\"\u003e\u003cb\u003e输入：\u003c/b\u003es = \"([])\"\u003c/span\u003e\u003c/p\u003e\n\n\u003cp\u003e\u003cspan class=\"example-io\"\u003e\u003cb\u003e输出：\u003c/b\u003etrue\u003c/span\u003e\u003c/p\u003e\n\u003c/div\u003e\n\n\u003cp\u003e\u0026nbsp;\u003c/p\u003e\n\n\u003cp\u003e\u003cstrong\u003e提示：\u003c/strong\u003e\u003c/p\u003e\n\n\u003cul\u003e\n\t\u003cli\u003e\u003ccode\u003e1 \u0026lt;= s.length \u0026lt;= 10\u003csup\u003e4\u003c/sup\u003e\u003c/code\u003e\u003c/li\u003e\n\t\u003cli\u003e\u003ccode\u003es\u003c/code\u003e 仅由括号 \u003ccode\u003e'()[]{}'\u003c/code\u003e 组成\u003c/li\u003e\n\u003c/ul\u003e\n",
+                        "categoryTitle": "Algorithms",
+                        "difficulty": "Easy",
+                        "stats": "{\"totalAccepted\": \"2.1M\", \"totalSubmission\": \"4.6M\", \"totalAcceptedRaw\": 2058589, \"totalSubmissionRaw\": 4624632, \"acRate\": \"44.5%\"}",
+                        "style": "LEETCODE",
+                        "contributors": [],
+                        "book": null,
+                        "companyTagStatsV2": null,
+                        "topicTags": [
+                          {
+                            "name": "Stack",
+                            "slug": "stack",
+                            "translatedName": "栈"
+                          },
+                          {
+                            "name": "String",
+                            "slug": "string",
+                            "translatedName": "字符串"
+                          }
+                        ],
+                        "similarQuestions": "[{\"title\": \"Generate Parentheses\", \"titleSlug\": \"generate-parentheses\", \"difficulty\": \"Medium\", \"translatedTitle\": \"\\u62ec\\u53f7\\u751f\\u6210\", \"isPaidOnly\": false}, {\"title\": \"Longest Valid Parentheses\", \"titleSlug\": \"longest-valid-parentheses\", \"difficulty\": \"Hard\", \"translatedTitle\": \"\\u6700\\u957f\\u6709\\u6548\\u62ec\\u53f7\", \"isPaidOnly\": false}, {\"title\": \"Remove Invalid Parentheses\", \"titleSlug\": \"remove-invalid-parentheses\", \"difficulty\": \"Hard\", \"translatedTitle\": \"\\u5220\\u9664\\u65e0\\u6548\\u7684\\u62ec\\u53f7\", \"isPaidOnly\": false}, {\"title\": \"Check If Word Is Valid After Substitutions\", \"titleSlug\": \"check-if-word-is-valid-after-substitutions\", \"difficulty\": \"Medium\", \"translatedTitle\": \"\\u68c0\\u67e5\\u66ff\\u6362\\u540e\\u7684\\u8bcd\\u662f\\u5426\\u6709\\u6548\", \"isPaidOnly\": false}, {\"title\": \"Check if a Parentheses String Can Be Valid\", \"titleSlug\": \"check-if-a-parentheses-string-can-be-valid\", \"difficulty\": \"Medium\", \"translatedTitle\": \"\\u5224\\u65ad\\u4e00\\u4e2a\\u62ec\\u53f7\\u5b57\\u7b26\\u4e32\\u662f\\u5426\\u6709\\u6548\", \"isPaidOnly\": false}, {\"title\": \"Move Pieces to Obtain a String\", \"titleSlug\": \"move-pieces-to-obtain-a-string\", \"difficulty\": \"Medium\", \"translatedTitle\": \"\\u79fb\\u52a8\\u7247\\u6bb5\\u5f97\\u5230\\u5b57\\u7b26\\u4e32\", \"isPaidOnly\": false}]",
+                        "mysqlSchemas": [],
+                        "dataSchemas": [],
+                        "frontendPreviews": "{}",
+                        "likes": 4636,
+                        "dislikes": 0,
+                        "isPaidOnly": false,
+                        "status": "ac",
+                        "boundTopicId": 1090,
+                        "enableTestMode": false,
+                        "metaData": "{ \r\n  \"name\": \"isValid\",\r\n  \"params\": [\r\n    { \r\n      \"name\": \"s\",\r\n      \"type\": \"string\"\r\n    }\r\n  ],\r\n  \"return\": {\r\n    \"type\": \"boolean\"\r\n  }\r\n}",
+                        "enableRunCode": true,
+                        "enableSubmit": true,
+                        "envInfo": "{\"cpp\":[\"C++\",\"\u003cp\u003e\\u7248\\u672c\\uff1a\u003ccode\u003eclang 19\u003c\\/code\u003e \\u91c7\\u7528\\u6700\\u65b0 C++ 23 \\u6807\\u51c6\\uff0c\\u5e76\\u4f7f\\u7528 GCC 14 \\u63d0\\u4f9b\\u7684 \u003ccode\u003elibstdc++\u003c\\/code\u003e\\u3002\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u7f16\\u8bd1\\u65f6\\uff0c\\u5c06\\u4f1a\\u91c7\\u7528 \u003ccode\u003e-O2\u003c\\/code\u003e \\u7ea7\\u4f18\\u5316\\uff0c\\u5e76\\u63d0\\u4f9b \u003ccode\u003e-gline-tables-only\u003c\\/code\u003e \\u53c2\\u6570\\u3002\u003ca href=\\\"https:\\/\\/github.com\\/google\\/sanitizers\\/wiki\\/AddressSanitizer\\\" target=\\\"_blank\\\"\u003eAddressSanitizer\u003c\\/a\u003e \\u4e5f\\u88ab\\u5f00\\u542f\\u6765\\u68c0\\u6d4b \u003ccode\u003eout-of-bounds\u003c\\/code\u003e \\u548c \u003ccode\u003euse-after-free\u003c\\/code\u003e \\u9519\\u8bef\\u3002\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u4e3a\\u4e86\\u4f7f\\u7528\\u65b9\\u4fbf\\uff0c\\u5927\\u90e8\\u5206\\u6807\\u51c6\\u5e93\\u7684\\u5934\\u6587\\u4ef6\\u5df2\\u7ecf\\u88ab\\u81ea\\u52a8\\u5bfc\\u5165\\u3002\u003c\\/p\u003e\"],\"java\":[\"Java\",\"\u003cp\u003e\\u7248\\u672c\\uff1a\u003ccode\u003eOpenJDK 21\u003c\\/code\u003e\\u3002\\u4f7f\\u7528\\u7f16\\u8bd1\\u53c2\\u6570 \u003ccode\u003e--enable-preview --release 21\u003c\\/code\u003e\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u4e3a\\u4e86\\u65b9\\u4fbf\\u8d77\\u89c1\\uff0c\\u5927\\u90e8\\u5206\\u6807\\u51c6\\u5e93\\u7684\\u5934\\u6587\\u4ef6\\u5df2\\u88ab\\u5bfc\\u5165\\u3002\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u5305\\u542b Pair \\u7c7b: https:\\/\\/docs.oracle.com\\/javase\\/8\\/javafx\\/api\\/javafx\\/util\\/Pair.html \u003c\\/p\u003e\"],\"python\":[\"Python\",\"\u003cp\u003e\\u7248\\u672c\\uff1a \u003ccode\u003ePython 2.7.18\u003c\\/code\u003e\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u4e3a\\u4e86\\u65b9\\u4fbf\\u8d77\\u89c1\\uff0c\\u5927\\u90e8\\u5206\\u5e38\\u7528\\u5e93\\u5df2\\u7ecf\\u88ab\\u81ea\\u52a8 \\u5bfc\\u5165\\uff0c\\u5982\\uff1a\u003ca href=\\\"https:\\/\\/docs.python.org\\/2\\/library\\/array.html\\\" target=\\\"_blank\\\"\u003earray\u003c\\/a\u003e, \u003ca href=\\\"https:\\/\\/docs.python.org\\/2\\/library\\/bisect.html\\\" target=\\\"_blank\\\"\u003ebisect\u003c\\/a\u003e, \u003ca href=\\\"https:\\/\\/docs.python.org\\/2\\/library\\/collections.html\\\" target=\\\"_blank\\\"\u003ecollections\u003c\\/a\u003e\\u3002\\u5982\\u679c\\u60a8\\u9700\\u8981\\u4f7f\\u7528\\u5176\\u4ed6\\u5e93\\u51fd\\u6570\\uff0c\\u8bf7\\u81ea\\u884c\\u5bfc\\u5165\\u3002\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u6ce8\\u610f Python 2.7 \u003ca href=\\\"https:\\/\\/www.python.org\\/dev\\/peps\\/pep-0373\\/\\\" target=\\\"_blank\\\"\u003e\\u5df2\\u4e0d\\u518d\\u7ef4\\u62a4\u003c\\/a\u003e\\u3002 \\u5982\\u60f3\\u4f7f\\u7528\\u6700\\u65b0\\u7248\\u7684Python\\uff0c\\u8bf7\\u9009\\u62e9Python 3\\u3002\u003c\\/p\u003e\"],\"c\":[\"C\",\"\u003cp\u003e\\u7248\\u672c\\uff1a\u003ccode\u003eGCC 14\u003c\\/code\u003e\\uff0c\\u91c7\\u7528 GNU11 \\u6807\\u51c6\\u3002\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u7f16\\u8bd1\\u65f6\\uff0c\\u5c06\\u4f1a\\u91c7\\u7528 \u003ccode\u003e-O2\u003c\\/code\u003e \\u7ea7\\u4f18\\u5316\\uff0c\\u5e76\\u63d0\\u4f9b \u003ccode\u003e-g1\u003c\\/code\u003e \\u53c2\\u6570\\u3002 \u003ca href=\\\"https:\\/\\/github.com\\/google\\/sanitizers\\/wiki\\/AddressSanitizer\\\" target=\\\"_blank\\\"\u003eAddressSanitizer\u003c\\/a\u003e \\u4e5f\\u88ab\\u5f00\\u542f\\u6765\\u68c0\\u6d4b \u003ccode\u003eout-of-bounds\u003c\\/code\u003e \\u548c \u003ccode\u003euse-after-free\u003c\\/code\u003e \\u9519\\u8bef\\u3002\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u4e3a\\u4e86\\u4f7f\\u7528\\u65b9\\u4fbf\\uff0c\\u5927\\u90e8\\u5206\\u6807\\u51c6\\u5e93\\u7684\\u5934\\u6587\\u4ef6\\u5df2\\u7ecf\\u88ab\\u81ea\\u52a8\\u5bfc\\u5165\\u3002\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u5982\\u60f3\\u4f7f\\u7528\\u54c8\\u5e0c\\u8868\\u8fd0\\u7b97, \\u60a8\\u53ef\\u4ee5\\u4f7f\\u7528 \u003ca href=\\\"https:\\/\\/troydhanson.github.io\\/uthash\\/\\\" target=\\\"_blank\\\"\u003euthash\u003c\\/a\u003e\\u3002 \\\"uthash.h\\\"\\u5df2\\u7ecf\\u9ed8\\u8ba4\\u88ab\\u5bfc\\u5165\\u3002\\u8bf7\\u770b\\u5982\\u4e0b\\u793a\\u4f8b:\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\u003cb\u003e1. \\u5f80\\u54c8\\u5e0c\\u8868\\u4e2d\\u6dfb\\u52a0\\u4e00\\u4e2a\\u5bf9\\u8c61\\uff1a\u003c\\/b\u003e\\r\\n\u003cpre\u003e\\r\\nstruct hash_entry {\\r\\n    int id;            \\/* we'll use this field as the key *\\/\\r\\n    char name[10];\\r\\n    UT_hash_handle hh; \\/* makes this structure hashable *\\/\\r\\n};\\r\\n\\r\\nstruct hash_entry *users = NULL;\\r\\n\\r\\nvoid add_user(struct hash_entry *s) {\\r\\n    HASH_ADD_INT(users, id, s);\\r\\n}\\r\\n\u003c\\/pre\u003e\\r\\n\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\u003cb\u003e2. \\u5728\\u54c8\\u5e0c\\u8868\\u4e2d\\u67e5\\u627e\\u4e00\\u4e2a\\u5bf9\\u8c61\\uff1a\u003c\\/b\u003e\\r\\n\u003cpre\u003e\\r\\nstruct hash_entry *find_user(int user_id) {\\r\\n    struct hash_entry *s;\\r\\n    HASH_FIND_INT(users, \u0026user_id, s);\\r\\n    return s;\\r\\n}\\r\\n\u003c\\/pre\u003e\\r\\n\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\u003cb\u003e3. \\u4ece\\u54c8\\u5e0c\\u8868\\u4e2d\\u5220\\u9664\\u4e00\\u4e2a\\u5bf9\\u8c61\\uff1a\u003c\\/b\u003e\\r\\n\u003cpre\u003e\\r\\nvoid delete_user(struct hash_entry *user) {\\r\\n    HASH_DEL(users, user);  \\r\\n}\\r\\n\u003c\\/pre\u003e\\r\\n\u003c\\/p\u003e\"],\"csharp\":[\"C#\",\"\u003cp\u003e\u003ca href=\\\"https:\\/\\/learn.microsoft.com\\/en-us\\/dotnet\\/csharp\\/whats-new\\/csharp-13\\\" target=\\\"_blank\\\"\u003eC# 13\u003c\\/a\u003e \\u8fd0\\u884c\\u5728 .NET 9 \\u4e0a\u003c\\/p\u003e\"],\"javascript\":[\"JavaScript\",\"\u003cp\u003e\\u7248\\u672c\\uff1a\u003ccode\u003eNode.js 22.14.0\u003c\\/code\u003e\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u60a8\\u7684\\u4ee3\\u7801\\u5728\\u6267\\u884c\\u65f6\\u5c06\\u5e26\\u4e0a \u003ccode\u003e--harmony\u003c\\/code\u003e \\u6807\\u8bb0\\u6765\\u5f00\\u542f \u003ca href=\\\"http:\\/\\/node.green\\/\\\" target=\\\"_blank\\\"\u003e\\u65b0\\u7248ES6\\u7279\\u6027\u003c\\/a\u003e\\u3002\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\u003ca href=\\\"https:\\/\\/lodash.com\\\" target=\\\"_blank\\\"\u003elodash.js\u003c\\/a\u003e \\u5e93\\u5df2\\u7ecf\\u9ed8\\u8ba4\\u88ab\\u5305\\u542b\\u3002\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e \\u5982\\u9700\\u4f7f\\u7528\\u961f\\u5217\\/\\u4f18\\u5148\\u961f\\u5217\\uff0c\\u60a8\\u53ef\\u4f7f\\u7528 \u003ca href=\\\"https:\\/\\/github.com\\/datastructures-js\\/priority-queue\\/tree\\/v6.3.2\\\" target=\\\"_blank\\\"\u003e datastructures-js\\/priority-queue@6.3.2\u003c\\/a\u003e\\uff0c\u003ca href=\\\"https:\\/\\/github.com\\/datastructures-js\\/queue\\/tree\\/v4.2.3\\\" target=\\\"_blank\\\"\u003e datastructures-js\\/queue@4.2.3\u003c\\/a\u003e \\u4ee5\\u53ca \u003ca href=\\\"https:\\/\\/github.com\\/datastructures-js\\/deque\\/tree\\/v1.0.4\\\" target=\\\"_blank\\\"\u003e datastructures-js\\/deque@1.0.4\u003c\\/a\u003e\\u3002\u003c\\/p\u003e\"],\"ruby\":[\"Ruby\",\"\u003cp\u003e\\u4f7f\\u7528 \u003ccode\u003eRuby 3.2\u003c\\/code\u003e \\u6267\\u884c\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u4e00\\u4e9b\\u5e38\\u7528\\u7684\\u6570\\u636e\\u7ed3\\u6784\\u5df2\\u5728 Algorithms \\u6a21\\u5757\\u4e2d\\u63d0\\u4f9b\\uff1ahttps:\\/\\/www.rubydoc.info\\/github\\/kanwei\\/algorithms\\/Algorithms\u003c\\/p\u003e\"],\"swift\":[\"Swift\",\"\u003cp\u003e\\u7248\\u672c\\uff1a\u003ccode\u003eSwift 6.0\u003c\\/code\u003e\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u60a8\\u53ef\\u4ee5\\u4f7f\\u7528 \u003ca href=\\\"https:\\/\\/github.com\\/apple\\/swift-algorithms\\/tree\\/1.2.0\\\" target=\\\"_blank\\\"\u003eswift-algorithms 1.2.0\u003c\\/a\u003e\\uff0c\u003ca href=\\\"https:\\/\\/github.com\\/apple\\/swift-collections\\/tree\\/1.1.4\\\" target=\\\"_blank\\\"\u003eswift-collections 1.1.4\u003c\\/a\u003e \\u548c \u003ca href=\\\"https:\\/\\/github.com\\/apple\\/swift-numerics\\/tree\\/1.0.2\\\" target=\\\"_blank\\\"\u003eswift-numerics 1.0.2\u003c\\/a\u003e\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u6211\\u4eec\\u901a\\u5e38\\u4fdd\\u8bc1\\u66f4\\u65b0\\u5230 \u003ca href=\\\"https:\\/\\/swift.org\\/download\\/\\\" target=\\\"_blank\\\"\u003eApple\\u653e\\u51fa\\u7684\\u6700\\u65b0\\u7248Swift\u003c\\/a\u003e\\u3002\\u5982\\u679c\\u60a8\\u53d1\\u73b0Swift\\u4e0d\\u662f\\u6700\\u65b0\\u7248\\u7684\\uff0c\\u8bf7\\u8054\\u7cfb\\u6211\\u4eec\\uff01\\u6211\\u4eec\\u5c06\\u5c3d\\u5feb\\u66f4\\u65b0\\u3002\u003c\\/p\u003e\"],\"golang\":[\"Go\",\"\u003cp\u003e\\u7248\\u672c\\uff1a\u003ccode\u003eGo 1.23\u003c\\/code\u003e\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u652f\\u6301 \u003ca href=\\\"https:\\/\\/pkg.go.dev\\/github.com\\/emirpasic\\/gods@v1.18.1\\\" target=\\\"_blank\\\"\u003ehttps:\\/\\/pkg.go.dev\\/github.com\\/emirpasic\\/gods@v1.18.1\u003c\\/a\u003e \\u548c \u003ca href=\\\"https:\\/\\/pkg.go.dev\\/github.com\\/emirpasic\\/gods\\/v2@v2.0.0-alpha\\\" target=\\\"_blank\\\"\u003ehttps:\\/\\/pkg.go.dev\\/github.com\\/emirpasic\\/gods\\/v2@v2.0.0-alpha\u003c\\/a\u003e \\u7b2c\\u4e09\\u65b9\\u5e93\\u3002\u003c\\/p\u003e\"],\"python3\":[\"Python3\",\"\u003cp\u003e\\u7248\\u672c\\uff1a\u003ccode\u003ePython 3.11\u003c\\/code\u003e\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u4e3a\\u4e86\\u65b9\\u4fbf\\u8d77\\u89c1\\uff0c\\u5927\\u90e8\\u5206\\u5e38\\u7528\\u5e93\\u5df2\\u7ecf\\u88ab\\u81ea\\u52a8 \\u5bfc\\u5165\\uff0c\\u5982\u003ca href=\\\"https:\\/\\/docs.python.org\\/3\\/library\\/array.html\\\" target=\\\"_blank\\\"\u003earray\u003c\\/a\u003e, \u003ca href=\\\"https:\\/\\/docs.python.org\\/3\\/library\\/bisect.html\\\" target=\\\"_blank\\\"\u003ebisect\u003c\\/a\u003e, \u003ca href=\\\"https:\\/\\/docs.python.org\\/3\\/library\\/collections.html\\\" target=\\\"_blank\\\"\u003ecollections\u003c\\/a\u003e\\u3002 \\u5982\\u679c\\u60a8\\u9700\\u8981\\u4f7f\\u7528\\u5176\\u4ed6\\u5e93\\u51fd\\u6570\\uff0c\\u8bf7\\u81ea\\u884c\\u5bfc\\u5165\\u3002\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u5982\\u9700\\u4f7f\\u7528 Map\\/TreeMap \\u6570\\u636e\\u7ed3\\u6784\\uff0c\\u60a8\\u53ef\\u4f7f\\u7528 \u003ca href=\\\"http:\\/\\/www.grantjenks.com\\/docs\\/sortedcontainers\\/\\\" target=\\\"_blank\\\"\u003esortedcontainers\u003c\\/a\u003e \\u5e93\\u3002\u003c\\/p\u003e\"],\"scala\":[\"Scala\",\"\u003cp\u003e\\u7248\\u672c\\uff1a\u003ccode\u003eScala 3.3.1\u003c\\/code\u003e\u003c\\/p\u003e\"],\"kotlin\":[\"Kotlin\",\"\u003cp\u003e\\u7248\\u672c\\uff1a\u003ccode\u003eKotlin 1.9.0\u003c\\/code\u003e\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u6211\\u4eec\\u4f7f\\u7528\\u7684\\u662f JetBrains \\u63d0\\u4f9b\\u7684 experimental compiler\\u3002\\u5982\\u679c\\u60a8\\u8ba4\\u4e3a\\u60a8\\u9047\\u5230\\u4e86\\u7f16\\u8bd1\\u5668\\u76f8\\u5173\\u7684\\u95ee\\u9898\\uff0c\\u8bf7\\u5411\\u6211\\u4eec\\u53cd\\u9988\u003c\\/p\u003e\"],\"rust\":[\"Rust\",\"\u003cp\u003e\\u7248\\u672c\\uff1a\u003ccode\u003erust 1.79.0\u003c\\/code\u003e\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u652f\\u6301 crates.io \\u7684 \u003ca href=\\\"https:\\/\\/crates.io\\/crates\\/rand\\\" target=\\\"_blank\\\"\u003erand\u003c\\/a\u003e \\u548c \u003ca href=\\\"https:\\/\\/crates.io\\/crates\\/regex\\\" target=\\\"_blank\\\"\u003eregex\u003c\\/a\u003e\u003c\\/p\u003e\"],\"php\":[\"PHP\",\"\u003cp\u003e\u003ccode\u003ePHP 8.2\u003c\\/code\u003e.\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003eWith bcmath module.\u003c\\/p\u003e\"],\"typescript\":[\"TypeScript\",\"\u003cp\u003eTypeScript 5.7.3\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003eCompile Options: --alwaysStrict --strictBindCallApply --strictFunctionTypes --target ES2024\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\u003ca href=\\\"https:\\/\\/lodash.com\\\" target=\\\"_blank\\\"\u003elodash.js\u003c\\/a\u003e \\u5e93\\u5df2\\u7ecf\\u9ed8\\u8ba4\\u88ab\\u5305\\u542b\\u3002\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e \\u5982\\u9700\\u4f7f\\u7528\\u961f\\u5217\\/\\u4f18\\u5148\\u961f\\u5217\\uff0c\\u60a8\\u53ef\\u4f7f\\u7528 \u003ca href=\\\"https:\\/\\/github.com\\/datastructures-js\\/priority-queue\\/tree\\/v6.3.2\\\" target=\\\"_blank\\\"\u003e datastructures-js\\/priority-queue@6.3.2\u003c\\/a\u003e\\uff0c\u003ca href=\\\"https:\\/\\/github.com\\/datastructures-js\\/queue\\/tree\\/v4.2.3\\\" target=\\\"_blank\\\"\u003e datastructures-js\\/queue@4.2.3\u003c\\/a\u003e \\u4ee5\\u53ca \u003ca href=\\\"https:\\/\\/github.com\\/datastructures-js\\/deque\\/tree\\/v1.0.4\\\" target=\\\"_blank\\\"\u003e datastructures-js\\/deque@1.0.4\u003c\\/a\u003e\\u3002\u003c\\/p\u003e\"],\"racket\":[\"Racket\",\"\u003cp\u003e\u003ca href=\\\"https:\\/\\/docs.racket-lang.org\\/guide\\/performance.html#%28tech._c%29\\\" target=\\\"_blank\\\"\u003eRacket CS\u003c\\/a\u003e v8.15\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u4f7f\\u7528 #lang racket\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u5df2\\u9884\\u5148 (require data\\/gvector data\\/queue data\\/order data\\/heap). \\u82e5\\u9700\\u4f7f\\u7528\\u5176\\u5b83\\u6570\\u636e\\u7ed3\\u6784\\uff0c\\u53ef\\u81ea\\u884c require\\u3002\u003c\\/p\u003e\"],\"erlang\":[\"Erlang\",\"Erlang\\/OTP 26\"],\"elixir\":[\"Elixir\",\"Elixir 1.17 with Erlang\\/OTP 26\"],\"dart\":[\"Dart\",\"\u003cp\u003eDart 3.2\\u3002\\u60a8\\u53ef\\u4ee5\\u4f7f\\u7528 \u003ca href=\\\"https:\\/\\/pub.dev\\/packages\\/collection\\/versions\\/1.18.0\\\" target=\\\"_blank\\\"\u003ecollection\u003c\\/a\u003e \\u5305\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u60a8\\u7684\\u4ee3\\u7801\\u5c06\\u4f1a\\u88ab\\u4e0d\\u7f16\\u8bd1\\u76f4\\u63a5\\u8fd0\\u884c\u003c\\/p\u003e\"],\"cangjie\":[\"Cangjie\",\"\u003cp\u003e\\u7248\\u672c\\uff1a0.53.11 (cjnative)\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u7f16\\u8bd1\\u53c2\\u6570\\uff1a\u003ccode\u003e-O2 --disable-reflection\u003c\\/code\u003e\u003c\\/p\u003e\\r\\n\\r\\n\u003cp\u003e\\u5feb\\u901f\\u5165\\u95e8\\u8bf7\\u67e5\\u9605\u003ca href=\\\"https:\\/\\/leetcode.cn\\/leetbook\\/detail\\/cangjie\\/\\\" target=\\\"_blank\\\"\u003e\\u300c\\u4ed3\\u9889\\u7f16\\u7a0b\\u8bed\\u8a00\\u5f00\\u53d1\\u6307\\u5357\\u300d\u003c\\/a\u003e\u003c\\/p\u003e\"]}",
+                        "isLiked": null,
+                        "nextChallengePairs": "[{\"question_title\": \"\\u62ec\\u53f7\\u751f\\u6210\", \"question_title_slug\": \"generate-parentheses\", \"difficulty\": \"M\", \"frontend_id\": 22}, {\"question_title\": \"\\u6700\\u957f\\u6709\\u6548\\u62ec\\u53f7\", \"question_title_slug\": \"longest-valid-parentheses\", \"difficulty\": \"H\", \"frontend_id\": 32}, {\"question_title\": \"\\u5220\\u9664\\u65e0\\u6548\\u7684\\u62ec\\u53f7\", \"question_title_slug\": \"remove-invalid-parentheses\", \"difficulty\": \"H\", \"frontend_id\": 301}, {\"question_title\": \"\\u68c0\\u67e5\\u66ff\\u6362\\u540e\\u7684\\u8bcd\\u662f\\u5426\\u6709\\u6548\", \"question_title_slug\": \"check-if-word-is-valid-after-substitutions\", \"difficulty\": \"M\", \"frontend_id\": 1003}, {\"question_title\": \"\\u5224\\u65ad\\u4e00\\u4e2a\\u62ec\\u53f7\\u5b57\\u7b26\\u4e32\\u662f\\u5426\\u6709\\u6548\", \"question_title_slug\": \"check-if-a-parentheses-string-can-be-valid\", \"difficulty\": \"M\", \"frontend_id\": 2116}, {\"question_title\": \"\\u79fb\\u52a8\\u7247\\u6bb5\\u5f97\\u5230\\u5b57\\u7b26\\u4e32\", \"question_title_slug\": \"move-pieces-to-obtain-a-string\", \"difficulty\": \"M\", \"frontend_id\": 2337}]",
+                        "libraryUrl": null,
+                        "hints": [
+                          "Use a stack of characters.",
+                          "When you encounter an opening bracket, push it to the top of the stack.",
+                          "When you encounter a closing bracket, check if the top of the stack was the opening for it. If yes, pop it from the stack. Otherwise, return false."
+                        ],
+                        "codeSnippets": [
+                          {
+                            "code": "class Solution {\npublic:\n    bool isValid(string s) {\n        \n    }\n};",
+                            "lang": "C++",
+                            "langSlug": "cpp"
+                          },
+                          {
+                            "code": "class Solution {\n    public boolean isValid(String s) {\n        \n    }\n}",
+                            "lang": "Java",
+                            "langSlug": "java"
+                          },
+                          {
+                            "code": "class Solution(object):\n    def isValid(self, s):\n        \"\"\"\n        :type s: str\n        :rtype: bool\n        \"\"\"\n        ",
+                            "lang": "Python",
+                            "langSlug": "python"
+                          },
+                          {
+                            "code": "class Solution:\n    def isValid(self, s: str) -\u003e bool:\n        ",
+                            "lang": "Python3",
+                            "langSlug": "python3"
+                          },
+                          {
+                            "code": "bool isValid(char* s) {\n    \n}",
+                            "lang": "C",
+                            "langSlug": "c"
+                          },
+                          {
+                            "code": "public class Solution {\n    public bool IsValid(string s) {\n        \n    }\n}",
+                            "lang": "C#",
+                            "langSlug": "csharp"
+                          },
+                          {
+                            "code": "/**\n * @param {string} s\n * @return {boolean}\n */\nvar isValid = function(s) {\n    \n};",
+                            "lang": "JavaScript",
+                            "langSlug": "javascript"
+                          },
+                          {
+                            "code": "function isValid(s: string): boolean {\n    \n};",
+                            "lang": "TypeScript",
+                            "langSlug": "typescript"
+                          },
+                          {
+                            "code": "class Solution {\n\n    /**\n     * @param String $s\n     * @return Boolean\n     */\n    function isValid($s) {\n        \n    }\n}",
+                            "lang": "PHP",
+                            "langSlug": "php"
+                          },
+                          {
+                            "code": "class Solution {\n    func isValid(_ s: String) -\u003e Bool {\n        \n    }\n}",
+                            "lang": "Swift",
+                            "langSlug": "swift"
+                          },
+                          {
+                            "code": "class Solution {\n    fun isValid(s: String): Boolean {\n        \n    }\n}",
+                            "lang": "Kotlin",
+                            "langSlug": "kotlin"
+                          },
+                          {
+                            "code": "class Solution {\n  bool isValid(String s) {\n    \n  }\n}",
+                            "lang": "Dart",
+                            "langSlug": "dart"
+                          },
+                          {
+                            "code": "func isValid(s string) bool {\n    \n}",
+                            "lang": "Go",
+                            "langSlug": "golang"
+                          },
+                          {
+                            "code": "# @param {String} s\n# @return {Boolean}\ndef is_valid(s)\n    \nend",
+                            "lang": "Ruby",
+                            "langSlug": "ruby"
+                          },
+                          {
+                            "code": "object Solution {\n    def isValid(s: String): Boolean = {\n        \n    }\n}",
+                            "lang": "Scala",
+                            "langSlug": "scala"
+                          },
+                          {
+                            "code": "impl Solution {\n    pub fn is_valid(s: String) -\u003e bool {\n        \n    }\n}",
+                            "lang": "Rust",
+                            "langSlug": "rust"
+                          },
+                          {
+                            "code": "(define/contract (is-valid s)\n  (-\u003e string? boolean?)\n  )",
+                            "lang": "Racket",
+                            "langSlug": "racket"
+                          },
+                          {
+                            "code": "-spec is_valid(S :: unicode:unicode_binary()) -\u003e boolean().\nis_valid(S) -\u003e\n  .",
+                            "lang": "Erlang",
+                            "langSlug": "erlang"
+                          },
+                          {
+                            "code": "defmodule Solution do\n  @spec is_valid(s :: String.t) :: boolean\n  def is_valid(s) do\n    \n  end\nend",
+                            "lang": "Elixir",
+                            "langSlug": "elixir"
+                          },
+                          {
+                            "code": "class Solution {\n    func isValid(s: String): Bool {\n\n    }\n}",
+                            "lang": "Cangjie",
+                            "langSlug": "cangjie"
+                          }
+                        ],
+                        "jsonExampleTestcases": "[\"\\\"()\\\"\", \"\\\"()[]{}\\\"\", \"\\\"(]\\\"\", \"\\\"([])\\\"\"]",
+                        "exampleTestcases": "\"()\"\n\"()[]{}\"\n\"(]\"\n\"([])\"",
+                        "sampleTestCase": "\"()\"",
+                        "hasFrontendPreview": false,
+                        "editorType": "CKEDITOR"
+                      }
+                    },
+                    "dataUpdateCount": 1,
+                    "dataUpdatedAt": 1739825160413,
+                    "error": null,
+                    "errorUpdateCount": 0,
+                    "errorUpdatedAt": 0,
+                    "fetchFailureCount": 0,
+                    "fetchFailureReason": null,
+                    "fetchMeta": null,
+                    "isInvalidated": false,
+                    "status": "success",
+                    "fetchStatus": "idle"
+                  },
+                  "queryKey": [
+                    "questionDetail",
+                    { "titleSlug": "valid-parentheses" }
+                  ],
+                  "queryHash": "[\"questionDetail\",{\"titleSlug\":\"valid-parentheses\"}]"
+                }
+              ]
+            },
+            "_nextI18Next": {
+              "initialI18nStore": {
+                "zh": {
+                  "common": {
+                    "404": {
+                      "title": "力扣",
+                      "pageNotFound": "页面不存在",
+                      "message": "抱歉！我们找不到您想访问的页面..."
+                    },
+                    "meta": { "title": "", "description": "", "keywords": "" },
+                    "ok": "好",
+                    "cancel": "取消",
+                    "confirm": "确认",
+                    "update": "更新",
+                    "submit": "提交",
+                    "save": "保存",
+                    "netFailed": "网络错误",
+                    "header": {
+                      "logo": { "url": "", "description": "" },
+                      "title": { "problemset-all": "" },
+                      "action": { "login": { "text": "", "url": "" } }
+                    },
+                    "conjunctions": { "and": "and", "or": "或" },
+                    "pages": {
+                      "leetcode": "LeetCode",
+                      "explore": "学习",
+                      "problems": "题库",
+                      "interview": {
+                        "interview": "求职",
+                        "onlineInterview": "在线面试",
+                        "assessment": "Assessment"
+                      },
+                      "contest": "竞赛",
+                      "discuss": "讨论",
+                      "store": {
+                        "store": "商店",
+                        "redeem": "力扣周边",
+                        "premium": "Plus 会员",
+                        "shop": "精品商城"
+                      },
+                      "admin": {
+                        "admin": "管理员",
+                        "library": "题库",
+                        "translation": "翻译",
+                        "operations": "运营管理",
+                        "scores": "点数",
+                        "contribute": "贡献",
+                        "backend": "后台管理",
+                        "twoStepVerification": "二步验证",
+                        "internalContest": "Internal Contest Dashboard",
+                        "contestAdmin": "Contest Cheating Dashboard",
+                        "dangerZone": "Danger Zone",
+                        "review": "Review",
+                        "contestDashboard": "Contest Dashboard"
+                      },
+                      "mobileApp": "下载 App",
+                      "playground": "Playground",
+                      "myPlayground": "我的 Playground",
+                      "signIn": "登录",
+                      "register": "注册",
+                      "signOut": "退出"
+                    },
+                    "userMenu": {
+                      "renew": "续订",
+                      "getPremium": "升级 Plus 会员享专属特权",
+                      "tryNewFeatures": "体验新功能",
+                      "orders": "订单",
+                      "resume": "个人资料",
+                      "translateQuestions": "题目以中文展示",
+                      "translateQuestionsEn": "题目以英文显示",
+                      "enterprise": "企业招聘",
+                      "revertToOldVersion": "经典模式",
+                      "categories": {
+                        "myList": "收藏夹",
+                        "notebook": "笔记本",
+                        "submissions": "我的题解",
+                        "session": "进度管理",
+                        "points": "积分",
+                        "progress": "进展分析"
+                      },
+                      "unmockUser": "Unmock User",
+                      "account": "账号设置",
+                      "appearance": "外观",
+                      "appearanceContent": {
+                        "auto": "跟随系统",
+                        "light": "浅色",
+                        "dark": "深色"
+                      }
+                    },
+                    "streakCounter": {
+                      "finished": "干的好！明天再来挑战！",
+                      "unfinished": "解决今天的「每日 1 题」，刷新你的连胜记录！",
+                      "buyTimeTravelTicket": "购买补签卡",
+                      "missedOneDayThisMonth": "这个月你错过了 1 天.",
+                      "missedDaysThisMonth": "这个月你错过了 {{count}} 天."
+                    },
+                    "playground": {
+                      "playground": "Playground",
+                      "remainingPlaygrounds": "数量",
+                      "renew": "升级",
+                      "myPlaygrounds": "我的 Playgrounds",
+                      "templates": {
+                        "consoleApplication": "控制台程序",
+                        "empty": "空白 Playground",
+                        "frontend": "前端程序",
+                        "machineLearning": "机器学习"
+                      }
+                    },
+                    "links": {
+                      "admin": {
+                        "scores": "/library/scores",
+                        "translation": "/contribution/translation/question/admin/",
+                        "operations": "/management"
+                      },
+                      "premium": "/premium",
+                      "discuss": "/circle",
+                      "interview": "/company",
+                      "shop": "https://detail.youzan.com/show/goods/newest?alias=271n43vr9hen7",
+                      "onlineInterview": "https://leetcode.cn/interview",
+                      "profileArticles": "/profile/articles",
+                      "tryNewFeatures": "/new/",
+                      "orders": "/order",
+                      "explore": "/leetbook",
+                      "resume": "/profile/info/",
+                      "playground": "/playground",
+                      "assessment": "/assessment/",
+                      "account": "/profile/info"
+                    },
+                    "pagination": { "perpage": " 条/页" },
+                    "expand": "展开",
+                    "collapse": "收起",
+                    "difficulty": {
+                      "easy": "简单",
+                      "medium": "中等",
+                      "hard": "困难"
+                    },
+                    "data": {
+                      "question": {
+                        "difficulty": {
+                          "easy": "简单",
+                          "medium": "中等",
+                          "hard": "困难"
+                        }
+                      }
+                    },
+                    "markdown": { "heading": "heading", "quote": "Quote" },
+                    "mentions": { "users": "用户", "problems": "题目" },
+                    "confirmModal": {
+                      "title": "确定执行此操作?",
+                      "confirmBtn": "确定",
+                      "cancelBtn": "取消"
+                    },
+                    "saving": "保存中...",
+                    "saved": "保存成功",
+                    "autoSaved": "已自动保存",
+                    "loginRequired": "您尚未登录",
+                    "verifiedRequired": "请绑定手机号或者邮箱后继续操作",
+                    "phoneVerifiedRequired": "请绑定手机号后继续操作",
+                    "maybeVerifiedRequired": "请绑定手机号后继续操作",
+                    "copy": "复制",
+                    "copyToEditor": "复制到编辑器",
+                    "copied": "已复制",
+                    "copyLink": "复制链接",
+                    "viewMore": "查看更多",
+                    "viewLess": "收起",
+                    "code": "代码",
+                    "dailyCheckIn": "+1 每日登录",
+                    "//maybeVerifiedRequired": "maybeVerifiedRequired means email in LCUS and phone in LCCN",
+                    "easterEgg": {
+                      "rewardMessage": "恭喜您获得了 10 积分，Happy LeetCoding!"
+                    },
+                    "survey": {
+                      "veryDissatisfied": "非常不满意",
+                      "verySatisfied": "非常满意",
+                      "next": "下一题",
+                      "continue": "继续",
+                      "submit": "提交",
+                      "questionNo": "问卷题目 {{current}}/{{total}}",
+                      "thanksMsg": "🎉 感谢您的反馈!"
+                    },
+                    "qdNav": {
+                      "backTitle": "题库",
+                      "expandPanel": "展开面板",
+                      "preQuestion": "上一题",
+                      "nextQuestion": "下一题",
+                      "pickOne": "随机一题",
+                      "openInNewTab": "在新的标签页打开"
+                    },
+                    "premiumModal": {
+                      "learnMore": "了解更多权益",
+                      "subscribe": "升级 Plus 会员"
+                    },
+                    "truncatedContent": {
+                      "viewAll": "查看全部",
+                      "viewLess": "收起",
+                      "openRaw": "打开源码",
+                      "showMore": "显示更多",
+                      "showLess": "显示更少"
+                    },
+                    "safariNotUse": "当前 Safari 版本过低，为了更好的使用体验，请升级到最新版本",
+                    "medal": {
+                      "metadataTitle": "勋章 - 力扣（LeetCode）",
+                      "congratulation": "恭喜获得",
+                      "genPoster": "生成海报",
+                      "genPostering": "生成中...",
+                      "saveImgMobile": "长按图片保存",
+                      "saveImgPc": "右键保存图片",
+                      "medalEmpty": "暂无可领取的勋章"
+                    },
+                    "recordEventType": {
+                      "start": "开始",
+                      "switchQuestion": "切换问题",
+                      "switchLang": "切换语言",
+                      "pageVisible": "切换页面",
+                      "interpretCode": "运行代码",
+                      "submitCode": "提交代码",
+                      "end": "结束",
+                      "input": "输入",
+                      "undo": "撤销",
+                      "redo": "重做",
+                      "paste": "外部粘贴",
+                      "changeCursor": "改变光标",
+                      "debug": "调试",
+                      "debugEnd": "结束调试"
+                    },
+                    "codeReplay": {
+                      "title": "代码回放",
+                      "redirectContent": "这个账号属于 LeetCode 国际服. 前往 leetcode.com 查看?",
+                      "doNotShowAgain": "不再提示",
+                      "eventHistory": "回放事件",
+                      "skipInactive": "跳过非活跃事件",
+                      "noCodeResults": "没有代码结果",
+                      "size": "大小",
+                      "chars": "字符",
+                      "leaveContestPageN": "离开竞赛作答页",
+                      "returnContestPage": "回到竞赛作答页"
+                    },
+                    "verified": "已认证"
+                  },
+                  "problems": {
+                    "meta": {
+                      "title": "{{title}} - 力扣（LeetCode）",
+                      "description": "{{title}} - {{content}}",
+                      "ogImage": "https://static.leetcode-cn.com/cn-legacy-assets/images/LeetCode_Sharing.png",
+                      "defaultDescription": "备战技术面试？力扣提供海量技术面试资源，帮助你高效提升编程技能,轻松拿下世界 IT 名企 Dream Offer。"
+                    },
+                    "tabs": {
+                      "description": "题目描述",
+                      "editorial": "官方题解",
+                      "discussion": "评论",
+                      "solutions": "题解",
+                      "submissions": "提交记录",
+                      "submissionOverview": "提交记录概述",
+                      "code": "代码",
+                      "testcase": "测试用例",
+                      "result": "测试结果",
+                      "debugger": "调试器",
+                      "settings": "设置",
+                      "note": "笔记",
+                      "guide": "指引",
+                      "preview": "预览",
+                      "previewConsole": "Web 控制台",
+                      "rawText": "原始文本",
+                      "resultDiff": "差异",
+                      "disabledTooltips": {
+                        "editorial": "Editorial is not available for this question."
+                      }
+                    },
+                    "feedback": {
+                      "feedback": "反馈",
+                      "revertToOld": "回退到上一个版本"
+                    },
+                    "lockedQuestion": {
+                      "subscribe": "升级 Plus 会员",
+                      "subscribeToUnlockMessage": "感谢使用力扣！您需要升级为 Plus 会员来解锁该题目",
+                      "subscribeToUnlock": "该题目是 Plus 会员专享题"
+                    },
+                    "unsupportedFeature": {
+                      "upgradeToIdeTitle": "升级至动态布局",
+                      "signInToTryOut": "登录以体验",
+                      "tryOut": "立即体验",
+                      "features": {
+                        "frontendQuestion": "新的前端问题仅在动态布局中支持。切换到此格式以获得更加沉浸的LeetCode体验并访问这些问题。"
+                      }
+                    },
+                    "satisfactionSurvey": { "submitBtnText": "提交" },
+                    "panel": {
+                      "recommend": "为你推荐",
+                      "description": "为你精选近期热门题目"
+                    },
+                    "dynamicLayout": {
+                      "maximize": "放大",
+                      "exit": "退出放大",
+                      "foldPanel": "折叠",
+                      "unFoldPanel": "展开",
+                      "moveTabset": "{{name}} 等 {{count}} 个 tab",
+                      "disabledUnFold": "当前布局结构不支持一键展开，请手动拖拽",
+                      "layoutManager": {
+                        "hints": "帮助",
+                        "layouts": "布局",
+                        "featureTitle": "布局过于凌乱？",
+                        "featureContent": "一键重置布局现已支持！你甚至可以自定义布局模版，随时应用。",
+                        "gotIt": "我知道了",
+                        "tryNow": "立即体验",
+                        "featureInfo": "创建或管理你的布局，获得更佳学习体验。",
+                        "default": "预设",
+                        "note": "笔记",
+                        "debug": "调试",
+                        "saveCurrentLayout": "保存当前布局",
+                        "saveNewLayout": "保存新布局",
+                        "nameYourLayout": "命名当前布局",
+                        "temporaryTabs": "临时标签页",
+                        "temporaryTabsWarningBefore": "保存布局时，将不包含 ",
+                        "temporaryTabsWarningAfter": "",
+                        "temporaryTabsContent": "临时标签页仅在特定题目下可见，例如题解详情和提交结果详情。",
+                        "cancel": "取消",
+                        "save": "保存",
+                        "layoutSaved": "已保存布局",
+                        "layoutDeleted": "布局已删除",
+                        "upgradeToSaveFirst": "Plus 会员解锁",
+                        "upgradeToSaveSecond": "自定义布局",
+                        "subscribe": "升级",
+                        "apply": "应用",
+                        "upgradeToApply": "Plus 会员解锁此布局",
+                        "delete": "删除",
+                        "deleteTitle": "删除 “{{name}}”？",
+                        "deleteContent": "此布局将被永久删除且不可恢复。",
+                        "no": "取消",
+                        "edit": "编辑",
+                        "editLayout": "编辑布局",
+                        "updateToCurrentLayout": "更新至当前布局"
+                      },
+                      "featureModal": {
+                        "dynamicLayout": "灵动布局",
+                        "title": "升级「灵动布局」",
+                        "content": "屏幕空间由你灵活掌控，聚焦真正重要的内容，畅享更沉浸的编码体验。",
+                        "tryOut": "立即体验"
+                      },
+                      "settingRunSubmitPopover": {
+                        "title": "自由配置工具栏？",
+                        "content": "现在你可以将运行 / 提交 / 调试按钮移至代码编辑器。",
+                        "buttonText": "前往设置"
+                      }
+                    },
+                    "settings": {
+                      "settings": "设置",
+                      "lab": "实验室",
+                      "premium": "Plus",
+                      "layout": {
+                        "categoryTitle": "灵动布局",
+                        "resetToDefaultLayout": "重置为默认布局",
+                        "reset": "重置",
+                        "runSubmitPosition": "运行 / 提交 / 调试按钮位置",
+                        "toolbar": "顶部工具栏",
+                        "code-editor": "代码编辑器",
+                        "revertToSplitViewMode": "返回双栏布局"
+                      },
+                      "editor": {
+                        "categoryTitle": "代码编辑器",
+                        "fontSize": "字体大小",
+                        "keyBinding": "键位绑定",
+                        "keyBindingVim": "Vim",
+                        "keyBindingEmacs": "Emacs",
+                        "keyBindingStandard": "Standard",
+                        "tabSize": "Tab 长度",
+                        "spaces": "{{count}} 个空格",
+                        "wordWrap": "自动换行",
+                        "relativeLineNumber": "显示相对行号"
+                      },
+                      "shortcuts": {
+                        "categoryTitle": "键盘快捷键",
+                        "or": "或",
+                        "general": "常规",
+                        "runCode": "执行代码",
+                        "submit": "提交解答",
+                        "closeTab": "关闭 tab",
+                        "maximizePanel": "放大 / 退出放大面板",
+                        "fullScreen": "进入 / 退出全屏",
+                        "debug": "调试",
+                        "debugStart": "开始调试",
+                        "debugStop": "停止调试",
+                        "debugSkipForward": "继续",
+                        "debugStepOver": "单步跳过",
+                        "debugStepIn": "单步调试",
+                        "debugStepOut": "单步跳出",
+                        "debugRestart": "重启",
+                        "codeEditor": "代码编辑器",
+                        "editorIndent": "行缩进",
+                        "editorIndentFew": "行减少缩进",
+                        "editorMoveLines": "上下移动行",
+                        "editorCut": "剪切",
+                        "editorToggleComment": "切换行注释",
+                        "editorUndo": "撤销",
+                        "editorRedo": "重做"
+                      },
+                      "advanced": {
+                        "categoryTitle": "高级设置",
+                        "premiumTitle": "LeetCode Plus",
+                        "premiumDesc": "升级 plus 会员，即可在灵动布局中畅享定制化的学习体验。",
+                        "learnMore": "了解详情",
+                        "realTimeResizing": "布局实时变化",
+                        "realTimeResizingDesc": "拖动调整窗口尺寸时，布局实时变化。",
+                        "multipleTab": "以新标签页呈现多个内容组件",
+                        "multipleTabDesc": "列表中的元素（如题解、提交记录等）可在新标签页中打开，并同时允许打开多个标签页。",
+                        "openAfterActive": "在激活的 Panel 中打开",
+                        "openAfterSimilar": "在同类标签最新位置后打开",
+                        "customLayout": "保存自定义布局 (云端)",
+                        "customLayoutDesc": "会员可额外存储 3 个自定义布局模版。",
+                        "upgrade": "升级",
+                        "view": "查看",
+                        "multipleTabUpdateAlert": {
+                          "title": "更新设置?",
+                          "desc": "更新此项配置，将自动关闭所有已打开的题解和提交记录。确认更新吗？",
+                          "no": "取消",
+                          "update": "更新"
+                        }
+                      }
+                    },
+                    "preview": {
+                      "goBackTooltip": "返回",
+                      "goForwardTooltip": "前进",
+                      "refreshTooltip": "刷新",
+                      "openInNewTabTooltip": "在新标签页中打开",
+                      "upgradeToGetUrl": "升级至高级会员以查看链接"
+                    },
+                    "previewConsole": {
+                      "isEmpty": "控制台为空",
+                      "clearTooltip": "清空控制台",
+                      "clearedAt": "控制台清空于 {{time}}"
+                    },
+                    "ideGuide": {
+                      "introIdeTitle": "灵动布局",
+                      "new": "全新",
+                      "introInfo": "沉浸式畅享自由编码体验，潜力无边",
+                      "setTitle": "选择运行/提交按钮的位置",
+                      "setTip": "你也可以在设置中随时修改按钮出现的位置",
+                      "enableIde": "开启灵动布局",
+                      "of": "/",
+                      "skipTour": "跳过",
+                      "back": "上一步",
+                      "next": "下一步",
+                      "done": "完成",
+                      "toolbarTitle": "工具栏",
+                      "toolbarContent": "包含运行代码、提交、笔记等主要工具。",
+                      "tabsTitle": "标签页",
+                      "tabsContent": "通过拖动标签页来，即可定制布局为您理想的样子。",
+                      "resizeTitle": "调整面板大小",
+                      "resizeContent": "拖拽分隔条从而实现面板的大小调整，以适应您的空间需求。",
+                      "maximizeTitle": "最大化一个面板",
+                      "maximizeContent": "双击面板顶部的标签栏即可最大化该面板并增强您对该页内容的专注度。",
+                      "expandCollapseTitle": "展开 / 折叠",
+                      "expandCollapseContent": "点击以展开或折叠面板，为重要内容腾出更多的空间。",
+                      "settingsTitle": "设置",
+                      "settingsContent": "自定义灵活布局、代码编辑器、快捷键和高级设置。",
+                      "maybeLater": "稍后再说"
+                    },
+                    "contest": {
+                      "toolbar": {
+                        "userAccepted": "通过的用户数",
+                        "userAcceptedShort": "通过的用户数",
+                        "userTried": "尝试过的用户数",
+                        "userTriedShort": "尝试过的用户数",
+                        "totalAccepted": "用户总通过次数",
+                        "totalAcceptedShort": "用户总通过次数",
+                        "totalSubmissions": "用户总提交次数",
+                        "totalSubmissionsShort": "用户总提交次数"
+                      },
+                      "navbar": { "classicMode": "经典模式" }
+                    },
+                    "collaboration": {
+                      "invite": "邀请",
+                      "liveCollaboration": "代码协同",
+                      "beta": "Beta",
+                      "invitePopoverDescBefore": "邀请协同者加入本题一起编程吧！协同最多可持续 3 小时。",
+                      "invitePopoverDescAfter": "邀请协同者加入本题一起编程吧！协同最多可持续 3 小时。",
+                      "createLink": "创建链接",
+                      "copyTip": "复制链接并分享",
+                      "copied": "已复制链接",
+                      "endCollaboration": "结束协同",
+                      "leaveCollaboration": "退出协同",
+                      "user": "用户",
+                      "clickToFollow": "点击跟随用户",
+                      "clickToUnfollow": "点击结束跟随用户",
+                      "failedToJoin": "暂时无法加入",
+                      "failedSignIn": "登录后即可加入协同。",
+                      "failedPremium": "升级为 Plus 会员后，即可加入协同。",
+                      "failedMaximum": "当前协同已超过 5 人，请稍后再尝试加入。",
+                      "failedDynamicLayout": "开启灵动布局后，即可加入协同。",
+                      "failedNotFound": "链接不存在或已失效，请联系协同发起者并确认。",
+                      "failedJoinedOtherRoom": "一次只能加入一个协同。",
+                      "failedConnectionFailed": "连接失败。请检查您的网络连接并重试。",
+                      "generalFailedTitle": "协同已终止",
+                      "failedEnd": "发起者已结束协同",
+                      "failedSameUser": "发起者重复进入协同，断开连接",
+                      "failedHostLost": "发起者断开连接，协同结束",
+                      "failedMaxTime": "已超过协同时长，协同结束",
+                      "signIn": "登录",
+                      "leave": "离开",
+                      "subscribe": "升级",
+                      "tryAgain": "重试",
+                      "gotIt": "我知道了",
+                      "reconnect": "重新连接",
+                      "maybeLater": "以后再说",
+                      "enableDynamicLayout": "开启灵动布局",
+                      "endCollaborationWarning": "确定结束协同吗？结束后，成员将无法继续进行代码协同。",
+                      "leaveCollaborationWarning": "确定退出协同吗？退出后，你将无法继续进行代码协同。",
+                      "cancel": "取消",
+                      "end": "结束",
+                      "switchProblem": "切换题目",
+                      "switchProblemWarning": "确定切换题目吗？切换后，所有参与者都将同步更新。",
+                      "switchLanguage": "切换语言",
+                      "switchLanguageWarning": "确定切换语言吗？切换后，所有参与者都将同步更新。",
+                      "leavingQd": "离开当前页面",
+                      "leavingQdWarning": "本题正在协作中，确定离开吗？",
+                      "confirm": "确定",
+                      "switch": "切换",
+                      "readOnlyOnTip": "设置为只读模式",
+                      "readOnlyOffTip": "设置为编辑模式",
+                      "toast": {
+                        "joining": "加入协同中...",
+                        "joinedHost": "协同已开启",
+                        "joinedGuest": "已加入协同",
+                        "anotherParticipant": "另一位参与者",
+                        "userJoined": "{{user}} 已加入协同",
+                        "userLeft": "{{user}} 已退出协同",
+                        "end": "发起者已结束协同",
+                        "leave": "已退出协同",
+                        "sameUser": "发起者重复进入协同，断开连接",
+                        "hostLost": "发起者断开连接，协同结束",
+                        "maxTime": "已超协同时长，协同结束",
+                        "switchProblem": "{{user}} 已切换题目",
+                        "switchLanguage": "{{user}} 已切换语言",
+                        "runCode": "{{user}} 已执行代码。结果：{{result}}",
+                        "submit": "{{user}} 已提交代码。结果：{{result}}",
+                        "readOnlyOn": "协同房主已将你设置为只读模式",
+                        "readOnlyOff": "协同房主已将你设置为编辑模式",
+                        "readOnlyEdit": "只读模式下无法编辑代码",
+                        "readOnlySwitch": "只读模式下无法切换题目或语言",
+                        "logoutDisconnect": "当前未登录，请登录后重新加入协同。"
+                      },
+                      "online": "人在线",
+                      "visitorTip": "正在本题学习的扣友"
+                    }
+                  },
+                  "console": {
+                    "meta": { "title": "题目详情" },
+                    "console": "控制台",
+                    "run": "运行",
+                    "submit": "提交",
+                    "resetTestcases": "重置测试用例",
+                    "debug": "调试",
+                    "testcase": "测试用例",
+                    "debugger": "调试器",
+                    "testcaseNumber": "Case {{ number }}",
+                    "cloneCurrentTestcase": "克隆当前用例",
+                    "testcaseCount": "{{ count }}/{{ max }} 个测试用例",
+                    "switchToRawEditor": "使用文本编辑器编写用例",
+                    "switchToTabEditor": "使用标签效果编辑器编写用例",
+                    "switchToRawResultEditor": "使用文本编辑器查看运行结果",
+                    "switchToTabResultEditor": "使用标签效果编辑器查看运行结果",
+                    "switchConsoleToLeft": "控制台置于左侧",
+                    "switchConsoleToRight": "控制台置于右侧",
+                    "testcasePlaceholder": "请输入测试用例",
+                    "shellTestcaseBlocker": "Shell 题目无需设置测试用例",
+                    "sourceMode": "Source Mode",
+                    "sourceModeText": "你可以在文本编辑器里编写测试用例了",
+                    "line": "Line",
+                    "case": "Case",
+                    "noThanks": "知道了",
+                    "tryNow": "立即使用",
+                    "inconsistentResults": "执行跟提交结果不一致?",
+                    "inconsistentResultsContent": "您的程序可能使用了全局变量或者自定义的类内变量，需要您避免申明类内静态变量以及全局变量，或者手动初始化。",
+                    "gotIt": "明白了",
+                    "readMore": "阅读更多",
+                    "result": {
+                      "result": "执行结果",
+                      "stdout": "标准输出",
+                      "noResult": "请先执行代码",
+                      "notAvailable": "竞赛中暂不可见",
+                      "slowdown": {
+                        "premium": "你的提交过于频繁，请稍候重试",
+                        "first": "你的提交过于频繁，请稍候重试，或",
+                        "second": "升级 Plus 会员",
+                        "third": "，可减少等待时间"
+                      },
+                      "networkError": "网络错误，请稍后刷新页面重试",
+                      "serverError": "未知的服务器错误，请联系我们的团队进行技术支持。",
+                      "unknownError": "未知错误",
+                      "compileError": "编译出错",
+                      "runtimeError": "执行出错",
+                      "copyCompileError": "复制错误信息",
+                      "copied": "已复制",
+                      "viewAll": "查看全部",
+                      "viewLess": "收起",
+                      "outputLimitExceeded": "超出输出限制",
+                      "timeLimitExceeded": "超出时间限制",
+                      "memoryLimitExceeded": "超出内存限制",
+                      "timeout": "请求超时",
+                      "internalError": "内部错误",
+                      "accepted": "通过",
+                      "finished": "完成",
+                      "wrongAnswer": "解答错误",
+                      "invalidTestcase": "测试用例非有效值",
+                      "runtime": "执行用时",
+                      "input": "输入",
+                      "output": "输出",
+                      "expected": "预期结果",
+                      "contribution": "贡献测试用例",
+                      "pending": "运行中...",
+                      "premiumPending": "极速判题中...",
+                      "judging": "判题中...",
+                      "debugging": "调试中...",
+                      "speedUp": "开启极速判题",
+                      "lastExecutedInput": "最后执行的输入",
+                      "openTestcase": "查看测试用例",
+                      "testcasesPassed": "个通过的测试用例",
+                      "testPassedButTookTooLong": "测试用例通过了，但耗时太长。",
+                      "useTestcaseAsInput": "添加到测试用例",
+                      "addedTestcaseMessage": "成功添加测试用例",
+                      "testcaseExistsMessage": "测试用例已存在",
+                      "cantUseTestcaseAsInput": "测试用例数达到最大限制",
+                      "maxTestcaseCountReached": "测试用例数达到上限 {{ count }} 个",
+                      "debugger": "调试器",
+                      "copyContent": "已复制到剪切板",
+                      "moreLine_one": "更多",
+                      "moreLine_other": "更多",
+                      "edit": "编辑",
+                      "errorTestcaseMsg1": "你发现了系统无法通过的测试用例，现在就去",
+                      "errorTestcaseActionMsg": "提交",
+                      "errorTestcaseMsg2": "此用例，帮助我们改进~"
+                    },
+                    "ai": {
+                      "title": "LeetWiz",
+                      "beta": "Beta",
+                      "analyzingCode": "分析代码...",
+                      "codeErrorHint": "为什么我会遇到这个 错误？",
+                      "fullName": "LeetWiz - 一款AI助手",
+                      "shortName": "LeetWiz",
+                      "description": "忘记加分号了吗? LeetWiz 帮助你专注于重要的事情，让你不断进步. 它会帮助你找出运行代码/编译错误的原因，并提供解决方法.",
+                      "fixedError": "您似乎已经修复了运行时/编译错误。请记住，我目前只支持帮助解决运行代码错误或编译错误 😊",
+                      "morePremiumFeatures": "更多高級功能"
+                    },
+                    "info": {
+                      "info": "注意",
+                      "content": "\u003c0\u003e执行代码与提交代码的结果不同？如果您在C/C++的代码中使用了全局变量，请看\u003c/0\u003e \u003c1\u003e这里\u003c/1\u003e",
+                      "ok": "确定"
+                    },
+                    "execute": "Execute",
+                    "to": "to",
+                    "fullTreeTooBig": "数据太大，无法展示",
+                    "or": "or",
+                    "showFullTree": "点击查看完整的二叉树",
+                    "visualizer": {
+                      "dataTooLarge": "数据量过大，只展示部分",
+                      "parseFailed": "生成错误，请检查格式是否正确",
+                      "dataNotSupported": "不支持可视化",
+                      "outputDataTypeNotSupported": "输出类型不支持可视化",
+                      "initFailed": "画布初始化失败，请刷新页面重试"
+                    },
+                    "verifyEmail": "请绑定邮箱后继续操作",
+                    "signToRunOrSubmit": "{{action}}需要登录",
+                    "signToRunAndSubmit": "运行和提交代码需要\u003c0\u003e登录\u003c/0\u003e",
+                    "verifyToRunAndSubmit": "您的手机号尚未绑定，\u003c0\u003e前往验证\u003c/0\u003e！ ",
+                    "notAvailableDuringDebugging": "调试状态不可用",
+                    "notAvailableDuringExecuting": "代码执行中不可用",
+                    "nonVerifyMsg": "请绑定手机号后继续操作",
+                    "frontendTestcases": {
+                      "reset": "重置",
+                      "lnCol": "行 {{lineNumber}}，列 {{column}}",
+                      "guideTooltip": "测试用例指南",
+                      "guideTitle": "测试用例指南"
+                    },
+                    "createTestCaseTip": "如何创建测试用例?"
+                  },
+                  "code-editor": {
+                    "commonConfirmTitle": "操作确认",
+                    "fullScreen": "全屏",
+                    "exitFullScreen": "退出全屏",
+                    "autocomplete": {
+                      "button": "智能模式",
+                      "lspTooltip": "智能补全/语法检查",
+                      "basicTooltip": "基础代码补全。",
+                      "basicWithLspError": "基础代码补全。双击重试智能代码补全。",
+                      "lspConnectionError": "连接失败",
+                      "lspNotSupportedTooltip": "该语言暂不支持智能补全 / 语法检查",
+                      "needToLoginTooltip": "登录来使用自动补全",
+                      "notPremiumTooltip": "升级 Plus 会员使用自动补全"
+                    },
+                    "langInfo": "了解语言环境",
+                    "settings": {
+                      "name": "代码编辑器设置",
+                      "fontSize": "字体设置",
+                      "fontSizeDesc": "调整适合你的字体大小。",
+                      "theme": "主题设置",
+                      "themeDesc": "切换不同的代码编辑器主题，选择适合你的语法高亮。",
+                      "themeDark": "Dark",
+                      "themeLight": "Light",
+                      "themeSystem": "System",
+                      "keyBinding": "键位绑定",
+                      "keyBindingDesc": "想要练习使用 Vim 或者 Emacs？你可以在这里切换这些预设的键位绑定。",
+                      "keyBindingVim": "Vim",
+                      "keyBindingEmacs": "Emacs",
+                      "keyBindingStandard": "Standard",
+                      "tabSize": "Tab 长度",
+                      "tabSizeDesc": "选择你想要的 Tab 长度，默认设置为4个空格。",
+                      "spaces": "{{count}}",
+                      "wordWrap": "自动换行"
+                    },
+                    "shortcuts": {
+                      "name": "编辑器快捷键",
+                      "run": "执行代码",
+                      "submit": "提交解答",
+                      "debug": "调试",
+                      "indent": "行缩进",
+                      "indentFew": "行减少缩进",
+                      "moveLines": "上下移动行",
+                      "cut": "剪切",
+                      "toggleComment": "切换行注释",
+                      "undo": "撤销",
+                      "redo": "重做",
+                      "note": "笔记"
+                    },
+                    "reset": {
+                      "tip": "还原到默认的代码模版",
+                      "confirmContent": "您将放弃所有更改并初始化代码！",
+                      "resetServer": "您的代码已在 {{time}} 保存在云端,",
+                      "restore": "恢复"
+                    },
+                    "history": {
+                      "title": "添加了备注的 {{lang}} 提交记录",
+                      "tip": "获取备注过的提交记录",
+                      "description": "仅展示当前语言下提交的代码；选中并确认后，当前代码编辑区的全部内容将会被替换。",
+                      "status": "结果",
+                      "runtime": "执行用时",
+                      "memory": "消耗内存",
+                      "time": "时间",
+                      "topic": "标签",
+                      "notes": "备注",
+                      "noNotes": "暂无提交记录！"
+                    },
+                    "timer": {
+                      "start": "开始计时",
+                      "hide": "隐藏",
+                      "show": "展示",
+                      "reset": "重置",
+                      "pause": "暂停",
+                      "continue": "继续计时",
+                      "contest": {
+                        "penaltyTimeDescription": "每个错误提交增加 5 分钟罚时"
+                      }
+                    },
+                    "debugger": {
+                      "loginToDebug": "启用调试功能需要登录",
+                      "name": "调试器",
+                      "stdout": "标准输出",
+                      "input": "输入",
+                      "enterTip": "点击行号添加断点",
+                      "exit": "退出调试",
+                      "start": "开始调试",
+                      "stop": "停止调试",
+                      "startShort": "调试",
+                      "stopShort": "停止",
+                      "watch": "监听表达式",
+                      "local": "本地变量",
+                      "watchHolder": "请输入需要监听的变量，按回车确认",
+                      "controlStart": "开始调试",
+                      "controlForward": "继续",
+                      "controlStepOver": "单步跳过",
+                      "controlStepOut": "单步跳出",
+                      "controlStepIn": "单步调试",
+                      "controlReset": "重置",
+                      "exited": "已经有一个调试会话在运行，是否将其终止？",
+                      "startToWatch": "开启调试后查看表达式",
+                      "watchTip": "开启调试才可添加表达式",
+                      "startViewVars": "开启调试查看本地变量",
+                      "noVars": "暂无变量",
+                      "startViewOutput": "开启调试查看输出",
+                      "noOutput": "暂无输出...",
+                      "edited": "代码已变更，需要重启调试",
+                      "cantAddTestcase": "您已達到最大測試用例數",
+                      "langNotSupported": "{{lang}}暂不支持调试功能",
+                      "expressionsNotSupported": "{{lang}} 不支持",
+                      "notPremium": "升级 Plus 会员使用调试功能",
+                      "oneClickDebug": "一键调试",
+                      "cppAdditionalTip": "基于 GDB，请使用 *(\u0026nums[i]) 查看 nums[i] 的值"
+                    },
+                    "markDownPlaceholder": "请输入...(支持使用 Markdown)",
+                    "retrieveCode": {
+                      "tip": "还原到最新提交的代码",
+                      "confirmContent": "你确定要使用最近一次提交的代码来替换现有代码吗？",
+                      "noData": "您尚未提交过任何代码！"
+                    },
+                    "editor-position": "行 {{lineNumber}}，列 {{column}}",
+                    "framework": {
+                      "switchTooltip": "切换框架",
+                      "modalTitle": "选择框架",
+                      "modalDescription": "选择你想要的框架。",
+                      "modalConfirmTitle": "确认切换框架",
+                      "modalConfirmText": "切换框架将会重置未提交的代码。你确定要继续吗？",
+                      "modalConfirmBtn": "继续",
+                      "toastSwitchSuccess": "已更新 {{framework}} 的描述。",
+                      "guide": {
+                        "selectFramework": "选择框架",
+                        "selectFrameworkDescription": "你可以在这里切换至理想的框架",
+                        "selectFrameworkConfirm": "知道了"
+                      }
+                    },
+                    "saveCode": {
+                      "restoredFromCloud": "已从云端恢复",
+                      "restoredFromLocal": "已从本地恢复",
+                      "upgradeToCloud": "升级云端代码存储",
+                      "savedToCloudToast": "您是 Plus 会员，代码已自动存储至云端",
+                      "savedToLocalToastFirst": "代码已存储至本地，",
+                      "savedToLocalToastSecond": " 解锁云端存储",
+                      "upgradeToPremium": "升级 Plus 会员",
+                      "savedToCloud": "已存储",
+                      "savedToLocal": "已存储",
+                      "saving": "存储中..."
+                    },
+                    "format": { "tip": "代码格式化", "formatted": "已格式化" },
+                    "exceedMaxLineLength": "因性能的缘故，每行的字符数量被限制为 10,000。"
+                  },
+                  "description": {
+                    "status": { "tried": "尝试过", "ac": "已解答" },
+                    "somethingWentWrong": "网络错误",
+                    "thanksForVoting": "感谢反馈！",
+                    "topics": "相关标签",
+                    "companies": "相关企业",
+                    "pastSixMonths": "0 - 6 个月",
+                    "pastYear": "6 个月 - 1 年",
+                    "pastTwoYears": "1 年 - 2 年",
+                    "lastThreeMonths": "过去 3 个月",
+                    "lastSixMonths": "过去 6 个月",
+                    "SixMonthsAgo": "6 个月前",
+                    "hint": "提示",
+                    "showHints": "显示提示",
+                    "moreActions": "更多操作",
+                    "feedback": "反馈",
+                    "showEnglish": "切换为英文",
+                    "showChinese": "切换为中文",
+                    "feedbackForm": {
+                      "title": "反馈",
+                      "alternative": "您也可以通过 \u003c0\u003eGitHub 快速反馈通道\u003c/0\u003e 进行提交",
+                      "cancel": "取消",
+                      "submit": "提交",
+                      "issuesEncountered": "遇到问题",
+                      "problem": "题目",
+                      "somethingWentWrong": "网络错误",
+                      "additionalFeedback": "额外的反馈",
+                      "description": "我们将致力于提高题目质量，你不喜欢的理由是什么？",
+                      "options": {
+                        "unclearDescription": "描述和示例不清楚或不正确",
+                        "unclearDifficulty": "难度不准确",
+                        "unclearTestCases": "测试用例缺失或不正确",
+                        "runtimeStrict": "时间要求太严格",
+                        "edgeCases": "边界情况太多",
+                        "other": "其他",
+                        "otherPlaceholder": "额外的反馈"
+                      },
+                      "optionRequiredError": "至少选择一个选项."
+                    },
+                    "accepted": "通过次数",
+                    "submissions": "提交次数",
+                    "acRate": "通过率",
+                    "copyright": "© {{year}} 领扣网络（上海）有限公司",
+                    "yes": "是",
+                    "no": "否",
+                    "add2": "添加",
+                    "seenBefore": "面试中遇到过这道题?",
+                    "whichCompany": "请问您应聘的哪家公司？",
+                    "whichPosition": "请问您应聘的岗位类型？",
+                    "whichTimePeriod": "您是在什么时候遇到该题的？",
+                    "whichStage": "请问您进行了哪种形式的面试？",
+                    "thanksForFeedback": "🎉 谢谢您的反馈！",
+                    "relatedTopics": "相关标签",
+                    "add": "加入",
+                    "remove": "移除",
+                    "createNewList": "创建题单",
+                    "nameListPlaceholder": "输入标题",
+                    "cancel": "取消",
+                    "save": "保存",
+                    "setAsPrivate": "设为私密",
+                    "addToList": "加入收藏夹",
+                    "sqlSchema": "SQL Schema",
+                    "pandasSchema": "Pandas Schema",
+                    "confirm": "确定",
+                    "favoriteSignInError": "登录后才能收藏题目",
+                    "changeLanguageError": "登录后才能切换语言",
+                    "feedbackSignInError": "登录后才能反馈问题",
+                    "likeSignInError": "登录后才能点赞",
+                    "schemaCopySuccess": "已复制到剪贴板",
+                    "shareQuestionDescription": "分享题目",
+                    "viewMyLists": "查看我的收藏夹",
+                    "searchPlaceholder": "搜索",
+                    "ok": "OK",
+                    "addToListError": "Something went wrong. Please try again.",
+                    "similarQuestions": "相似题目",
+                    "discussion": "评论 ({{commentCount}})",
+                    "myLists": "我的题单",
+                    "create": "创建",
+                    "addProblemToListSuccess": "成功添加到",
+                    "addedSuccess": "添加成功",
+                    "removeProblemFromListSuccess": "已从 {{listItemName}} 中移除",
+                    "viewAllLists": "查看全部",
+                    "unGetListInfo": "无法获取题单信息",
+                    "listUnExist": "题单不存在",
+                    "companyListUnExist": "企业题库不存在",
+                    "listContextNull": "无权限获取题单内容",
+                    "listContextEmpty": "题单内容为空",
+                    "companyListContextEmpty": "企业题库内容为空",
+                    "points": "分"
+                  },
+                  "submissions": {
+                    "runtime": "时间",
+                    "memory": "内存",
+                    "beat": "击败",
+                    "noData": "暂无数据",
+                    "noSubmission": "暂无数据",
+                    "copied": "已复制",
+                    "submittedAt": "提交于",
+                    "allSubmissions": "全部提交记录",
+                    "fullCode": "全部代码",
+                    "success": {
+                      "accept": "通过",
+                      "timeTaken": "用时: {{time}}",
+                      "nextQuestion": "下一题",
+                      "moreChallenges": "更多挑战",
+                      "second_short": "s",
+                      "minute_short": "m",
+                      "hour_one": "hr",
+                      "hour_other": "hrs",
+                      "solution": "写题解",
+                      "beatsPercentage": "击败 {{percent}}%",
+                      "ofUsersWithLanguage": "使用 {{language}} 的用户"
+                    },
+                    "details": {
+                      "myCode": "我提交的代码",
+                      "otherCode": "他提交的代码",
+                      "sampleCode": "{{metric}} 的代码示例",
+                      "backToMyCode": "返回我的位置",
+                      "chartHintForAction": "点击查看代码",
+                      "fetchingCodeFromServer": "加载中..."
+                    },
+                    "buttons": {
+                      "close": "关闭",
+                      "details": "详情",
+                      "solution": "写题解"
+                    },
+                    "filters": {
+                      "allStatuses": "所有状态",
+                      "allLanguages": "所有语言",
+                      "time": "时间",
+                      "status": "所有状态",
+                      "language": "所有语言",
+                      "framework": "所有框架",
+                      "runtime": "执行用时",
+                      "memory": "消耗内存",
+                      "notes": "备注",
+                      "penaltyTime": "惩罚时间",
+                      "minute": "分钟"
+                    },
+                    "notes": {
+                      "label": "备注",
+                      "placeholder": "添加备注，例如「暴力解法」、「方法一」等"
+                    },
+                    "relatedTags": {
+                      "label": "相关标签",
+                      "placeholder": "选择相关标签",
+                      "startTyping": "搜索标签",
+                      "noResults": "暂无标签"
+                    },
+                    "chart": {
+                      "runtimeDescription": "执行用时 (%)",
+                      "memoryDescription": "消耗内存 (%)",
+                      "youAreHere": "你在这里",
+                      "hintForAction": "点击图片查看分布详情",
+                      "runtime": "执行用时分布",
+                      "memory": "消耗内存分布",
+                      "percentLabel": "{{percent}}% 的用户使用了类似解法",
+                      "runtimeValueLabel": "Runtime: {{value}} ms",
+                      "memoryValueLabel": "Memory: {{value}} MB",
+                      "noData": "加载中，暂无数据",
+                      "memoryShortDescription": "Distribution (%)",
+                      "runtimeShortDescription": "Distribution (%)",
+                      "codeSample": "代码示例",
+                      "runtimeCodeSampleInfo": "执行用时：{{value}}ms",
+                      "memoryCodeSampleInfo": "消耗内存：{{value}}mb",
+                      "resetZoom": "点击缩略地图以重置",
+                      "complexity": "复杂度",
+                      "runtimeTip": "本指标计算函数运行时间（自 2024.10.19 生效，此日期前提交的代码运行时间不变，但会与新数据一同计算排名）"
+                    },
+                    "nonSignedIn": {
+                      "signInTitle": "🔥 登录力扣开始写代码",
+                      "signInInfo": "这里会展示你的提交记录 ",
+                      "signInButton": "登录/注册"
+                    },
+                    "noCode": "There is no code here",
+                    "pending": "Pending...",
+                    "testPassedButTookTooLong": "测试用例通过了，但耗时太长。",
+                    "failedSubmission": {
+                      "runtimeError": "执行出错信息",
+                      "compileError": "编译出错信息",
+                      "lastTestcase": "最后执行的输入"
+                    },
+                    "submissionPreview": {
+                      "embedCode": "嵌入代码",
+                      "copiedEmbedCode": "已复制",
+                      "copyEmbedCode": "复制",
+                      "copyEmbedCodeTooltip": "复制嵌入代码",
+                      "copyLinkTooltip": "复制链接",
+                      "openInNewTabTooltip": "在新标签页打开",
+                      "openInPanelTooltip": "在面板中打开",
+                      "maximizeTooltip": "最大化",
+                      "minimizeTooltip": "最小化",
+                      "invalidSubmissionIdLabel": "无效的提交记录 ID",
+                      "missingSubmissionIdTooltip": "请输入提交记录 ID",
+                      "nonFeSubmissionIdTooltip": "请输入有效的提交记录 ID",
+                      "openIn": "打开"
+                    },
+                    "complexity": {
+                      "timeComplexity": "时间复杂度",
+                      "spaceComplexity": "空间复杂度",
+                      "analyzeComplexity": "复杂度分析",
+                      "accurate": "有帮助",
+                      "notAccurate": "没有帮助",
+                      "notAccurateTitle": "没有帮助",
+                      "placeholder": "结果不准确，或其他功能反馈？",
+                      "premiumLimit": "复杂度分析已达上限，请明天再试吧~",
+                      "limitTitle": "升级 Plus 会员继续使用",
+                      "limitContent": "今日复杂度分析已达次数上限，升级会员可继续使用，还能提高结果准确率！",
+                      "learnMore": "了解更多权益",
+                      "subscribe": "升级 Plus 会员",
+                      "tryLater": "前方线路拥挤，请稍后再试。",
+                      "noteEmpty": "请输入内容再提交哦"
+                    }
+                  },
+                  "feature-guide": {
+                    "layout": "支持上下、左右拖拽调整布局",
+                    "timer": "\u003c0\u003e计时器：\u003c/0\u003e 现在可以在做题过程中使用计时器了！",
+                    "debugger": "\u003c0\u003e调试器：\u003c/0\u003e 我们将 Debugger 移动到了这里",
+                    "problemSwitch": "这里可以快速切换到 \u003c0\u003e上一题/下一题\u003c/0\u003e ",
+                    "problemList": "这里可以快速返回\u003c0\u003e题目列表\u003c/0\u003e",
+                    "discussion": "新的 \u003c0\u003e“讨论”，\u003c/0\u003e 您可以发布任何想法",
+                    "solution": "将 \u003c0\u003e“评论”\u003c/0\u003e 的名字修改为新的 \u003c0\u003e“题解” 名\u003c/0\u003e",
+                    "back": "返回",
+                    "skip": "跳过",
+                    "next": "下一步",
+                    "ok": "确定",
+                    "title": "🎉 我们的新界面"
+                  },
+                  "feature-guide-dynamic": {
+                    "back": "返回",
+                    "skip": "跳过",
+                    "next": "下一步",
+                    "explore": "探索",
+                    "step1": {
+                      "title": "全新灵动布局",
+                      "des": "我们珍视每一种独特的思考与学习方式，并致力于提供个性化的支持。",
+                      "tip": ""
+                    },
+                    "step2": {
+                      "title": "自定义布局",
+                      "des": "不满意默认布局？从此页面内容由你定义，让编码与学习事半功倍。",
+                      "tip": "拖拽标签页或标签面板以定义布局"
+                    },
+                    "step3": {
+                      "title": "自定义尺寸",
+                      "des": "屏幕空间受限？现在由你掌控如何利用空间，聚焦真正重要的内容。",
+                      "tip": "拖拽标签面板间的空隙以改变尺寸"
+                    },
+                    "step4": {
+                      "title": "沉浸式全屏",
+                      "des": "干扰信息过多？轻松双击即可隔绝干扰，遁入沉浸。",
+                      "tip": "双击面板顶部进入全屏模式"
+                    },
+                    "step5": {
+                      "title": "全局工具栏",
+                      "des": "承载聚合力扣核心功能，并将持续拓展，敬请期待。",
+                      "tip": ""
+                    }
+                  },
+                  "solutions": {
+                    "filter": {
+                      "searchPlaceholder": "搜索",
+                      "tags": { "all": "不限", "mySolution": "我的" },
+                      "sortBy": {
+                        "placeholder": "排序",
+                        "hot": "热度最高",
+                        "most_posts": "发布数量",
+                        "most_relevant": "默认排序",
+                        "most_votes": "点赞最多",
+                        "newest_to_oldest": "最新发布",
+                        "oldest_to_newest": "最早发布",
+                        "recent_activity": "默认排序",
+                        "recent_activity_short": "默认排序",
+                        "hot_short": "热度最高",
+                        "newest_to_oldest_short": "最新发布",
+                        "oldest_to_newest_short": "最早发布",
+                        "most_votes_short": "点赞最多",
+                        "most_relevant_short": "默认排序"
+                      }
+                    },
+                    "solution": "题解",
+                    "writeSolution": "写题解",
+                    "continueSolution": "继续写题解",
+                    "tags": {
+                      "editorial": "官方题解",
+                      "premiumVideo": "Premium Video",
+                      "official": "官方",
+                      "pinned": "精选",
+                      "favorite": "收藏",
+                      "mySolution": "我的题解",
+                      "hidden": "灰屏"
+                    },
+                    "post": {
+                      "invalidSolutionTitle": "题解不存在",
+                      "invalidSolutionDescription": "请查看其他题解",
+                      "prevLabel": "上一篇题解",
+                      "nextLabel": "下一篇题解",
+                      "isAdmin": "管理员",
+                      "reputationTooltip": "声望",
+                      "share": "分享",
+                      "addToCollection": "收藏",
+                      "isInCollection": "已收藏",
+                      "votes": "({{votesCount}} votes)",
+                      "shareCopySuccess": "分享链接复制到剪切板",
+                      "addToFavoriteSuccess": "添加成功",
+                      "removeFromFavoriteSuccess": "移除成功",
+                      "feedbackTooltip": "反馈",
+                      "backToTop": "回到顶部",
+                      "genericError": "未知错误",
+                      "upvote": "有用",
+                      "comments": "评论",
+                      "allSolutions": "全部题解",
+                      "more": {
+                        "error": "网络错误",
+                        "cancel": "取消",
+                        "edit": "编辑",
+                        "editorsPick": "设为精选",
+                        "subscribe": "Subscribe",
+                        "subscribeMessage": "Subscribed",
+                        "unsubscribe": "Unsubscribe",
+                        "unsubscribeMessage": "Unsubscribed",
+                        "delete": "删除",
+                        "deleteMessage": "删除成功",
+                        "deleteConfirmText": "确定删除?",
+                        "deleteConfirmBtn": "删除",
+                        "remove": "下线",
+                        "restore": "Restore",
+                        "restoreMessage": "Restored",
+                        "restoreConfirmText": "Are you sure you want to restore this post?",
+                        "restoreConfirmBtn": "Restore",
+                        "report": "举报",
+                        "reportMessage": "举报成功",
+                        "officialPick": "设为官方",
+                        "pin": "Pin",
+                        "pinMessage": "Pinned",
+                        "pinConfirmText": "Are you sure you want to pin this post?",
+                        "pinConfirmBtn": "Pin",
+                        "uneditorsPick": "取消精选",
+                        "undelete": "恢复删除",
+                        "unmute": "取消屏蔽",
+                        "unofficialPick": "取消官方",
+                        "unpin": "Unpin",
+                        "unpinMessage": "Unpinned",
+                        "unpinConfirmText": "Are you sure you want to unpin this post?",
+                        "unpinConfirmBtn": "Unpin",
+                        "unsunk": "取消下沉",
+                        "hide": "Hide",
+                        "hideMessage": "Hid the post",
+                        "hideConfirmText": "Are you sure you want to hide this post?",
+                        "hideConfirmBtn": "Hide",
+                        "hideFromTrending": "Hide from trending",
+                        "hideFromTrendingMessage": "Hid post from trending",
+                        "hideFromTrendingConfirmText": "Are you sure you want to hide this post from trending?",
+                        "hideFromTrendingConfirmBtn": "Hide from trending",
+                        "unlist": "Unlist",
+                        "unlistMessage": "Unlisted the post",
+                        "unlistConfirmText": "Are you sure you want to unlist this post?",
+                        "unlistConfirmBtn": "Unlist",
+                        "unlistFromTrending": "Unlist from trending",
+                        "unlistFromTrendingMessage": "Unlisted post from trending",
+                        "unlistFromTrendingConfirmText": "Are you sure you want to unlist this post from trending?",
+                        "unlistFromTrendingConfirmBtn": "Unlist from trending",
+                        "show": "Show",
+                        "showMessage": "Showed the post",
+                        "showConfirmText": "Are you sure you want to show this post to everyone?",
+                        "showConfirmBtn": "Show",
+                        "open": "Open",
+                        "openMessage": "Opened the post",
+                        "openConfirmText": "Are you sure you want to open this post to everyone?",
+                        "openConfirmBtn": "Open",
+                        "sunk": "下沉",
+                        "moveToDiscussion": "Move to Discussion",
+                        "moveToDiscussionMessage": "Moved to Discussion",
+                        "moveToDiscussionConfirmText": "Are you sure you want to move this post to Discussion?",
+                        "moveToDiscussionConfirmBtn": "Move to Discussion",
+                        "mute": "灰色屏蔽",
+                        "recommend": "Recommend",
+                        "setRecommendationCoefficient": "Set Recommendation Coefficient",
+                        "value": "Value",
+                        "custom": "Custom",
+                        "enterAnInteger": "Enter an integer",
+                        "notOfficial": "unofficial",
+                        "official": "official",
+                        "notOfficialMessage": "Set post to unofficial",
+                        "officialMessage": "Set post to official",
+                        "notOfficialConfirmText": "Are you sure you want to set this post to unofficial?",
+                        "officialConfirmText": "Are you sure you want to set this post to official?",
+                        "notOfficialConfirmBtn": "Set to unofficial",
+                        "officialConfirmBtn": "Set to official",
+                        "free": "Set to free",
+                        "freeMessage": "Set post to free",
+                        "freeConfirmText": "Are you sure you want to make this post free to all users?",
+                        "freeConfirmBtn": "Set to free",
+                        "premium": "Set to premium",
+                        "premiumMessage": "Set post to premium",
+                        "premiumConfirmText": "Are you sure you want to make this post premium?",
+                        "premiumConfirmBtn": "Set to premium"
+                      },
+                      "rateSuccess": "Thanks for rating this solution!"
+                    },
+                    "searchResult": {
+                      "commentPrefix": " comment",
+                      "replyPrefix": " reply to ",
+                      "colon": ": "
+                    },
+                    "noDirectResultsHint": "No result. Show you some related content",
+                    "noResults": "暂无相关题解内容",
+                    "noMoreResults": "已经到底了",
+                    "backToTop": "回到顶部",
+                    "report": {
+                      "reportModalTitle": "举报",
+                      "contentPlaceholder": "其他",
+                      "cancel": "取消",
+                      "confirm": "确认",
+                      "advertising": "骚扰广告",
+                      "sexual": "黄色内容",
+                      "violent": "暴力内容",
+                      "terrorism": "恐怖言论",
+                      "illegal": "违法内容",
+                      "politics": "政治言论",
+                      "abuse": "辱骂他人",
+                      "fake": "造谣传谣",
+                      "nonEnglish": "Non English content",
+                      "other": "其他",
+                      "reportSuccess": "提交成功",
+                      "reportError": "提交遇到问题，请稍后再试！"
+                    },
+                    "blocker": {
+                      "subscribeToUnlock": "Subscribe to unlock.",
+                      "subscribeSubTitle": "Thanks for using LeetCode! To view this solution you must subscribe to premium.",
+                      "subscribe": "Subscribe"
+                    },
+                    "videoSolutionTooltip": "Video Solution",
+                    "premiumOnlyTooltip": "Premium Solution",
+                    "switchToRightTooltip": "移到右边",
+                    "switchToLeftTooltip": "移到左边",
+                    "switchFirstTimePopoverContent": "您可以通过点击 “切换视图” 的按钮将题解文章的视图进行左右切换",
+                    "switchFirstTimePopoverBtn": "明白了",
+                    "shareSolutionBanner": {
+                      "lastSubmissionBeats": "你最近一次提交运行时间超过了 \u003c0\u003e{{percentage}}\u003c/0\u003e 的用户",
+                      "lastSubmissionBeatsSmall": "你最近一次提交运行时间超过了 \u003c0\u003e{{percentage}}\u003c/0\u003e 的用户",
+                      "lastSubmissionMemoryBeats": "你最近一次提交运行内存超过了 \u003c0\u003e{{percentage}}\u003c/0\u003e 的用户",
+                      "lastSubmissionMemoryBeatsSmall": "你最近一次提交运行内存超过了 \u003c0\u003e{{percentage}}\u003c/0\u003e 的用户",
+                      "signInAndShareSolutions": "登录并分享题解",
+                      "signIn": "登录",
+                      "shareMySolution": "发布题解",
+                      "share": "分享",
+                      "getACSubmissionsToPublish": "你需要先通过这道题目才能发布题解"
+                    },
+                    "sideBySide": {
+                      "enterMode": "开启双栏模式",
+                      "exitMode": "退出双栏模式",
+                      "modeOn": "已开启双栏模式",
+                      "modeOff": "已退出双栏模式",
+                      "enterGuideTitle": "浏览多份内容?",
+                      "enterGuideDesc": "试试开启双栏模式，你还可以进一步在设置中自定义你的浏览体验。",
+                      "exitGuideTitle": "退出双栏模式",
+                      "exitGuideDesc": "退出后，即可专注浏览唯一标签页。",
+                      "goToSettings": "打开设置",
+                      "gotIt": "我知道了"
+                    }
+                  },
+                  "comments": {
+                    "edited": "(编辑过)",
+                    "tooShort": "评论过短",
+                    "noComments": "暂无评论",
+                    "reply": "回复",
+                    "mentionInputPlaceholder": "用户或题目",
+                    "user": "用户",
+                    "problem": "题目",
+                    "mdRules": {
+                      "inlineCode": "行内代码...",
+                      "codeBlock": "code block",
+                      "link": "leetcode",
+                      "href": "https://leetcode.cn"
+                    },
+                    "pinnedBy": "被 {{pinnedBy}} 置顶",
+                    "share": "分享",
+                    "edit": "编辑",
+                    "save": "保存",
+                    "shareCopySuccess": "已复制到剪切板",
+                    "hideReplies": "隐藏回复",
+                    "showReplies": "展示 {{num}} 条回复",
+                    "cancel": "取消",
+                    "confirm": "确定",
+                    "preview": "预览",
+                    "comment": "评论",
+                    "typeCommentHere": "请输入评论...",
+                    "comments": "评论",
+                    "sortBy": "排序",
+                    "newestToOldest": "最新",
+                    "oldestToNewest": "最早",
+                    "mostVotes": "赞成数",
+                    "best": "最热",
+                    "editor": "编辑",
+                    "youMust": "您需要先",
+                    "verifyYourEmail": "绑定邮箱",
+                    "first": "first",
+                    "readMore": "展开全部",
+                    "somethingWentWrong": "未知错误",
+                    "areYouSure": "操作确认",
+                    "confirmDeleteComment": "确定删除该条评论？",
+                    "confirmRestoreComment": "确定恢复该条评论？",
+                    "confirmHideComment": "确定将该条评论灰色屏蔽？",
+                    "confirmShowComment": "确定将该条评论取消灰色屏蔽？",
+                    "confirmPinComment": "确定置顶该评论？",
+                    "confirmUnpinComment": "确定移除置顶？",
+                    "reward": "赞赏",
+                    "delete": "删除",
+                    "hide": "隐藏",
+                    "show": "展示",
+                    "askQuestion": "问问题",
+                    "feedback": "反馈",
+                    "tips": "提示",
+                    "chooseAType": "请选择一个类型",
+                    "showMoreReplies": "展示更多",
+                    "hideSuccess": "灰色屏蔽成功.",
+                    "showSuccess": "取消灰色屏蔽成功.",
+                    "pinSuccess": "Comment has been pinned.",
+                    "unpinSuccess": "Comment has been unpinned.",
+                    "deleteSuccess": "删除成功",
+                    "restore": "Restore",
+                    "restoreSuccess": "成功恢复评论",
+                    "hidden": "Hidden",
+                    "report": "举报",
+                    "pin": "设为精选",
+                    "pinned": "精选",
+                    "unpin": "取消精选",
+                    "hideComment": "灰色屏蔽",
+                    "showComment": "取消灰色屏蔽",
+                    "move": "Move to Solution",
+                    "moveTitle": "Title:",
+                    "moveTitlePlaceholder": "Enter title here",
+                    "moveSuccess": "Comment Successfully Moved",
+                    "postSuccess": "发布成功",
+                    "genericError": "Something went wrong",
+                    "signInVoteError": "You must sign in to vote",
+                    "verifyVoteError": "You must verify your email to vote"
+                  },
+                  "post-solution": {
+                    "meta": {
+                      "newTitle": "{{title}} - LeetCode - New Solution",
+                      "editTitle": "{{title}} - LeetCode - Edit Solution"
+                    },
+                    "filterTopic": "搜索标签",
+                    "publishSolution": "写题解",
+                    "publishSolutionTooltip": "您需要先通过这道题目才能发布题解",
+                    "restore": "是否清空草稿？",
+                    "discard": "清空",
+                    "discardConfirmTitle": "您确定要清空草稿吗？",
+                    "discardConfirmContent": "如果清空草稿，会删除当前编辑器中的所有内容",
+                    "discardConfirmOk": "确定",
+                    "discardConfirmCancel": "取消",
+                    "guide": "力扣「Markdown 编辑器」使用说明",
+                    "check": "查看",
+                    "blockCode": "「代码块」",
+                    "tag": "标签",
+                    "related": "与题相关",
+                    "selectATag": "请为该题解选择至少1个标签",
+                    "post": "发布题解",
+                    "publishError": "发布失败",
+                    "imgUploadSuccuss": "上传成功",
+                    "imgUploadError": "上传失败，请重试",
+                    "guideTooltip": "Markdown 指引",
+                    "saved": "已保存为草稿"
+                  },
+                  "new-study-plan": {
+                    "detail": {
+                      "metadata": {
+                        "title": "{{plan}} - 学习计划 - 力扣（LeetCode）全球极客挚爱的技术成长平台",
+                        "description": "学习计划 - 力扣（LeetCode）全球极客挚爱的技术成长平台",
+                        "notFound": "未找到学习计划"
+                      },
+                      "weekTextAbbr": {
+                        "sun": "周日",
+                        "mon": "周一",
+                        "tue": "周二",
+                        "wed": "周三",
+                        "thu": "周四",
+                        "fri": "周五",
+                        "sat": "周六"
+                      },
+                      "weekText": {
+                        "sun": "周日",
+                        "mon": "周一",
+                        "tue": "周二",
+                        "wed": "周三",
+                        "thu": "周四",
+                        "fri": "周五",
+                        "sat": "周六"
+                      },
+                      "myPlan": "我的计划",
+                      "problemLeft": "题待完成",
+                      "problemsLeft": "题待完成",
+                      "notification": "注意",
+                      "setUpSp": "设置学习计划",
+                      "solvedText": "完成",
+                      "problem": "题",
+                      "problems": "题",
+                      "learnMore": "更多信息",
+                      "you": "你",
+                      "weeklyRanking": "周榜",
+                      "weeklyRankingToolTip": "按本周完成题目数计算排名，每小时更新一次榜单数据（若本周未完成任何计划内题目，不计算排名）",
+                      "solvePrev": "以下时间每天完成",
+                      "solveNext": "道题",
+                      "startTitle": "设置学习计划",
+                      "confirmStartText": "计划保存后不可修改哦，确定保存吗？",
+                      "quitTypeTipPrev": "请输入本计划标题：",
+                      "quitTypeTipNext": " ",
+                      "subscribeToUnlock": "升级 Plus 会员",
+                      "subscribeToUnlockContent": "升级到 Plus 会员，可解锁该学习计划",
+                      "start": "开始",
+                      "share": "分享",
+                      "backToExplore": "返回学习计划",
+                      "goCurrentPage": "重新尝试该计划",
+                      "premiumTip": "开通会员",
+                      "copyLink": "复制链接",
+                      "copiedSuccess": "已复制分享链接",
+                      "more": "更多",
+                      "quit": "退出",
+                      "back": "返回",
+                      "quitTitle": "关闭学习计划",
+                      "quitContent": "当关闭此学习计划时，所有已解决问题的都会被重置，且无法恢复进度。你确定你要关闭吗？",
+                      "showTags": "显示标签",
+                      "summary": "概述",
+                      "showMore": "展开",
+                      "showLess": "收起",
+                      "award": "勋章",
+                      "awardCongratulation": "太棒啦！你已经获得此勋章",
+                      "related": "相关计划",
+                      "viewMore": "查看更多",
+                      "todo": "待完成",
+                      "attempted": "尝试过",
+                      "solved": "已解答",
+                      "markAsSolved": "标记为已解决",
+                      "markAsSolvedTip": "你以前曾解决过这道题目，是否将其 '标记为已解决' ？",
+                      "difficulty": "难度",
+                      "congratulation": "🎉 恭喜你！",
+                      "solvedAllProblemsText": "你已经解决了 {{title}} 中的所有问题！",
+                      "checkBadge": "前往您的",
+                      "profilePage": "个人主页",
+                      "wearGlory": "并佩戴勋章！",
+                      "checkMyStudyPlan": "回到我的学习计划",
+                      "joinSuccessfully": "已加入",
+                      "quitSuccessfully": "已退出",
+                      "setSuccessfully": "已设置",
+                      "errorTip": "遇到些问题，请再次尝试",
+                      "quitTip": "若您退出该学习计划，所有已解决的问题都将被重置，且无法恢复。",
+                      "pastSolved": "解答过",
+                      "solution": "题解",
+                      "points": "分",
+                      "ranking": "排名"
+                    },
+                    "list": {
+                      "metadata": {
+                        "title": "学习计划 - 在 LeetCode 上持续练习来获得面试的成功"
+                      },
+                      "title": "学习计划",
+                      "ongoing": "进行中",
+                      "myPlan": "我的学习计划",
+                      "featured": "精选",
+                      "showMore": "展开",
+                      "revertOldPlan": "查看旧版的学习计划",
+                      "revertOldPlanTipTitle": "🌟 返回到旧版的学习计划",
+                      "revertOldPlanTipDesc": "你可以点击该按钮前往旧版的学习计划",
+                      "cancel": "取消",
+                      "iSee": "知道了"
+                    },
+                    "myStudyPlan": {
+                      "metadata": {
+                        "title": "我的学习计划 - 力扣 (LeetCode) 全球极客挚爱的技术成长平台",
+                        "desc": "加入到该学习计划可以追踪你的做题进度，有效地获得能力的提升！"
+                      },
+                      "title": "我的学习计划",
+                      "ongoing": "进行中",
+                      "history": "已结束的计划",
+                      "noOngoingPlan": "暂无进行中的计划",
+                      "noHistoryPlan": "暂无已结束的计划"
+                    },
+                    "common": {
+                      "studyPlan": "学习计划",
+                      "tryNow": "立即开启",
+                      "noTanks": "暂不尝试",
+                      "newPlan": "✨ 全新的学习计划！",
+                      "newPlanDesc": "加入一个新的学习计划，最大限度地发挥你的学习潜力。追踪你的进展，专注于每天的问题，以取得持续增长",
+                      "seeAll": "查看更多",
+                      "totalProgress": "完成进度",
+                      "totalScore": "得分",
+                      "progress": "完成进度",
+                      "completed": "完成时间",
+                      "giveUp": "退出时间",
+                      "ongoing": "进行中",
+                      "ongoingStudyPlan": "进行中的学习计划",
+                      "later": "暂不参与",
+                      "joinInQDTitle": "是否开始该学习计划？",
+                      "joinInQD": "加入到该学习计划可以追踪你的做题进度，有效地获得能力的提升！",
+                      "doNotRemind": "今天不再提示",
+                      "exploreButton": "探索学习计划",
+                      "notFoundText": "抱歉，无法找到该网页，请检查你的输入内容或重新探索一个新的学习计划"
+                    },
+                    "survey": { "submit": "提交" },
+                    "satisfactionSurvey": { "submitBtnText": "提交" }
+                  },
+                  "problemlist": {
+                    "metadata": {
+                      "defaultTitle": "题单 - 力扣（LeetCode）全球极客挚爱的技术成长平台",
+                      "title": "{{title}} - 力扣（LeetCode）全球极客挚爱的技术成长平台"
+                    },
+                    "tags": "Tags",
+                    "todo": "待完成",
+                    "attempted": "尝试过",
+                    "solved": "已解答",
+                    "move": "拖动排序",
+                    "removeFromList": "移除",
+                    "addToList": "添加至题单",
+                    "moveToTop": "置顶",
+                    "moveToBottom": "置底",
+                    "nullList": "Oops, 该题单不存在！",
+                    "privateList": "该题单已设为私密",
+                    "noQuestions": "暂无题目",
+                    "noSearchResult": "无搜索结果",
+                    "goToProblemSet": "前往题库",
+                    "difficulty": {
+                      "easy": "简单",
+                      "medium": "中等",
+                      "hard": "困难"
+                    },
+                    "acceptance": "通过率",
+                    "nav-panel": {
+                      "title": "我的题单",
+                      "fold": "折叠",
+                      "unfold": "展开",
+                      "createdByMe": "我创建的",
+                      "savedByMe": "我收藏的",
+                      "public": "公开",
+                      "private": "私密",
+                      "remove": "取消收藏",
+                      "listInvalid": "题单已失效",
+                      "newList": "创建题单",
+                      "newSmartList": "生成智能题单...",
+                      "smartList": "智能题单",
+                      "studyPlan": "学习计划",
+                      "oldLibrary": "题库",
+                      "library": "题目",
+                      "myList": "我的题单",
+                      "oldMyList": "我创建的",
+                      "mySaved": "我收藏的"
+                    },
+                    "description": {
+                      "cover": {
+                        "editCover": "修改封面",
+                        "emojis": "表情符号",
+                        "image": "自定义",
+                        "random": "随机一图",
+                        "background": "背景色",
+                        "chooseBackground": "请选择背景色",
+                        "Recommend": "推荐",
+                        "Smileys \u0026 Emotion": "表情",
+                        "People \u0026 Body": "角色",
+                        "Animals \u0026 Nature": "动物与自然",
+                        "Food \u0026 Drink": "食物与饮品",
+                        "Activities": "活动",
+                        "Travel \u0026 Places": "旅行与景点",
+                        "Objects": "物品",
+                        "Symbols": "符号",
+                        "Flags": "旗帜",
+                        "uploadImage": "上传图片",
+                        "uploadRecommendedSize": "建议尺寸为 200 x 200 像素",
+                        "uploadSizeLimit": "每个文件的最大尺寸为 5 MB",
+                        "cancel": "取消",
+                        "save": "保存"
+                      },
+                      "operations": {
+                        "updated": "更新时间：",
+                        "noQuestions": "暂无题目",
+                        "questions": "题",
+                        "public": "公开",
+                        "makePublic": "设为公开",
+                        "private": "私密",
+                        "makePrivate": "设为私密",
+                        "publicToast": "题单已公开",
+                        "privateToast": "已设为私密",
+                        "practice": "开始练习",
+                        "random": "随机一题",
+                        "listSave": "收藏",
+                        "listSaved": "已收藏",
+                        "listSavedByCount": "人收藏",
+                        "listSavedToast": "已收藏",
+                        "listUnsavedToast": "已取消收藏",
+                        "share": "分享",
+                        "fork": "Fork",
+                        "forkToast": "题单已 Fork!",
+                        "more": "更多",
+                        "delete": "删除",
+                        "deleteList": "删除题单",
+                        "deleteAlert": "您确定要删除此题单吗？本操作无法撤销。",
+                        "cancel": "取消",
+                        "create": "创建",
+                        "created": "已创建",
+                        "addQuestions": "添加题目",
+                        "addToList": "添加到题单",
+                        "hasSelected": "已选 {{count}} 题",
+                        "genSmartList": "生成智能题单",
+                        "createNewList": "创建新题单",
+                        "updateRuleQuestionTip": "已包含 {{count}} 道题，将根据所选条件自动更新",
+                        "updateRuleQuestionsTip": "已包含 {{count}} 道题，将根据所选条件自动更新",
+                        "editRule": "设置规则",
+                        "addRules": "添加规则",
+                        "editRuleDesc": "添加难度、知识点等多维条件，按需定制你的专属题集",
+                        "setCondition": "设置条件",
+                        "acceptDelete": "确定",
+                        "deleteToast": "题单已删除",
+                        "edit": "编辑",
+                        "editListInfo": "编辑题单信息",
+                        "title": "标题",
+                        "titlePlaceholder": "请输入题单名称",
+                        "description": "描述",
+                        "descriptionPlaceholder": "请简述本题单内容主题，例如：收集有趣的动态规划题",
+                        "save": "保存",
+                        "infoSavedToast": "保存成功！",
+                        "clickToReadMore": "点击查看全文",
+                        "nonLoggedInDialog": {
+                          "saveTitle": "收藏题单",
+                          "saveContent": "登录后即可收藏题单",
+                          "forkTitle": "Fork 题单",
+                          "forkContent": "登录后即可 fork 题单",
+                          "notNow": "以后再说",
+                          "logIn": "登录"
+                        },
+                        "confirmPlusDialogTitle": "升级 Plus 会员",
+                        "confirmPlusDialogContent1": "本智能题单含会员专享筛选条件，需升级为会员才能使用。",
+                        "confirmPlusDialogContent2": "若会员失效后编辑规则，会员专享筛选条件将会被清除。",
+                        "confirmPlusEditRulesDialogBtn": "编辑规则",
+                        "confirmPlusDialogBtn": "升级 Plus 会员"
+                      },
+                      "progress": {
+                        "progress": "进度",
+                        "resetProgress": "重置进度",
+                        "resetAlert": "重置后，本题单进度将被清除（不影响题库或其他题单）。确定重置吗？此操作不可撤销。",
+                        "cancel": "取消",
+                        "reset": "确定",
+                        "resetToast": "进度已重置",
+                        "easy": "简单",
+                        "medium": "中等",
+                        "hard": "困难",
+                        "solved": "已解答",
+                        "acceptance": "通过率",
+                        "beats": "击败比例",
+                        "attempting": "尝试过",
+                        "checkReset": "同时清除代码编辑器草稿"
+                      }
+                    },
+                    "company": {
+                      "nullList": "Oops, 该企业不存在！",
+                      "subscribeText1": "升级至 Plus 会员",
+                      "subscribeText2": "解锁更多企业高频面试题。",
+                      "subscribe": "升级 Plus 会员",
+                      "learnMore": "查看权益",
+                      "freeQuestion": "免费高频面试题",
+                      "claim": "领取",
+                      "claiming": "领取中…",
+                      "saved": "已收藏",
+                      "savedByCount": "人收藏",
+                      "updated": "更新时间：",
+                      "description": "简介",
+                      "filter": "筛选",
+                      "status": "状态",
+                      "todo": "未开始",
+                      "attempted": "尝试过",
+                      "solved": "已解答",
+                      "difficulty": "难度",
+                      "easy": "简单",
+                      "medium": "中等",
+                      "hard": "困难",
+                      "role": "岗位",
+                      "rolePlaceholder": "请选择",
+                      "reset": "清空筛选",
+                      "tags": "标签",
+                      "showTags": "显示标签",
+                      "frequency": "出题频率",
+                      "discuss": "讨论",
+                      "chanceUsedUp": "免费机会已用完，升级 Plus 会员获取更多高频面试题。",
+                      "subscribeNow": "升级会员",
+                      "claimSignIn": "登录后领取 1 道面试题。",
+                      "signIn": "登录",
+                      "clickToReadMore": "点击查看详情",
+                      "interviewTime": "面试时间",
+                      "interviewTimeTip": "题单进度与当前所选面试时间相关",
+                      "frequencyTip": "按出题频率倒序排列",
+                      "ok": "好的",
+                      "subscribeFrequency": "升级 Plus 会员查看出题频率"
+                    },
+                    "points": "分",
+                    "filter": {
+                      "difficulty": "难度",
+                      "status": "状态",
+                      "list": "题单",
+                      "tag": "标签",
+                      "tagSearch": "筛选标签",
+                      "expand": "展开",
+                      "collapse": "收起",
+                      "reset": "重置",
+                      "searchPlaceholder": "搜索题目、编号或内容",
+                      "noResult": "暂无搜索结果",
+                      "search": "搜索",
+                      "filter": "筛选",
+                      "filtered": "已筛选",
+                      "showSaveAsSmartListBtn": "保存为智能题单",
+                      "match": "匹配",
+                      "matchTitle": "过滤条件：",
+                      "is": "等于",
+                      "not": "不等于",
+                      "range": "介于",
+                      "past": "过去",
+                      "all": "所有",
+                      "any": "任一",
+                      "days": "天",
+                      "including": "Plus 内容",
+                      "excluding": "非 Plus 内容",
+                      "filterName": {
+                        "frequency": "出题频率",
+                        "companies": "企业",
+                        "position": "岗位",
+                        "status": "状态",
+                        "difficulty": "难度",
+                        "topics": "知识点",
+                        "lang": "语言",
+                        "acceptance": "通过率",
+                        "lastSubmit": "最近提交时间",
+                        "published": "题目发布时间",
+                        "premium": "Plus 内容"
+                      },
+                      "filterNameAbbr": {
+                        "frequency": "频率",
+                        "companies": "企业",
+                        "position": "岗位",
+                        "status": "状态",
+                        "difficulty": "难度",
+                        "topics": "知识点",
+                        "lang": "语言",
+                        "acceptance": "通过率",
+                        "lastSubmit": "新提交",
+                        "published": "发布于",
+                        "premium": "Plus"
+                      },
+                      "premiumTooltip": {
+                        "frequency": "升级 Plus 会员筛选出题频率",
+                        "companies": "升级 Plus 会员筛选企业",
+                        "position": "升级 Plus 会员筛选岗位"
+                      },
+                      "sort": {
+                        "custom": "默认排序",
+                        "frequency": "出题频率",
+                        "difficulty": "难度",
+                        "ac_rate": "通过率",
+                        "frontend_id": "标题",
+                        "premiumOnlyTip": "升级 Plus 会员筛选出题频率",
+                        "tooltip": {
+                          "custom": "默认排序",
+                          "frequency": "按出题频率排序",
+                          "difficulty": "按难度排序",
+                          "ac_rate": "按通过率排序",
+                          "frontend_id": "按标题排序"
+                        }
+                      },
+                      "random": "随机一题",
+                      "addQuestionsToListTip_one": "将 {{count}} 题添加至题单",
+                      "addQuestionsToListTip_other": "将 {{count}} 题添加至题单",
+                      "backToTop": "回到顶部",
+                      "totalNum": "{{count}} 题"
+                    }
+                  },
+                  "contest": {
+                    "meta": {
+                      "title": "Contest - LeetCode",
+                      "description": "Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.",
+                      "keywords": "",
+                      "ogImage": "https://leetcode.com/static/images/LeetCode_Sharing.png"
+                    },
+                    "featuredContests": "Featured Contests",
+                    "sponsorContest": "Sponsor a Contest",
+                    "contest": "Contest",
+                    "ranking": "Ranking",
+                    "startsIn": "Starts in",
+                    "endsIn": "Ends in",
+                    "addToCalendar": "Add to Calendar",
+                    "pastContests": "Past Contests",
+                    "myContests": "My Contests",
+                    "public": "Public",
+                    "virtual": "Virtual",
+                    "startVirtualContestDescription": "Start a Virtual Contest. Get well-prepared for a ranked match.",
+                    "whatIsVirtualContest": "What's a Virtual Contest?",
+                    "virtualContestModal": {
+                      "title": "Would you like to start a Virtual Contest?",
+                      "ongoingTitle": "Would you like to start a new Virtual Contest?",
+                      "confirmTitle": "Virtual Contest Started",
+                      "goToContest": "Go to Contest",
+                      "resumeOngoing": "Resume Ongoing",
+                      "startNew": "Start New",
+                      "confirmDescription": "Let‘s go to your Virtual Contest!",
+                      "freshStartDescription": "Virtual Contests are a way to take part in previous contests. The experience is as close as it gets to real participation, but your rank is not affected.",
+                      "ongoingDescription": "You already have an ongoing virtual contest. Do you want to end the ongoing one and start a new one? If you choose so, your current process WILL END and be saved.",
+                      "start": "Start Virtual Contest",
+                      "cancel": "Cancel"
+                    },
+                    "attended": "Attended",
+                    "globalRanking": "Global Ranking",
+                    "rating": "Rating",
+                    "ratingTooltip": "Rating displayed is the net change from your previous rating followed by your new rating.",
+                    "viewMore": "View More",
+                    "virtualContest": "Virtual Contest",
+                    "finishTime": "Finish Time",
+                    "solved": "Solved",
+                    "localTimeBased": "Date \u0026 time is based on the local timezone settings on your device",
+                    "ratingPending": "Rating update is currently pending",
+                    "finishTimeTooltip": "Acceptance time of your last solved problem plus penalty time",
+                    "joinContests": "🏆 Join LeetCode Contests",
+                    "viewContestInfo": "Register or sign in to view your personalized contest information",
+                    "registerOrSignIn": "Register or Sign In",
+                    "crownAlt": "Crown",
+                    "noContests": "You haven't joined any contests yet.",
+                    "randomVirtualContest": "Random Virtual Contest",
+                    "ended": "Ended",
+                    "rankingPage": {
+                      "meta": { "title": "{{title}} 排名 - 力扣（LeetCode）" },
+                      "problemList": "题目列表",
+                      "ranking": "排名",
+                      "rankingDetailPage": "排行榜详情",
+                      "titlePrefix": "",
+                      "titleSuffix": " 排名",
+                      "akSuffix": " 人 AK！",
+                      "akTip": "\"AK\" 即 \"All Killed\"，指本场竞赛题全部解出。",
+                      "pending": "未开始",
+                      "ended": "已结束",
+                      "emptyRankingPlaceholder": "AK 等你来",
+                      "rank": "排名",
+                      "rankTipTitle": "竞赛过程中：",
+                      "rankTip1": "排名信息可能无法实时更新，会有延迟",
+                      "rankTip2": "仅展示 Top 200 用户",
+                      "rankTipPending": "排名确认中",
+                      "rankTipUpdated": "排名已确认",
+                      "rankTipUnrated": "本场竞赛不计排名",
+                      "name": "用户名",
+                      "score": "得分",
+                      "finishTime": "完成时间",
+                      "finishTimeTip": "完成时间为通过时间和处罚时间的总和",
+                      "questionPrefix": "题目",
+                      "bugTipSuffix": " 次错误尝试",
+                      "you": "我",
+                      "code": "代码",
+                      "reportCheating": "举报作弊",
+                      "reportCheatingOtherRegion": "前往美服举报作弊",
+                      "reportCheatingSubmitted": "已举报",
+                      "reportCheatingPlaceholder": "你可以检举违规库、函数的使用，或者抄袭等其他作弊行为",
+                      "submit": "提交",
+                      "guideTitle": "查看代码",
+                      "guideDescription": "点击此处可查看用户解答。",
+                      "ok": "好的",
+                      "tag": "标签",
+                      "colon": "：",
+                      "llmScore": "总分",
+                      "avgScore": "平均分",
+                      "avgTotalScore": "平均总分",
+                      "avg": "平均",
+                      "bestScore": "最佳分",
+                      "bestTotalSore": "最佳总分",
+                      "best": "最佳",
+                      "model": "大模型",
+                      "questions": "题目",
+                      "language": "语言",
+                      "passed": "通过",
+                      "execLangs": "包含",
+                      "LlmQuestionRule": "每种语言在每道题中同时开启 4 轮会话，基于题目分值和会话平均提交通过率，计算最终综合平均得分；基于题目分值和会话最佳提交通过率，计算最佳得分。",
+                      "llmTableEmptyTip": "AI 模型生成代码中…谁会是第一？"
+                    }
+                  }
+                }
+              },
+              "initialLocale": "zh",
+              "ns": [
+                "common",
+                "problems",
+                "console",
+                "code-editor",
+                "description",
+                "submissions",
+                "feature-guide",
+                "feature-guide-dynamic",
+                "solutions",
+                "comments",
+                "post-solution",
+                "new-study-plan",
+                "problemlist",
+                "contest"
+              ],
+              "userConfig": {
+                "i18n": { "defaultLocale": "zh", "locales": ["en", "zh"] },
+                "react": { "useSuspense": false },
+                "reloadOnPrerender": false,
+                "default": {
+                  "i18n": { "defaultLocale": "zh", "locales": ["en", "zh"] },
+                  "react": { "useSuspense": false },
+                  "reloadOnPrerender": false
+                }
+              }
+            }
+          },
+          "enableNewVersion": false,
+          "__N_SSP": true
+        },
+        "page": "/problems/[slug]/[[...tab]]",
+        "query": { "slug": "valid-parentheses" },
+        "buildId": "LeHEpgXuEDRFbGHXTRXan",
+        "assetPrefix": "https://static.leetcode.cn/cn-frontendx-assets/production",
+        "isFallback": false,
+        "gssp": true,
+        "appGip": true,
+        "scriptLoader": []
+      }
+    </script>
+    <div id="modal-root"></div>
+  </body>
+</html>

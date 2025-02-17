@@ -4,63 +4,72 @@
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 using namespace std;
 
 class Solution {
 public:
-  int divide(int dividend, int divisor) {
-    // index value count
-    vector<vector<int>> expVec = {{0, 0, 0}, {1, divisor, 0}};
-    int curDividend = dividend;
-    bool reachMax = false;
-    int curIndex = 1;
-    int curDivisor = 1;
-
-    if (dividend < divisor) {
-      return 0;
-    }
-    if (dividend == divisor) {
-      return 1;
-    }
-
-    // find max divisor
-    while (curDividend - curDivisor > 0) {
-      if (expVec.size() < curIndex) {
-        expVec.push_back({curIndex, curDivisor, 0});
+  vector<string> generateAllPermutations(const vector<string> &strings) {
+    vector<string> result;
+    vector<string> temp = strings;
+    // 排序以便生成所有排列
+    sort(temp.begin(), temp.end());
+    do {
+      string combo;
+      for (const string &s : temp) {
+        combo += s;
       }
-      curIndex++;
-      curDivisor += curDivisor;
+      result.push_back(combo);
+    } while (next_permutation(temp.begin(), temp.end()));
+    return result;
+  }
+
+  vector<int> find_substring_positions(const std::string &str,
+                                       const std::string &substr) {
+    vector<int> positions;
+    size_t pos = str.find(substr); // 查找第一个匹配的位置
+
+    // 循环查找所有匹配的位置
+    while (pos != std::string::npos) {
+      positions.push_back(pos);        // 存储匹配的位置
+      pos = str.find(substr, pos + 1); // 从下一个位置继续查找
     }
 
-    curIndex--;
-    curDivisor = expVec[curIndex][1];
+    return positions;
+  }
 
-    while (true) {
-      while (curDividend - curDivisor >= 0) {
-        curDividend -= curDivisor;
-        expVec[curIndex][2]++;
+  vector<int> findSubstring(string s, vector<string> &words) {
+    vector<int> positions = find_substring_positions(s, words[0]);
+    vector<string> AllPermutaions = generateAllPermutations(words);
+    int permuationLen = words.size() * words[0].size();
+    vector<int> result;
+    for (string permuation : AllPermutaions) {
+      for (int i = 0; i < positions.size(); i++) {
+        int wordPosInPermutation = permuation.find(words[0]);
+        int left = positions[i] - wordPosInPermutation;
+        int right = positions[i] + words[0].size() - wordPosInPermutation - 1;
+        if (left >= 0 && right < s.size()) {
+          if (s.substr(left, permuationLen) == permuation) {
+            result.push_back(left);
+          }
+        } else {
+          continue;
+        }
       }
-      curIndex--;
-      if (curIndex < 1) {
-        break;
-      }
-
-      curDivisor = expVec[curIndex][1];
     }
-    int result = 0;
-    for (vector<int> vec : expVec) {
-      for (int i = 0; i < vec[2]; i++) {
-        result += vec[1];
-      }
-    }
-
     return result;
   }
 };
 
 int main() {
   Solution s;
-  cout << s.divide(10, 3) << endl;
+  vector<string> words = {"a"};
+  vector<int> result = s.findSubstring("a", words);
+  for (int i : result) {
+    cout << i << " ";
+  }
+  return 0;
 }
+
