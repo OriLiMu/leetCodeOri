@@ -9,9 +9,8 @@
 using namespace std;
 struct Node {
   char c;
-  bool isEnd;
   unordered_map<char, Node *> nextNodes;
-  Node(char c = '\0', unordered_map<char, Node *> nextNodes = {}, bool isEnd = false)
+  Node(char c = '\0', unordered_map<char, Node *> nextNodes = {})
       : c(c), nextNodes(nextNodes) {};
 };
 class Solution {
@@ -33,19 +32,16 @@ public:
       sort(str.begin(), str.end());
     }
     sort(words.begin(), words.end());
-    Node head = {'A', {}, false};
+    Node head = {'A', {}};
     Node *curNode = &head;
     int result = 0;
 
     for (auto &word : words) {
       for (int i = 0; i < word.size(); i++) {
         char c = word[i];
-        if (i == word.size() - 1) {
-          curNode->isEnd = true;
-        }
         if (curNode->c == c ||
             curNode->nextNodes.find(c) != curNode->nextNodes.end()) {
-          if (curNode->isEnd && i == word.size() - 1) {
+          if (curNode->nextNodes.empty() && i == word.size() - 1) {
             result++;
             curNode = &head;
             break;
@@ -56,12 +52,7 @@ public:
         } else {
           Node *tmp = new Node(c, {});
           curNode->nextNodes.insert({c, tmp});
-          if (i == word.size() - 1) {
-            curNode->isEnd = true;
-            curNode = &head;
-          } else {
-            curNode = curNode->nextNodes[c];
-          }
+          curNode = curNode->nextNodes[c];
         }
       }
     }

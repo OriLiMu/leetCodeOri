@@ -92,11 +92,27 @@ def create_leetcode_file(problem_number):
             
         with open(template_path, 'r') as source:
             content = source.read()
+        
+        content = """#include <algorithm>
+#include <climits>
+#include <cmath>
+#include <cstddef>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+""" + content + """
+int main() {
+  Solution s;
+  cout << "hello" << endl;
+}
+            """
             
         with open(new_filename, 'w') as target:
             target.write(content)
             
         print(f"成功创建文件: {new_filename}")
+        os.system('clang-format -i ' + new_filename)
         os.system('nvim ' + new_filename)
         
     except Exception as e:
