@@ -2,62 +2,70 @@
 #include <climits>
 #include <cmath>
 #include <iostream>
-#include <iterator>
 #include <unordered_map>
 #include <vector>
 
 using namespace std;
 struct Node {
   char c;
+  bool isEnd;
   unordered_map<char, Node *> nextNodes;
-  Node(char c = '\0', unordered_map<char, Node *> nextNodes = {})
+  Node(char c = '\0', unordered_map<char, Node *> nextNodes = {},
+       bool isEnd = false)
       : c(c), nextNodes(nextNodes) {};
 };
 class Solution {
 
 public:
   void deleteNode(Node *node) {
-    if (node->nextNodes.empty()) {
-      delete node;
-    } else {
-      for (auto it = node->nextNodes.begin(); it != node->nextNodes.end();
-           ++it) {
-        deleteNode(it->second);
-        node->nextNodes.erase(it->first);
-      }
+    for (auto it = node->nextNodes.begin(); it != node->nextNodes.end(); ++it) {
+      cout << "delete nextNodes " << it->first << endl;
+      deleteNode(it->second);
+      it->second = nullptr;
+      node->nextNodes.erase(it->first);
+      cout << "this turn done" << endl;
     }
+
+    delete node;
   }
   int similarPairs(vector<string> &words) {
     for (auto &str : words) {
       sort(str.begin(), str.end());
     }
     sort(words.begin(), words.end());
-    Node head = {'A', {}};
-    Node *curNode = &head;
+    Node *head = new Node('A', {}, false);
+    Node *curNode = head;
     int result = 0;
 
     for (auto &word : words) {
       for (int i = 0; i < word.size(); i++) {
+        if (i == word.size() - 1) {
+          curNode->isEnd = true;
+        }
         char c = word[i];
         if (curNode->c == c ||
             curNode->nextNodes.find(c) != curNode->nextNodes.end()) {
-          if (curNode->nextNodes.empty() && i == word.size() - 1) {
+          if (curNode->isEnd && i == word.size() - 1) {
             result++;
-            curNode = &head;
+            curNode = head;
             break;
           }
           if (curNode->c != c) {
             curNode = curNode->nextNodes[c];
           }
         } else {
-          Node *tmp = new Node(c, {});
+          Node *tmp = new Node(c, {}, false);
           curNode->nextNodes.insert({c, tmp});
           curNode = curNode->nextNodes[c];
+          if (i == word.size() - 1) {
+            curNode->isEnd = true;
+            curNode = head;
+          }
         }
       }
     }
 
-    deleteNode(&head);
+    deleteNode(head);
     return result;
   }
 };
