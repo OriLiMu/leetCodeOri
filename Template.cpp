@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int similarPairs(vector<string>& words) {
+    vector<string> generateParenthesis(int n) {
         
     }
 };
