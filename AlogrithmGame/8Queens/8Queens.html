@@ -14,44 +14,68 @@
         margin: 0;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: #333;
+        padding: 20px;
+        box-sizing: border-box;
       }
 
       .game-container {
-        text-align: center;
+        display: flex;
+        gap: 30px;
         background: white;
         padding: 30px;
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        max-width: 600px;
+        max-width: 95vw;
+        max-height: 95vh;
+        align-items: flex-start;
+      }
+
+      .main-game {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 0;
+      }
+
+      .sidebar {
+        width: 200px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        flex-shrink: 0;
       }
 
       h1 {
         color: #4a5568;
         margin-bottom: 20px;
-        font-size: 2.5em;
+        font-size: 2em;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
       }
 
       .board {
         display: grid;
-        grid-template-columns: repeat(8, 60px);
-        grid-template-rows: repeat(8, 60px);
+        grid-template-columns: repeat(8, 50px);
+        grid-template-rows: repeat(8, 50px);
         gap: 2px;
         margin: 20px auto;
         border: 3px solid #4a5568;
         border-radius: 8px;
         padding: 10px;
         background: #2d3748;
+        max-width: calc(100vw - 300px);
+        max-height: calc(100vh - 200px);
       }
 
       .square {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        font-size: 40px;
+        font-size: 32px;
         border-radius: 4px;
         transition: all 0.3s ease;
         position: relative;
@@ -110,30 +134,76 @@
         }
       }
 
+      .stats {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+        background-color: #f7fafc;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+      }
+
+      .stat-item {
+        text-align: center;
+        padding: 10px;
+        background: white;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-number {
+        font-size: 28px;
+        font-weight: bold;
+        color: #667eea;
+        display: block;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: #718096;
+        text-transform: uppercase;
+        margin-top: 5px;
+      }
+
       .controls {
-        margin-top: 30px;
+        margin-top: 20px;
         display: flex;
         flex-direction: column;
         gap: 15px;
         align-items: center;
+        width: 100%;
       }
 
       .control-row {
         display: flex;
+        flex-direction: column;
         gap: 10px;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
+        align-items: stretch;
+        width: 100%;
       }
 
       .board-size-control {
         display: flex;
+        flex-direction: column;
         align-items: center;
         gap: 10px;
         background: #f7fafc;
-        padding: 10px 15px;
+        padding: 15px;
         border-radius: 8px;
         border: 2px solid #e2e8f0;
+        width: 100%;
+      }
+
+      .size-input-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .size-input-row button {
+        width: auto;
+        flex-shrink: 0;
       }
 
       .board-size-control label {
@@ -144,7 +214,7 @@
 
       .board-size-control input {
         width: 60px;
-        padding: 5px 8px;
+        padding: 8px;
         border: 2px solid #cbd5e0;
         border-radius: 4px;
         text-align: center;
@@ -159,15 +229,17 @@
       }
 
       button {
-        padding: 12px 24px;
-        font-size: 16px;
+        padding: 10px 16px;
+        font-size: 14px;
         cursor: pointer;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 25px;
+        border-radius: 20px;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+        width: 100%;
       }
 
       button:hover {
@@ -181,12 +253,15 @@
 
       #message {
         margin-top: 20px;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: bold;
-        min-height: 27px;
-        padding: 10px;
+        min-height: 24px;
+        padding: 15px;
         border-radius: 8px;
         transition: all 0.3s ease;
+        text-align: center;
+        max-width: 100%;
+        word-wrap: break-word;
       }
 
       .success {
@@ -213,38 +288,83 @@
         background-color: #f7fafc;
         border-radius: 8px;
         text-align: left;
-        font-size: 14px;
-        line-height: 1.6;
+        font-size: 13px;
+        line-height: 1.5;
+        border: 2px solid #e2e8f0;
       }
 
       .rules h3 {
         margin-top: 0;
         color: #4a5568;
+        font-size: 16px;
       }
 
-      .stats {
-        display: flex;
-        justify-content: space-around;
-        margin: 20px 0;
-        padding: 15px;
-        background-color: #f7fafc;
-        border-radius: 8px;
+      .rules ul {
+        margin: 10px 0;
+        padding-left: 20px;
       }
 
-      .stat-item {
-        text-align: center;
+      .rules li {
+        margin-bottom: 5px;
       }
 
-      .stat-number {
-        font-size: 24px;
-        font-weight: bold;
-        color: #667eea;
+      /* 响应式设计 */
+      @media (max-width: 1024px) {
+        .game-container {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .sidebar {
+          width: 100%;
+          max-width: 500px;
+        }
+
+        .stats {
+          flex-direction: row;
+          justify-content: space-around;
+        }
+
+        .stat-item {
+          flex: 1;
+          margin: 0 5px;
+        }
+
+        .control-row {
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .control-row button {
+          flex: 1;
+          min-width: 120px;
+        }
       }
 
-      .stat-label {
-        font-size: 12px;
-        color: #718096;
-        text-transform: uppercase;
+      @media (max-width: 768px) {
+        .board {
+          grid-template-columns: repeat(8, 40px);
+          grid-template-rows: repeat(8, 40px);
+        }
+
+        .square {
+          width: 40px;
+          height: 40px;
+          font-size: 28px;
+        }
+
+        .game-container {
+          padding: 20px;
+        }
+
+        .control-row {
+          flex-direction: column;
+        }
+
+        .control-row button {
+          width: 100%;
+        }
       }
 
       /* 高亮样式 */
@@ -280,52 +400,56 @@
   </head>
   <body>
     <div class="game-container">
-      <h1>8皇后游戏</h1>
-
-      <div class="stats">
-        <div class="stat-item">
-          <div class="stat-number" id="queens-count">0</div>
-          <div class="stat-label">已放置皇后</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number" id="conflicts-count">0</div>
-          <div class="stat-label">冲突数量</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number" id="moves-count">0</div>
-          <div class="stat-label">移动次数</div>
+      <div class="main-game">
+        <h1>8皇后游戏</h1>
+        <div class="board" id="chessboard"></div>
+        <div id="message" class="info">
+          点击棋盘放置皇后。目标：放置8个皇后且互不攻击！
         </div>
       </div>
 
-      <div class="board" id="chessboard"></div>
-
-      <div class="controls">
-        <div class="board-size-control">
-          <label for="board-size">棋盘大小:</label>
-          <input type="number" id="board-size" min="1" max="8" value="8" />
-          <button id="apply-size-btn">应用</button>
+      <div class="sidebar">
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-number" id="queens-count">0</div>
+            <div class="stat-label">已放置皇后</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="conflicts-count">0</div>
+            <div class="stat-label">冲突数量</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="moves-count">0</div>
+            <div class="stat-label">移动次数</div>
+          </div>
         </div>
 
-        <div class="control-row">
-          <button id="reset-btn">重置棋盘</button>
-          <button id="hint-btn">提示</button>
-          <button id="solve-btn">自动求解</button>
+        <div class="controls">
+          <div class="board-size-control">
+            <label for="board-size">棋盘大小:</label>
+            <div class="size-input-row">
+              <input type="number" id="board-size" min="1" max="8" value="8" />
+              <button id="apply-size-btn">应用</button>
+            </div>
+          </div>
+
+          <div class="control-row">
+            <button id="reset-btn">重置棋盘</button>
+            <button id="hint-btn">提示</button>
+            <button id="solve-btn">自动求解</button>
+          </div>
         </div>
-      </div>
 
-      <div id="message" class="info">
-        点击棋盘放置皇后。目标：放置8个皇后且互不攻击！
-      </div>
-
-      <div class="rules">
-        <h3>游戏规则：</h3>
-        <ul>
-          <li>在8×8棋盘上放置8个皇后</li>
-          <li>任意两个皇后不能在同一行、同一列或同一对角线上</li>
-          <li>点击空格放置皇后，点击皇后移除它</li>
-          <li>红色背景表示皇后之间存在冲突</li>
-          <li>成功放置8个皇后且无冲突即获胜！</li>
-        </ul>
+        <div class="rules">
+          <h3>游戏规则：</h3>
+          <ul>
+            <li>在8×8棋盘上放置8个皇后</li>
+            <li>任意两个皇后不能在同一行、同一列或同一对角线上</li>
+            <li>点击空格放置皇后，点击皇后移除它</li>
+            <li>红色背景表示皇后之间存在冲突</li>
+            <li>成功放置8个皇后且无冲突即获胜！</li>
+          </ul>
+        </div>
       </div>
     </div>
 
@@ -357,8 +481,8 @@
             boardSize = newSize;
 
             // 更新CSS网格
-            board.style.gridTemplateColumns = `repeat(${boardSize}, 60px)`;
-            board.style.gridTemplateRows = `repeat(${boardSize}, 60px)`;
+            board.style.gridTemplateColumns = `repeat(${boardSize}, 50px)`;
+            board.style.gridTemplateRows = `repeat(${boardSize}, 50px)`;
 
             // 重新初始化棋盘
             initBoard();
