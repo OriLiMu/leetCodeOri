@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>8皇后游戏</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #333;
+      }
+
+      .game-container {
+        text-align: center;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+      }
+
+      h1 {
+        color: #4a5568;
+        margin-bottom: 20px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .board {
+        display: grid;
+        grid-template-columns: repeat(8, 60px);
+        grid-template-rows: repeat(8, 60px);
+        gap: 2px;
+        margin: 20px auto;
+        border: 3px solid #4a5568;
+        border-radius: 8px;
+        padding: 10px;
+        background: #2d3748;
+      }
+
+      .square {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        font-size: 40px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .square:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .light {
+        background-color: #f7fafc;
+      }
+
+      .dark {
+        background-color: #e2e8f0;
+      }
+
+      .queen {
+        color: #2d3748;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: placeQueen 0.3s ease-out;
+        background-color: rgb(173, 216, 230) !important;
+        border-radius: 8px;
+      }
+
+      @keyframes placeQueen {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .conflict {
+        background-color: #fed7d7 !important;
+        animation: shake 0.5s ease-in-out;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+
+      .controls {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .control-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .board-size-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f7fafc;
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+      }
+
+      .board-size-control label {
+        font-weight: bold;
+        color: #4a5568;
+        font-size: 14px;
+      }
+
+      .board-size-control input {
+        width: 60px;
+        padding: 5px 8px;
+        border: 2px solid #cbd5e0;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .board-size-control input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      button {
+        padding: 12px 24px;
+        font-size: 16px;
+        cursor: pointer;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      #message {
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: bold;
+        min-height: 27px;
+        padding: 10px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .success {
+        background-color: #c6f6d5;
+        color: #22543d;
+        border: 2px solid #38a169;
+      }
+
+      .error {
+        background-color: #fed7d7;
+        color: #742a2a;
+        border: 2px solid #e53e3e;
+      }
+
+      .info {
+        background-color: #bee3f8;
+        color: #2a4365;
+        border: 2px solid #3182ce;
+      }
+
+      .rules {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f7fafc;
+        border-radius: 8px;
+        text-align: left;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .rules h3 {
+        margin-top: 0;
+        color: #4a5568;
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #f7fafc;
+        border-radius: 8px;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: #718096;
+        text-transform: uppercase;
+      }
+
+      /* 高亮样式 */
+      .highlight-row {
+        background-color: rgb(245, 231, 138) !important;
+        box-shadow: inset 0 0 0 1px rgba(255, 193, 7, 0.8);
+      }
+
+      .highlight-col {
+        background-color: rgb(245, 231, 138) !important;
+        box-shadow: inset 0 0 0 1px rgba(255, 193, 7, 0.8);
+      }
+
+      .highlight-diagonal {
+        background-color: rgb(245, 231, 138) !important;
+        box-shadow: inset 0 0 0 1px rgba(255, 193, 7, 0.8);
+      }
+
+      .highlight-intersection {
+        background-color: rgba(54, 248, 255, 0.7) !important;
+        box-shadow: inset 0 0 0 1px rgba(255, 65, 54, 0.8);
+        transform: scale(1.02);
+      }
+
+      .square.highlight-row,
+      .square.highlight-col,
+      .square.highlight-diagonal,
+      .square.highlight-intersection {
+        z-index: 10;
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-container">
+      <h1>8皇后游戏</h1>
+
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-number" id="queens-count">0</div>
+          <div class="stat-label">已放置皇后</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="conflicts-count">0</div>
+          <div class="stat-label">冲突数量</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="moves-count">0</div>
+          <div class="stat-label">移动次数</div>
+        </div>
+      </div>
+
+      <div class="board" id="chessboard"></div>
+
+      <div class="controls">
+        <div class="board-size-control">
+          <label for="board-size">棋盘大小:</label>
+          <input type="number" id="board-size" min="1" max="8" value="8" />
+          <button id="apply-size-btn">应用</button>
+        </div>
+
+        <div class="control-row">
+          <button id="reset-btn">重置棋盘</button>
+          <button id="hint-btn">提示</button>
+          <button id="solve-btn">自动求解</button>
+        </div>
+      </div>
+
+      <div id="message" class="info">
+        点击棋盘放置皇后。目标：放置8个皇后且互不攻击！
+      </div>
+
+      <div class="rules">
+        <h3>游戏规则：</h3>
+        <ul>
+          <li>在8×8棋盘上放置8个皇后</li>
+          <li>任意两个皇后不能在同一行、同一列或同一对角线上</li>
+          <li>点击空格放置皇后，点击皇后移除它</li>
+          <li>红色背景表示皇后之间存在冲突</li>
+          <li>成功放置8个皇后且无冲突即获胜！</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const board = document.getElementById("chessboard");
+        const resetBtn = document.getElementById("reset-btn");
+        const hintBtn = document.getElementById("hint-btn");
+        const solveBtn = document.getElementById("solve-btn");
+        const applySizeBtn = document.getElementById("apply-size-btn");
+        const boardSizeInput = document.getElementById("board-size");
+        const messageEl = document.getElementById("message");
+        const queensCountEl = document.getElementById("queens-count");
+        const conflictsCountEl = document.getElementById("conflicts-count");
+        const movesCountEl = document.getElementById("moves-count");
+
+        let boardSize = 8;
+        let queens = [];
+        let boardState = Array(boardSize)
+          .fill()
+          .map(() => Array(boardSize).fill(0));
+        let moveCount = 0;
+        let isAnimating = false;
+
+        // 更新棋盘大小
+        function updateBoardSize() {
+          const newSize = parseInt(boardSizeInput.value);
+          if (newSize >= 1 && newSize <= 8) {
+            boardSize = newSize;
+
+            // 更新CSS网格
+            board.style.gridTemplateColumns = `repeat(${boardSize}, 60px)`;
+            board.style.gridTemplateRows = `repeat(${boardSize}, 60px)`;
+
+            // 重新初始化棋盘
+            initBoard();
+
+            // 更新游戏规则文本
+            updateRulesText();
+          } else {
+            setMessage("棋盘大小必须在1-8之间！", "error");
+            boardSizeInput.value = boardSize;
+          }
+        }
+
+        // 更新规则文本
+        function updateRulesText() {
+          const rulesText = document.querySelector(".rules ul");
+          rulesText.innerHTML = `
+            <li>在${boardSize}×${boardSize}棋盘上放置${boardSize}个皇后</li>
+            <li>任意两个皇后不能在同一行、同一列或同一对角线上</li>
+            <li>点击空格放置皇后，点击皇后移除它</li>
+            <li>红色背景表示皇后之间存在冲突</li>
+            <li>成功放置${boardSize}个皇后且无冲突即获胜！</li>
+          `;
+        }
+
+        // 初始化棋盘
+        function initBoard() {
+          board.innerHTML = "";
+          queens = [];
+          boardState = Array(boardSize)
+            .fill()
+            .map(() => Array(boardSize).fill(0));
+          moveCount = 0;
+          isAnimating = false;
+          updateStats();
+          setMessage(
+            `点击棋盘放置皇后。目标：放置${boardSize}个皇后且互不攻击！`,
+            "info"
+          );
+
+          for (let row = 0; row < boardSize; row++) {
+            for (let col = 0; col < boardSize; col++) {
+              const square = document.createElement("div");
+              square.className = `square ${
+                (row + col) % 2 === 0 ? "light" : "dark"
+              }`;
+              square.dataset.row = row;
+              square.dataset.col = col;
+              square.addEventListener("click", () =>
+                handleSquareClick(row, col)
+              );
+              board.appendChild(square);
+            }
+          }
+        }
+
+        // 处理方格点击
+        function handleSquareClick(row, col) {
+          if (isAnimating) return;
+
+          // 如果点击的是空方格
+          if (!boardState[row][col]) {
+            // 检查位置是否安全
+            if (isSafe(row, col)) {
+              // 安全位置：显示高亮并放置皇后
+              highlightAttackLines(row, col);
+
+              // 延迟执行放置皇后，让用户看到高亮效果
+              setTimeout(() => {
+                toggleQueen(row, col);
+                // 成功放置后保持高亮
+                maintainHighlightForQueen(row, col);
+              }, 300);
+            } else {
+              // 不安全位置：只显示临时高亮，不放置皇后
+              highlightAttackLines(row, col);
+              setMessage("此位置不安全！皇后会被攻击", "error");
+
+              // 2秒后清除高亮和错误消息
+              setTimeout(() => {
+                clearTemporaryHighlights();
+                updateGameMessage();
+              }, 2000);
+            }
+          } else {
+            // 如果点击的是皇后，移除它和相关高亮
+            removeQueenAndHighlight(row, col);
+          }
+        }
+
+        // 为成功放置的皇后维持高亮
+        function maintainHighlightForQueen(targetRow, targetCol) {
+          for (let row = 0; row < boardSize; row++) {
+            for (let col = 0; col < boardSize; col++) {
+              const square = document.querySelector(
+                `[data-row="${row}"][data-col="${col}"]`
+              );
+
+              // 为这个皇后的攻击线添加永久高亮
+              if (row === targetRow && col !== targetCol) {
+                square.classList.add("highlight-row");
+              }
+
+              if (col === targetCol && row !== targetRow) {
+                square.classList.add("highlight-col");
+              }
+
+              if (
+                Math.abs(row - targetRow) === Math.abs(col - targetCol) &&
+                !(row === targetRow && col === targetCol)
+              ) {
+                square.classList.add("highlight-diagonal");
+              }
+
+              if (row === targetRow && col === targetCol) {
+                square.classList.add("highlight-intersection");
+              }
+            }
+          }
+        }
+
+        // 移除皇后和相关高亮
+        function removeQueenAndHighlight(row, col) {
+          // 移除皇后
+          boardState[row][col] = 0;
+          queens = queens.filter((q) => !(q.row === row && q.col === col));
+          moveCount++;
+
+          // 重新计算所有高亮
+          clearHighlights();
+
+          // 为剩余的皇后重新添加高亮
+          queens.forEach((queen) => {
+            maintainHighlightForQueen(queen.row, queen.col);
+          });
+
+          updateBoard();
+          updateStats();
+          checkWin();
+        }
+
+        // 高亮攻击线（临时显示）
+        function highlightAttackLines(targetRow, targetCol) {
+          // 不清除现有的永久高亮，只添加临时高亮
+          for (let row = 0; row < boardSize; row++) {
+            for (let col = 0; col < boardSize; col++) {
+              const square = document.querySelector(
+                `[data-row="${row}"][data-col="${col}"]`
+              );
+
+              // 高亮同一行
+              if (row === targetRow && col !== targetCol) {
+                square.classList.add("highlight-row");
+              }
+
+              // 高亮同一列
+              if (col === targetCol && row !== targetRow) {
+                square.classList.add("highlight-col");
+              }
+
+              // 高亮对角线
+              if (
+                Math.abs(row - targetRow) === Math.abs(col - targetCol) &&
+                !(row === targetRow && col === targetCol)
+              ) {
+                square.classList.add("highlight-diagonal");
+              }
+
+              // 高亮交叉点（目标方格）
+              if (row === targetRow && col === targetCol) {
+                square.classList.add("highlight-intersection");
+              }
+            }
+          }
+        }
+
+        // 清除临时高亮（保留永久高亮）
+        function clearTemporaryHighlights() {
+          // 清除所有高亮
+          clearHighlights();
+
+          // 重新为现有皇后添加永久高亮
+          queens.forEach((queen) => {
+            maintainHighlightForQueen(queen.row, queen.col);
+          });
+        }
+
+        // 清除所有高亮
+        function clearHighlights() {
+          document.querySelectorAll(".square").forEach((square) => {
+            square.classList.remove(
+              "highlight-row",
+              "highlight-col",
+              "highlight-diagonal",
+              "highlight-intersection"
+            );
+          });
+        }
+
+        // 更新游戏消息
+        function updateGameMessage() {
+          if (queens.length === 0) {
+            setMessage(
+              `点击棋盘放置皇后。目标：放置${boardSize}个皇后且互不攻击！`,
+              "info"
+            );
+          } else {
+            const conflictCount = document.querySelectorAll(".conflict").length;
+            if (conflictCount > 0) {
+              setMessage(
+                `已放置 ${queens.length}/${boardSize} 个皇后，${conflictCount} 个冲突`,
+                "error"
+              );
+            } else {
+              setMessage(
+                `已放置 ${queens.length}/${boardSize} 个皇后，继续加油！`,
+                "info"
+              );
+            }
+          }
+        }
+
+        // 切换皇后放置（仅用于成功放置）
+        function toggleQueen(row, col) {
+          if (isAnimating) return;
+
+          // 只处理添加皇后的情况（移除由removeQueenAndHighlight处理）
+          if (!boardState[row][col]) {
+            boardState[row][col] = 1;
+            queens.push({ row, col });
+          }
+
+          updateBoard();
+          updateStats();
+          checkWin();
+        }
+
+        // 更新棋盘视觉效果
+        function updateBoard() {
+          // 重置所有方格（保留高亮）
+          document.querySelectorAll(".square").forEach((square) => {
+            square.classList.remove("queen", "conflict");
+            square.textContent = "";
+          });
+
+          // 检查冲突
+          const conflicts = new Set();
+          for (let i = 0; i < queens.length; i++) {
+            for (let j = i + 1; j < queens.length; j++) {
+              const q1 = queens[i];
+              const q2 = queens[j];
+
+              if (
+                q1.row === q2.row ||
+                q1.col === q2.col ||
+                Math.abs(q1.row - q2.row) === Math.abs(q1.col - q2.col)
+              ) {
+                conflicts.add(`${q1.row},${q1.col}`);
+                conflicts.add(`${q2.row},${q2.col}`);
+              }
+            }
+          }
+
+          // 更新皇后和冲突
+          queens.forEach((queen) => {
+            const square = document.querySelector(
+              `[data-row="${queen.row}"][data-col="${queen.col}"]`
+            );
+            square.classList.add("queen");
+            square.textContent = "♕";
+
+            if (conflicts.has(`${queen.row},${queen.col}`)) {
+              square.classList.add("conflict");
+            }
+          });
+        }
+
+        // 更新统计信息
+        function updateStats() {
+          queensCountEl.textContent = queens.length;
+          movesCountEl.textContent = moveCount;
+
+          // 计算冲突数量
+          let conflictCount = 0;
+          const conflicts = new Set();
+          for (let i = 0; i < queens.length; i++) {
+            for (let j = i + 1; j < queens.length; j++) {
+              const q1 = queens[i];
+              const q2 = queens[j];
+
+              if (
+                q1.row === q2.row ||
+                q1.col === q2.col ||
+                Math.abs(q1.row - q2.row) === Math.abs(q1.col - q2.col)
+              ) {
+                conflicts.add(`${q1.row},${q1.col}`);
+                conflicts.add(`${q2.row},${q2.col}`);
+              }
+            }
+          }
+          conflictsCountEl.textContent = conflicts.size;
+        }
+
+        // 设置消息
+        function setMessage(text, type) {
+          messageEl.textContent = text;
+          messageEl.className = type;
+        }
+
+        // 检查获胜条件
+        function checkWin() {
+          if (queens.length === boardSize) {
+            const hasConflicts = queens.some((queen) => {
+              return document
+                .querySelector(
+                  `[data-row="${queen.row}"][data-col="${queen.col}"]`
+                )
+                .classList.contains("conflict");
+            });
+
+            if (!hasConflicts) {
+              setMessage(
+                `🎉 恭喜！您成功解决了${boardSize}皇后问题！用了 ${moveCount} 步`,
+                "success"
+              );
+              celebrateWin();
+            } else {
+              setMessage("皇后之间存在攻击！请调整位置", "error");
+            }
+          } else if (queens.length > 0) {
+            const conflictCount = document.querySelectorAll(".conflict").length;
+            if (conflictCount > 0) {
+              setMessage(
+                `已放置 ${queens.length}/${boardSize} 个皇后，${conflictCount} 个冲突`,
+                "error"
+              );
+            } else {
+              setMessage(
+                `已放置 ${queens.length}/${boardSize} 个皇后，继续加油！`,
+                "info"
+              );
+            }
+          } else {
+            setMessage(
+              `点击棋盘放置皇后。目标：放置${boardSize}个皇后且互不攻击！`,
+              "info"
+            );
+          }
+        }
+
+        // 庆祝获胜
+        function celebrateWin() {
+          const squares = document.querySelectorAll(".queen");
+          squares.forEach((square, index) => {
+            setTimeout(() => {
+              square.style.animation = "placeQueen 0.5s ease-out";
+            }, index * 100);
+          });
+        }
+
+        // 提示功能
+        function showHint() {
+          if (queens.length === 0) {
+            setMessage("提示：可以从第一行的任意位置开始放置皇后", "info");
+            return;
+          }
+
+          // 找到一个安全的位置
+          for (let row = 0; row < boardSize; row++) {
+            for (let col = 0; col < boardSize; col++) {
+              if (!boardState[row][col] && isSafe(row, col)) {
+                const square = document.querySelector(
+                  `[data-row="${row}"][data-col="${col}"]`
+                );
+                square.style.background = "#90cdf4";
+                setTimeout(() => {
+                  square.classList.remove("light", "dark");
+                  square.classList.add(
+                    (row + col) % 2 === 0 ? "light" : "dark"
+                  );
+                }, 2000);
+                setMessage(
+                  `提示：尝试在第 ${row + 1} 行第 ${col + 1} 列放置皇后`,
+                  "info"
+                );
+                return;
+              }
+            }
+          }
+          setMessage("当前没有安全的位置，尝试移动现有的皇后", "info");
+        }
+
+        // 检查位置是否安全
+        function isSafe(row, col) {
+          for (let queen of queens) {
+            if (
+              queen.row === row ||
+              queen.col === col ||
+              Math.abs(queen.row - row) === Math.abs(queen.col - col)
+            ) {
+              return false;
+            }
+          }
+          return true;
+        }
+
+        // 自动求解（回溯算法）
+        async function autoSolve() {
+          if (isAnimating) return;
+
+          isAnimating = true;
+          solveBtn.disabled = true;
+          setMessage("正在自动求解...", "info");
+
+          // 清空棋盘和高亮
+          clearHighlights();
+          queens = [];
+          boardState = Array(boardSize)
+            .fill()
+            .map(() => Array(boardSize).fill(0));
+          updateBoard();
+          updateStats();
+
+          const solution = [];
+          if (await solveNQueens(0, solution)) {
+            // 逐步显示解决方案
+            for (let i = 0; i < solution.length; i++) {
+              await new Promise((resolve) => setTimeout(resolve, 500));
+              const row = i;
+              const col = solution[i];
+              boardState[row][col] = 1;
+              queens.push({ row, col });
+              updateBoard();
+              updateStats();
+              // 为每个放置的皇后添加永久高亮
+              maintainHighlightForQueen(row, col);
+            }
+            setMessage("自动求解完成！这是其中一种解法", "success");
+          } else {
+            setMessage("求解失败", "error");
+          }
+
+          isAnimating = false;
+          solveBtn.disabled = false;
+        }
+
+        // N皇后回溯算法
+        async function solveNQueens(row, solution) {
+          if (row === boardSize) {
+            return true;
+          }
+
+          for (let col = 0; col < boardSize; col++) {
+            if (isSafeForSolve(row, col, solution)) {
+              solution[row] = col;
+              if (await solveNQueens(row + 1, solution)) {
+                return true;
+              }
+            }
+          }
+          return false;
+        }
+
+        // 检查求解时的安全性
+        function isSafeForSolve(row, col, solution) {
+          for (let i = 0; i < row; i++) {
+            if (
+              solution[i] === col ||
+              Math.abs(solution[i] - col) === Math.abs(i - row)
+            ) {
+              return false;
+            }
+          }
+          return true;
+        }
+
+        // 事件监听器
+        resetBtn.addEventListener("click", initBoard);
+        hintBtn.addEventListener("click", showHint);
+        solveBtn.addEventListener("click", autoSolve);
+        applySizeBtn.addEventListener("click", updateBoardSize);
+
+        // 初始化游戏
+        initBoard();
+      });
+    </script>
+  </body>
+</html>
