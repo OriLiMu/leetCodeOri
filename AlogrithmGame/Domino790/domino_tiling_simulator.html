@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Domino Tiling Simulator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      #container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #board {
+        position: relative;
+        width: 800px;
+        height: 200px;
+        background-color: #fff;
+        border: 2px solid #333;
+        margin-bottom: 20px;
+        background-image: linear-gradient(#ddd 1px, transparent 1px),
+          linear-gradient(90deg, #ddd 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+
+      .tile {
+        position: absolute;
+        background-color: #6ab7ff;
+        border: 1px solid #1e88e5;
+        cursor: move;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-weight: bold;
+        user-select: none;
+      }
+
+      .tile div {
+        border: 1px solid #1e88e5;
+        background-color: #6ab7ff;
+      }
+
+      .tile[data-type="tromino"] {
+        background-color: transparent;
+        border: none;
+      }
+
+      .tile[data-type="tromino"] div {
+        border: none;
+        background-color: lightgreen;
+      }
+
+      .tile[data-type="tromino"]:hover div {
+        background-color: #81c784;
+      }
+
+      .tile[data-type="tromino"].dragging div {
+        background-color: #ffab91;
+        border: none;
+      }
+
+      .tile[data-type="domino"]:hover {
+        background-color: #42a5f5;
+      }
+
+      .tile[data-type="domino"].dragging {
+        background-color: #ff7043;
+        z-index: 100;
+        opacity: 0.8;
+      }
+
+      .tile[data-type="tromino"].dragging {
+        background-color: transparent;
+        z-index: 100;
+        opacity: 0.8;
+      }
+
+      #controls {
+        margin-bottom: 20px;
+      }
+
+      button {
+        padding: 8px 16px;
+        margin: 0 5px;
+        background-color: #1e88e5;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #1565c0;
+      }
+
+      #screenshots {
+        margin-top: 30px;
+        max-width: 800px;
+      }
+
+      #screenshots h3 {
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      #screenshotContainer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: flex-start;
+      }
+
+      .screenshot-item {
+        position: relative;
+        background-color: #fff;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        padding: 5px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+      }
+
+      .screenshot-board {
+        position: relative;
+        background-color: #fff;
+        /* Dynamic size will be set by JavaScript */
+      }
+
+      .screenshot-tile {
+        position: absolute;
+        border-radius: 3px;
+        cursor: default;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-weight: bold;
+        user-select: none;
+      }
+
+      .screenshot-tile[data-type="domino"] {
+        background-color: #6ab7ff;
+        border: 1px solid #1e88e5;
+      }
+
+      .screenshot-tile[data-type="tromino"] {
+        background-color: transparent;
+        border: none;
+      }
+
+      .screenshot-tile[data-type="tromino"] div {
+        border: none;
+        background-color: lightgreen;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <h1>Domino Tiling Simulator (LeetCode 790)</h1>
+
+      <div id="controls">
+        <button id="addDomino">Add Domino</button>
+        <button id="addTromino">Add Tromino</button>
+        <button id="clear">Clear Board</button>
+        <button id="screenshot">Screenshot</button>
+      </div>
+
+      <div id="board"></div>
+
+      <div id="screenshots">
+        <h3>Screenshots:</h3>
+        <div id="screenshotContainer">
+          <!-- Screenshots will be added here -->
+        </div>
+      </div>
+    </div>
+
+
+
+</script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const board = document.getElementById("board");
+        const addDominoBtn = document.getElementById("addDomino");
+        const addTrominoBtn = document.getElementById("addTromino");
+        const clearBtn = document.getElementById("clear");
+        const screenshotBtn = document.getElementById("screenshot");
+
+        const GRID_SIZE = 40;
+        const BOARD_COLS = 20;
+        const BOARD_ROWS = 2;
+
+        let tiles = [];
+        let draggedTile = null;
+        let offsetX = 0,
+          offsetY = 0;
+        let screenshotCount = 0;
+
+        // Initialize board
+        function initBoard() {
+          board.style.width = `${BOARD_COLS * GRID_SIZE}px`;
+          board.style.height = `${BOARD_ROWS * GRID_SIZE}px`;
+        }
+
+        // Add a new tile
+        function addTile(x, y, w, h, type = "domino") {
+          const tile = document.createElement("div");
+          tile.className = "tile";
+          tile.dataset.x = x;
+          tile.dataset.y = y;
+          tile.dataset.w = w;
+          tile.dataset.h = h;
+          tile.dataset.type = type;
+
+          if (type === "tromino") {
+            // Create L-shaped tromino
+            tile.style.width = `${2 * GRID_SIZE - 2}px`;
+            tile.style.height = `${2 * GRID_SIZE - 2}px`;
+            tile.style.left = `${x * GRID_SIZE + 1}px`;
+            tile.style.top = `${y * GRID_SIZE + 1}px`;
+            tile.innerHTML = `
+              <div style="position: absolute; width: ${
+                GRID_SIZE - 1
+              }px; height: ${
+              GRID_SIZE - 1
+            }px; left: 0; top: 0; pointer-events: none;"></div>
+              <div style="position: absolute; width: ${
+                GRID_SIZE - 1
+              }px; height: ${GRID_SIZE - 1}px; left: ${
+              GRID_SIZE - 1
+            }px; top: 0; pointer-events: none;"></div>
+              <div style="position: absolute; width: ${
+                GRID_SIZE - 1
+              }px; height: ${GRID_SIZE - 1}px; left: 0; top: ${
+              GRID_SIZE - 1
+            }px; pointer-events: none;"></div>
+            `;
+            tile.dataset.orientation = "0";
+          } else {
+            // Regular domino
+            tile.style.width = `${w * GRID_SIZE - 2}px`;
+            tile.style.height = `${h * GRID_SIZE - 2}px`;
+            tile.style.left = `${x * GRID_SIZE + 1}px`;
+            tile.style.top = `${y * GRID_SIZE + 1}px`;
+            tile.textContent = "";
+          }
+
+          tile.addEventListener("mousedown", startDrag);
+          tile.addEventListener("contextmenu", handleRightClick);
+
+          board.appendChild(tile);
+          tiles.push(tile);
+          return tile;
+        }
+
+        // Handle right click to rotate
+        function handleRightClick(e) {
+          e.preventDefault(); // Prevent context menu
+
+          let tile = e.target;
+          // If clicked on a child element, get the parent tile
+          if (!tile.classList.contains("tile")) {
+            tile = tile.closest(".tile");
+          }
+          if (!tile) return;
+
+          rotateTileStatic(tile);
+        }
+
+        // Start dragging a tile
+        function startDrag(e) {
+          e.preventDefault();
+
+          const tile = e.target;
+          draggedTile = tile;
+
+          // Calculate offset
+          const rect = tile.getBoundingClientRect();
+          offsetX = e.clientX - rect.left;
+          offsetY = e.clientY - rect.top;
+
+          tile.classList.add("dragging");
+
+          document.addEventListener("mousemove", dragTile);
+          document.addEventListener("mouseup", stopDrag);
+        }
+
+        // Drag tile
+        function dragTile(e) {
+          if (!draggedTile) return;
+
+          // Calculate new position
+          let x = e.clientX - offsetX - board.getBoundingClientRect().left;
+          let y = e.clientY - offsetY - board.getBoundingClientRect().top;
+
+          // Snap to grid while dragging
+          const gridX = Math.round(x / GRID_SIZE) * GRID_SIZE;
+          const gridY = Math.round(y / GRID_SIZE) * GRID_SIZE;
+
+          // Auto-align with existing tiles
+          for (const otherTile of tiles) {
+            if (otherTile === draggedTile) continue;
+
+            const otherX = parseInt(otherTile.dataset.x) * GRID_SIZE;
+            const otherY = parseInt(otherTile.dataset.y) * GRID_SIZE;
+            const otherW = parseInt(otherTile.dataset.w) * GRID_SIZE;
+            const otherH = parseInt(otherTile.dataset.h) * GRID_SIZE;
+
+            // Check right alignment
+            if (Math.abs(gridX - (otherX + otherW)) < 15) {
+              x = otherX + otherW;
+            }
+            // Check left alignment
+            else if (
+              Math.abs(
+                gridX + parseInt(draggedTile.dataset.w) * GRID_SIZE - otherX
+              ) < 15
+            ) {
+              x = otherX - parseInt(draggedTile.dataset.w) * GRID_SIZE;
+            }
+
+            // Check bottom alignment
+            if (Math.abs(gridY - (otherY + otherH)) < 15) {
+              y = otherY + otherH;
+            }
+            // Check top alignment
+            else if (
+              Math.abs(
+                gridY + parseInt(draggedTile.dataset.h) * GRID_SIZE - otherY
+              ) < 15
+            ) {
+              y = otherY - parseInt(draggedTile.dataset.h) * GRID_SIZE;
+            }
+          }
+
+          // Apply position
+          draggedTile.style.left = `${x}px`;
+          draggedTile.style.top = `${y}px`;
+        }
+
+        // Stop dragging and snap to grid
+        function stopDrag() {
+          if (!draggedTile) return;
+
+          // Calculate grid position
+          const x = Math.round(parseInt(draggedTile.style.left) / GRID_SIZE);
+          const y = Math.round(parseInt(draggedTile.style.top) / GRID_SIZE);
+
+          // Update position data
+          draggedTile.dataset.x = x;
+          draggedTile.dataset.y = y;
+
+          // Snap to grid
+          draggedTile.style.left = `${x * GRID_SIZE + 1}px`;
+          draggedTile.style.top = `${y * GRID_SIZE + 1}px`;
+
+          draggedTile.classList.remove("dragging");
+          draggedTile = null;
+
+          document.removeEventListener("mousemove", dragTile);
+          document.removeEventListener("mouseup", stopDrag);
+        }
+
+        // Rotate tile with boundary checking
+        function rotateTileStatic(tile) {
+          const type = tile.dataset.type;
+
+          if (type === "tromino") {
+            // Rotate L-shaped tromino (4 orientations)
+            let orientation = parseInt(tile.dataset.orientation || "0");
+            const newOrientation = (orientation + 1) % 4;
+
+            // Check if rotation would keep tromino in bounds
+            const currentX = parseInt(tile.dataset.x);
+            const currentY = parseInt(tile.dataset.y);
+
+            // Tromino always takes 2x2 space, so check bounds
+            if (currentX + 2 <= BOARD_COLS && currentY + 2 <= BOARD_ROWS) {
+              tile.dataset.orientation = newOrientation;
+
+              const shapes = [
+                // Orientation 0: L shape (bottom-left L)
+                `<div style="position: absolute; width: ${
+                  GRID_SIZE - 1
+                }px; height: ${
+                  GRID_SIZE - 1
+                }px; left: 0; top: 0; pointer-events: none;"></div>
+                 <div style="position: absolute; width: ${
+                   GRID_SIZE - 1
+                 }px; height: ${GRID_SIZE - 1}px; left: ${
+                  GRID_SIZE - 1
+                }px; top: 0; pointer-events: none;"></div>
+                 <div style="position: absolute; width: ${
+                   GRID_SIZE - 1
+                 }px; height: ${GRID_SIZE - 1}px; left: 0; top: ${
+                  GRID_SIZE - 1
+                }px; pointer-events: none;"></div>`,
+                // Orientation 1: rotated 90° (bottom-right L)
+                `<div style="position: absolute; width: ${
+                  GRID_SIZE - 1
+                }px; height: ${
+                  GRID_SIZE - 1
+                }px; left: 0; top: 0; pointer-events: none;"></div>
+                 <div style="position: absolute; width: ${
+                   GRID_SIZE - 1
+                 }px; height: ${GRID_SIZE - 1}px; left: 0; top: ${
+                  GRID_SIZE - 1
+                }px; pointer-events: none;"></div>
+                 <div style="position: absolute; width: ${
+                   GRID_SIZE - 1
+                 }px; height: ${GRID_SIZE - 1}px; left: ${
+                  GRID_SIZE - 1
+                }px; top: ${GRID_SIZE - 1}px; pointer-events: none;"></div>`,
+                // Orientation 2: rotated 180° (top-right L)
+                `<div style="position: absolute; width: ${
+                  GRID_SIZE - 1
+                }px; height: ${GRID_SIZE - 1}px; left: ${
+                  GRID_SIZE - 1
+                }px; top: 0; pointer-events: none;"></div>
+                 <div style="position: absolute; width: ${
+                   GRID_SIZE - 1
+                 }px; height: ${GRID_SIZE - 1}px; left: 0; top: ${
+                  GRID_SIZE - 1
+                }px; pointer-events: none;"></div>
+                 <div style="position: absolute; width: ${
+                   GRID_SIZE - 1
+                 }px; height: ${GRID_SIZE - 1}px; left: ${
+                  GRID_SIZE - 1
+                }px; top: ${GRID_SIZE - 1}px; pointer-events: none;"></div>`,
+                // Orientation 3: rotated 270° (top-left L)
+                `<div style="position: absolute; width: ${
+                  GRID_SIZE - 1
+                }px; height: ${
+                  GRID_SIZE - 1
+                }px; left: 0; top: 0; pointer-events: none;"></div>
+                 <div style="position: absolute; width: ${
+                   GRID_SIZE - 1
+                 }px; height: ${GRID_SIZE - 1}px; left: ${
+                  GRID_SIZE - 1
+                }px; top: 0; pointer-events: none;"></div>
+                 <div style="position: absolute; width: ${
+                   GRID_SIZE - 1
+                 }px; height: ${GRID_SIZE - 1}px; left: ${
+                  GRID_SIZE - 1
+                }px; top: ${GRID_SIZE - 1}px; pointer-events: none;"></div>`,
+              ];
+
+              tile.innerHTML = shapes[newOrientation];
+            }
+          } else {
+            // Regular domino rotation
+            const w = parseInt(tile.dataset.w);
+            const h = parseInt(tile.dataset.h);
+            const currentX = parseInt(tile.dataset.x);
+            const currentY = parseInt(tile.dataset.y);
+
+            // Check if rotation would keep domino in bounds
+            const newW = h;
+            const newH = w;
+
+            if (
+              currentX + newW <= BOARD_COLS &&
+              currentY + newH <= BOARD_ROWS
+            ) {
+              // Swap width and height
+              tile.dataset.w = newW;
+              tile.dataset.h = newH;
+
+              tile.style.width = `${newW * GRID_SIZE - 2}px`;
+              tile.style.height = `${newH * GRID_SIZE - 2}px`;
+            }
+          }
+        }
+
+        // Rotate tile (for drag mode)
+        function rotateTile() {
+          if (!draggedTile) return;
+
+          const type = draggedTile.dataset.type;
+
+          if (type === "tromino") {
+            // Rotate L-shaped tromino (4 orientations)
+            let orientation = parseInt(draggedTile.dataset.orientation || "0");
+            orientation = (orientation + 1) % 4;
+            draggedTile.dataset.orientation = orientation;
+
+            const shapes = [
+              // Orientation 0: L shape (bottom-left L)
+              `<div style="position: absolute; width: ${
+                GRID_SIZE - 1
+              }px; height: ${
+                GRID_SIZE - 1
+              }px; left: 0; top: 0; pointer-events: none;"></div>
+               <div style="position: absolute; width: ${
+                 GRID_SIZE - 1
+               }px; height: ${GRID_SIZE - 1}px; left: ${
+                GRID_SIZE - 1
+              }px; top: 0; pointer-events: none;"></div>
+               <div style="position: absolute; width: ${
+                 GRID_SIZE - 1
+               }px; height: ${GRID_SIZE - 1}px; left: 0; top: ${
+                GRID_SIZE - 1
+              }px; pointer-events: none;"></div>`,
+              // Orientation 1: rotated 90° (bottom-right L)
+              `<div style="position: absolute; width: ${
+                GRID_SIZE - 1
+              }px; height: ${
+                GRID_SIZE - 1
+              }px; left: 0; top: 0; pointer-events: none;"></div>
+               <div style="position: absolute; width: ${
+                 GRID_SIZE - 1
+               }px; height: ${GRID_SIZE - 1}px; left: 0; top: ${
+                GRID_SIZE - 1
+              }px; pointer-events: none;"></div>
+               <div style="position: absolute; width: ${
+                 GRID_SIZE - 1
+               }px; height: ${GRID_SIZE - 1}px; left: ${
+                GRID_SIZE - 1
+              }px; top: ${GRID_SIZE - 1}px; pointer-events: none;"></div>`,
+              // Orientation 2: rotated 180° (top-right L)
+              `<div style="position: absolute; width: ${
+                GRID_SIZE - 1
+              }px; height: ${GRID_SIZE - 1}px; left: ${
+                GRID_SIZE - 1
+              }px; top: 0; pointer-events: none;"></div>
+               <div style="position: absolute; width: ${
+                 GRID_SIZE - 1
+               }px; height: ${GRID_SIZE - 1}px; left: 0; top: ${
+                GRID_SIZE - 1
+              }px; pointer-events: none;"></div>
+               <div style="position: absolute; width: ${
+                 GRID_SIZE - 1
+               }px; height: ${GRID_SIZE - 1}px; left: ${
+                GRID_SIZE - 1
+              }px; top: ${GRID_SIZE - 1}px; pointer-events: none;"></div>`,
+              // Orientation 3: rotated 270° (top-left L)
+              `<div style="position: absolute; width: ${
+                GRID_SIZE - 1
+              }px; height: ${
+                GRID_SIZE - 1
+              }px; left: 0; top: 0; pointer-events: none;"></div>
+               <div style="position: absolute; width: ${
+                 GRID_SIZE - 1
+               }px; height: ${GRID_SIZE - 1}px; left: ${
+                GRID_SIZE - 1
+              }px; top: 0; pointer-events: none;"></div>
+               <div style="position: absolute; width: ${
+                 GRID_SIZE - 1
+               }px; height: ${GRID_SIZE - 1}px; left: ${
+                GRID_SIZE - 1
+              }px; top: ${GRID_SIZE - 1}px; pointer-events: none;"></div>`,
+            ];
+
+            draggedTile.innerHTML = shapes[orientation];
+          } else {
+            // Regular domino rotation
+            const w = parseInt(draggedTile.dataset.w);
+            const h = parseInt(draggedTile.dataset.h);
+
+            // Swap width and height
+            draggedTile.dataset.w = h;
+            draggedTile.dataset.h = w;
+
+            draggedTile.style.width = `${h * GRID_SIZE - 2}px`;
+            draggedTile.style.height = `${w * GRID_SIZE - 2}px`;
+
+            // Update display
+            draggedTile.textContent = "";
+          }
+        }
+
+        // Clear board
+        function clearBoard() {
+          tiles.forEach((tile) => board.removeChild(tile));
+          tiles = [];
+        }
+
+        // Event listeners
+        addDominoBtn.addEventListener("click", () => {
+          addTile(0, 0, 1, 2, "domino");
+        });
+
+        addTrominoBtn.addEventListener("click", () => {
+          addTile(0, 0, 2, 2, "tromino");
+        });
+
+        clearBtn.addEventListener("click", clearBoard);
+
+        screenshotBtn.addEventListener("click", takeScreenshot);
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key.toLowerCase() === "r" && draggedTile) {
+            rotateTile();
+          }
+        });
+
+                // Screenshot functions
+        function takeScreenshot() {
+          if (tiles.length === 0) {
+            alert("请先添加一些瓷砖再截图！");
+            return;
+          }
+          
+          const container = document.getElementById("screenshotContainer");
+          screenshotCount++;
+          
+          // Calculate bounding box of all tiles
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          
+          tiles.forEach(tile => {
+            const x = parseInt(tile.dataset.x);
+            const y = parseInt(tile.dataset.y);
+            const w = parseInt(tile.dataset.w);
+            const h = parseInt(tile.dataset.h);
+            
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x + w);
+            maxY = Math.max(maxY, y + h);
+          });
+          
+          // Create screenshot item
+          const screenshotItem = document.createElement("div");
+          screenshotItem.className = "screenshot-item";
+          
+          // Create screenshot board with tight bounds
+          const screenshotBoard = document.createElement("div");
+          screenshotBoard.className = "screenshot-board";
+          
+          const scaleFactor = 0.6; // 60% scale for better visibility
+          const boundingWidth = (maxX - minX) * GRID_SIZE * scaleFactor;
+          const boundingHeight = (maxY - minY) * GRID_SIZE * scaleFactor;
+          
+          screenshotBoard.style.width = `${boundingWidth}px`;
+          screenshotBoard.style.height = `${boundingHeight}px`;
+          
+          // Clone all tiles and scale them down
+          tiles.forEach(tile => {
+            const clonedTile = document.createElement("div");
+            clonedTile.className = "screenshot-tile";
+            clonedTile.dataset.type = tile.dataset.type;
+            
+            const originalX = parseInt(tile.dataset.x);
+            const originalY = parseInt(tile.dataset.y);
+            const originalW = parseInt(tile.dataset.w);
+            const originalH = parseInt(tile.dataset.h);
+            
+            // Adjust position relative to bounding box and scale
+            const scaledX = (originalX - minX) * GRID_SIZE * scaleFactor;
+            const scaledY = (originalY - minY) * GRID_SIZE * scaleFactor;
+            const scaledW = originalW * GRID_SIZE * scaleFactor - 1;
+            const scaledH = originalH * GRID_SIZE * scaleFactor - 1;
+            
+            clonedTile.style.left = `${scaledX + 0.5}px`;
+            clonedTile.style.top = `${scaledY + 0.5}px`;
+            clonedTile.style.width = `${scaledW}px`;
+            clonedTile.style.height = `${scaledH}px`;
+            
+            if (tile.dataset.type === "tromino") {
+              // Clone tromino structure
+              const orientation = tile.dataset.orientation || "0";
+              clonedTile.dataset.orientation = orientation;
+              clonedTile.innerHTML = createTrominoHTML(scaleFactor, orientation);
+            }
+            
+            screenshotBoard.appendChild(clonedTile);
+          });
+          
+          screenshotItem.appendChild(screenshotBoard);
+          container.appendChild(screenshotItem);
+        }
+        
+        function createTrominoHTML(scaleFactor, orientation) {
+          const scaledGridSize = GRID_SIZE * scaleFactor;
+          const shapes = [
+            // Orientation 0: L shape (bottom-left L)
+            `<div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: 0; top: 0; pointer-events: none;"></div>
+             <div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: ${scaledGridSize - 0.5}px; top: 0; pointer-events: none;"></div>
+             <div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: 0; top: ${scaledGridSize - 0.5}px; pointer-events: none;"></div>`,
+            // Orientation 1: rotated 90° (bottom-right L)
+            `<div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: 0; top: 0; pointer-events: none;"></div>
+             <div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: 0; top: ${scaledGridSize - 0.5}px; pointer-events: none;"></div>
+             <div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: ${scaledGridSize - 0.5}px; top: ${scaledGridSize - 0.5}px; pointer-events: none;"></div>`,
+            // Orientation 2: rotated 180° (top-right L)
+            `<div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: ${scaledGridSize - 0.5}px; top: 0; pointer-events: none;"></div>
+             <div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: 0; top: ${scaledGridSize - 0.5}px; pointer-events: none;"></div>
+             <div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: ${scaledGridSize - 0.5}px; top: ${scaledGridSize - 0.5}px; pointer-events: none;"></div>`,
+            // Orientation 3: rotated 270° (top-left L)
+            `<div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: 0; top: 0; pointer-events: none;"></div>
+             <div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: ${scaledGridSize - 0.5}px; top: 0; pointer-events: none;"></div>
+             <div style="position: absolute; width: ${scaledGridSize - 0.5}px; height: ${scaledGridSize - 0.5}px; left: ${scaledGridSize - 0.5}px; top: ${scaledGridSize - 0.5}px; pointer-events: none;"></div>`,
+          ];
+          
+          return shapes[parseInt(orientation)];
+        }
+
+        // Initialize
+        initBoard();
+      });
+    </script>
+  </body>
+</html>

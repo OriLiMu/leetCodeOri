@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>盛水容器游戏</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+      .main-content {
+        display: flex;
+        gap: 30px;
+        align-items: flex-start;
+        margin-bottom: 20px;
+      }
+      .container {
+        position: relative;
+        width: 600px;
+        height: 400px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+      }
+      .x-axis {
+        position: absolute;
+        bottom: 50px;
+        width: 100%;
+        height: 2px;
+        background-color: black;
+      }
+      .bar {
+        position: absolute;
+        bottom: 50px;
+        width: 8px;
+        background-color: #333;
+        transform: translateX(-50%);
+      }
+      .water {
+        position: absolute;
+        background-color: rgba(0, 0, 255, 0.3);
+        bottom: 50px;
+        width: 100%;
+      }
+      .arrow {
+        position: absolute;
+        bottom: 30px;
+        width: 0;
+        height: 0;
+        border-left: 15px solid transparent;
+        border-right: 15px solid transparent;
+        border-bottom: 30px solid red;
+        cursor: grab;
+        transform: translateX(-50%);
+      }
+      .arrow.left {
+        left: 0;
+      }
+      .arrow.right {
+        right: 0;
+      }
+      .info {
+        font-size: 18px;
+        min-width: 180px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      }
+      .info p {
+        margin: 10px 0;
+        font-weight: bold;
+      }
+      .tick {
+        position: absolute;
+        bottom: 40px;
+        width: 1px;
+        height: 10px;
+        background-color: black;
+        transform: translateX(-50%);
+      }
+      .tick-label {
+        position: absolute;
+        bottom: 20px;
+        transform: translateX(-50%);
+      }
+      .height-label {
+        position: absolute;
+        font-size: 12px;
+        font-weight: bold;
+        color: #333;
+        transform: translateX(-50%);
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 2px 4px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>盛水容器游戏</h1>
+    <div class="main-content">
+      <div class="info">
+        <p>最大水量: <span id="maxVolume">0</span></p>
+        <p>当前水量: <span id="currentVolume">0</span></p>
+      </div>
+      <div class="container" id="gameContainer">
+        <div class="x-axis"></div>
+      </div>
+    </div>
+    <button id="resetBtn">重新生成</button>
+
+    <script>
+      const container = document.getElementById("gameContainer");
+      const maxVolumeSpan = document.getElementById("maxVolume");
+      const currentVolumeSpan = document.getElementById("currentVolume");
+      const resetBtn = document.getElementById("resetBtn");
+
+      let arr = [];
+      let leftIndex = 0;
+      let rightIndex = 0;
+      let maxVolume = 0;
+      const HEIGHT_SCALE = 15; // 高度缩放因子
+
+      function init() {
+        // 清空容器
+        container.innerHTML = '<div class="x-axis"></div>';
+
+        // 生成随机数组
+        arr = Array.from(
+          { length: 10 },
+          () => Math.floor(Math.random() * 20) + 1
+        );
+        leftIndex = 0;
+        rightIndex = arr.length - 1;
+        maxVolume = 0;
+
+        // 计算最大水量
+        calculateMaxVolume();
+
+        // 绘制图形
+        drawBars();
+        drawArrows();
+        drawTicks();
+        updateWater();
+        updateVolumeDisplay();
+      }
+
+      function calculateMaxVolume() {
+        let left = 0;
+        let right = arr.length - 1;
+        maxVolume = 0;
+
+        while (left < right) {
+          const height = Math.min(arr[left], arr[right]);
+          const width = right - left;
+          const volume = height * width;
+          maxVolume = Math.max(maxVolume, volume);
+
+          if (arr[left] < arr[right]) {
+            left++;
+          } else {
+            right--;
+          }
+        }
+
+        maxVolumeSpan.textContent = maxVolume;
+      }
+
+      function drawBars() {
+        const containerWidth = container.offsetWidth;
+        const spacing = containerWidth / (arr.length - 1);
+
+        for (let i = 0; i < arr.length; i++) {
+          const bar = document.createElement("div");
+          bar.className = "bar";
+          bar.style.left = `${i * spacing}px`;
+          bar.style.height = `${arr[i] * HEIGHT_SCALE}px`;
+          container.appendChild(bar);
+
+          // 添加高度标签
+          const heightLabel = document.createElement("div");
+          heightLabel.className = "height-label";
+          heightLabel.textContent = arr[i];
+          heightLabel.style.left = `${i * spacing}px`;
+          heightLabel.style.bottom = `${arr[i] * HEIGHT_SCALE + 55}px`; // 显示在柱子顶部
+          container.appendChild(heightLabel);
+        }
+      }
+
+      function drawTicks() {
+        const containerWidth = container.offsetWidth;
+        const spacing = containerWidth / (arr.length - 1);
+
+        for (let i = 0; i < arr.length; i++) {
+          const tick = document.createElement("div");
+          tick.className = "tick";
+          tick.style.left = `${i * spacing}px`;
+          container.appendChild(tick);
+
+          const label = document.createElement("div");
+          label.className = "tick-label";
+          label.textContent = i;
+          label.style.left = `${i * spacing}px`;
+          container.appendChild(label);
+        }
+      }
+
+      function drawArrows() {
+        const containerWidth = container.offsetWidth;
+        const spacing = containerWidth / (arr.length - 1);
+
+        // 左箭头
+        const leftArrow = document.createElement("div");
+        leftArrow.className = "arrow left";
+        leftArrow.style.left = `${leftIndex * spacing}px`;
+        leftArrow.dataset.index = leftIndex;
+        leftArrow.addEventListener("mousedown", startDrag);
+        container.appendChild(leftArrow);
+
+        // 右箭头
+        const rightArrow = document.createElement("div");
+        rightArrow.className = "arrow right";
+        rightArrow.style.left = `${rightIndex * spacing}px`;
+        rightArrow.dataset.index = rightIndex;
+        rightArrow.addEventListener("mousedown", startDrag);
+        container.appendChild(rightArrow);
+      }
+
+      function startDrag(e) {
+        e.preventDefault();
+        const arrow = e.target;
+        const isLeft = arrow.classList.contains("left");
+        const containerWidth = container.offsetWidth;
+        const spacing = containerWidth / (arr.length - 1);
+
+        function moveArrow(e) {
+          let x = e.clientX - container.getBoundingClientRect().left;
+          x = Math.max(0, Math.min(containerWidth, x));
+          const index = Math.round(x / spacing);
+
+          if (isLeft) {
+            if (index < rightIndex) {
+              arrow.style.left = `${index * spacing}px`;
+              arrow.dataset.index = index;
+              leftIndex = index;
+            }
+          } else {
+            if (index > leftIndex) {
+              arrow.style.left = `${index * spacing}px`;
+              arrow.dataset.index = index;
+              rightIndex = index;
+            }
+          }
+
+          updateWater();
+          updateVolumeDisplay();
+        }
+
+        function stopDrag() {
+          document.removeEventListener("mousemove", moveArrow);
+          document.removeEventListener("mouseup", stopDrag);
+        }
+
+        document.addEventListener("mousemove", moveArrow);
+        document.addEventListener("mouseup", stopDrag);
+      }
+
+      function updateWater() {
+        // 移除旧的水区域
+        const oldWater = document.querySelector(".water");
+        if (oldWater) oldWater.remove();
+
+        if (leftIndex >= rightIndex) return;
+
+        const containerWidth = container.offsetWidth;
+        const spacing = containerWidth / (arr.length - 1);
+        const leftPos = leftIndex * spacing;
+        const rightPos = rightIndex * spacing;
+        const waterHeight = Math.min(arr[leftIndex], arr[rightIndex]);
+
+        const water = document.createElement("div");
+        water.className = "water";
+        water.style.left = `${leftPos}px`;
+        water.style.width = `${rightPos - leftPos}px`;
+        water.style.height = `${waterHeight * HEIGHT_SCALE}px`;
+
+        container.appendChild(water);
+      }
+
+      function updateVolumeDisplay() {
+        if (leftIndex >= rightIndex) {
+          currentVolumeSpan.textContent = "0";
+          return;
+        }
+
+        const height = Math.min(arr[leftIndex], arr[rightIndex]);
+        const width = rightIndex - leftIndex;
+        const volume = height * width;
+
+        currentVolumeSpan.textContent = volume;
+      }
+
+      resetBtn.addEventListener("click", init);
+
+      // 初始化游戏
+      init();
+    </script>
+  </body>
+</html>
