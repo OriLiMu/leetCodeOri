@@ -74,6 +74,22 @@
         margin: 10px 0;
         font-weight: bold;
       }
+      #resetBtn {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: background-color 0.3s;
+      }
+      #resetBtn:hover {
+        background-color: #0056b3;
+      }
       .tick {
         position: absolute;
         bottom: 40px;
@@ -105,12 +121,12 @@
       <div class="info">
         <p>最大水量: <span id="maxVolume">0</span></p>
         <p>当前水量: <span id="currentVolume">0</span></p>
+        <button id="resetBtn">重新生成</button>
       </div>
       <div class="container" id="gameContainer">
         <div class="x-axis"></div>
       </div>
     </div>
-    <button id="resetBtn">重新生成</button>
 
     <script>
       const container = document.getElementById("gameContainer");
