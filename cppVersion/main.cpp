@@ -10,11 +10,11 @@ class Solution {
 public:
   void getPermutations(vector<int> &nums, int curN,
                        vector<vector<int>> &result) {
-    if (curN == nums.size()) {
+    if (curN == nums.size() - 1) {
       result.push_back(nums);
       return;
     }
-    for (int n = curN + 1; n < nums.size(); n++) {
+    for (int n = curN; n < nums.size(); n++) {
       swap(nums[curN], nums[n]);
       getPermutations(nums, curN + 1, result);
       swap(nums[n], nums[curN]);
