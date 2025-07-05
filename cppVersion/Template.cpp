@@ -1,6 +1,6 @@
 class Solution {
 public:
-    vector<string> generateParenthesis(int n) {
+    void nextPermutation(vector<int>& nums) {
         
     }
 };
