@@ -1,6 +1,6 @@
 class Solution {
 public:
-    vector<string> generateParenthesis(int n) {
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
         
     }
 };
