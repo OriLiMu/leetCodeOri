@@ -1,6 +1,6 @@
 class Solution {
 public:
-    void nextPermutation(vector<int>& nums) {
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
         
     }
 };
