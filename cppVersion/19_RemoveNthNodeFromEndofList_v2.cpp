@@ -17,28 +17,21 @@ struct ListNode {
 class Solution {
 public:
   ListNode *removeNthFromEnd(ListNode *head, int n) {
-    // 注意你这个思路的前提的条件是, p1 p2 最后不能挨着.
-    // 这个是非常隐性的一个判断的条件
-    ListNode *p1 = nullptr;
-    ListNode *p2 = nullptr;
-    for (int i = 0; i < n; i++) {
-      if (!p1)
-        p1 = head;
-      else
-        p1 = p1->next;
-    }
-    while (p1->next) {
+    ListNode *p1 = head;
+    ListNode *p2 = head;
+    for (int i = 0; i < n; i++)
       p1 = p1->next;
-      if (!p2)
-        p2 = head;
-      else
-        p2 = p2->next;
+    ListNode *lastP2 = p2;
+    while (p1) {
+      p1 = p1->next;
+      lastP2 = p2;
+      p2 = p2->next;
     }
 
-    if (!p2) {
-      head = head->next;
+    if (lastP2 != p2) {
+      lastP2->next = p2->next;
     } else {
-      p2->next = p1;
+      head = head->next;
     }
 
     return head;
