@@ -39,7 +39,7 @@ public:
       if (edgeVec.size() == 0) {
         edgeVec.push_back(l);
       }
-      if (edgeVec.size() >= 2) {
+      if (edgeVec.size() >= 2) { // 本来这部分处理我是放到下面那个循环里面的
         int leftH = height[edgeVec[edgeVec.size() - 2]];
         int last = height[edgeVec.back()];
 
@@ -56,6 +56,7 @@ public:
       l = r;
     }
 
+    // 这个修改表明了尽量在第一次修改的时候, 做更多的事情
     if (edgeVec.size() >= 2) {
       int LIdx = 0;
       int RIdx = 1;
