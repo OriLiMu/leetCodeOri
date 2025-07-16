@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int trap(vector<int>& height) {
+    int subarraySum(vector<int>& nums, int k) {
         
     }
 };
