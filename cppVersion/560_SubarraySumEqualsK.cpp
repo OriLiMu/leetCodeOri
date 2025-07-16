@@ -16,7 +16,12 @@ public:
     int preSum = 0;
     int result = 0;
     for (int i = 0; i < nums.size(); i++) {
-      preSum += nums[i];
+      if (preSumCountUom.count(preSum)) {
+        preSumCountUom[preSum]++;
+      } else {
+        preSumCountUom[preSum] = 1;
+      }
+
       cout << "preSum: " << preSum << endl;
       cout << "target: " << preSum - k << endl;
       for (auto n : preSumCountUom) {
@@ -27,11 +32,7 @@ public:
         result += preSumCountUom[preSum - k];
       }
       cout << "----" << endl;
-      if (preSumCountUom.count(preSum)) {
-        preSumCountUom[preSum]++;
-      } else {
-        preSumCountUom[preSum] = 1;
-      }
+      preSum += nums[i];
     }
 
     return result;
