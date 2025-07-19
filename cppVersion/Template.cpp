@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int subarraySum(vector<int>& nums, int k) {
+    void rotate(vector<int>& nums, int k) {
         
     }
 };
