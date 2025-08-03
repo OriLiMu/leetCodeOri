@@ -1,48 +1,33 @@
-#include <algorithm>
+#include <cmath>
 #include <iostream>
-#include <numeric>
 #include <vector>
 
 using namespace std;
 class Solution {
 public:
-  void func(vector<int> &cur, vector<int> &candidates,
-            vector<vector<int>> &result, int start, int target) {
-    if (start >= candidates.size()) {
+  void func(vector<int> &candidates, int start, vector<int> curSelect,
+            int curSum, int target, vector<vector<int>> &result, bool isSet) {
+    if (curSum == target) {
+      cout << "push " << endl;
+      result.push_back(curSelect);
+      return;
+    } else if (curSum > target) {
       return;
     }
-    int sum = accumulate(cur.begin(), cur.end(), 0);
 
-    while (true) {
-      if (sum > target) {
-        return;
-      } else if (sum == target) {
-        result.push_back(cur);
-        cout << "cur insert:" << endl;
-        for (auto n : cur) {
-          cout << n;
-        }
-        cout << endl;
-        return;
-      }
-      start++;
-      func(cur, candidates, result, start, target);
-      start--;
-      if (start + 1 < cur.size()) {
-        cur.erase(cur.begin() + start + 1, cur.end());
-      }
-      auto it = upper_bound(cur.begin(), cur.end(), candidates[start]);
-      cur.erase(it, cur.end());
-      cur.push_back(candidates[start]);
-      sum = accumulate(cur.begin(), cur.end(), 0);
+    for (int i = start; i < candidates.size(); i++) {
+      curSelect.push_back(candidates[i]);
+      func(candidates, i, curSelect, curSum + candidates[i], target, result,
+           isSet);
+      curSelect.pop_back();
     }
+    return;
   }
 
   vector<vector<int>> combinationSum(vector<int> &candidates, int target) {
-    sort(candidates.begin(), candidates.end());
     vector<vector<int>> result;
-    vector<int> cur = {};
-    func(cur, candidates, result, 0, target);
+    vector<int> curSelect;
+    func(candidates, 0, curSelect, 0, target, result, false);
     return result;
   }
 };

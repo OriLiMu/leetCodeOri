@@ -45,41 +45,33 @@ public:
 
     ListNode *h1 = head, *h2 = h1, dummy(0, nullptr), *prev = &dummy;
     for (int l = 1; l < len; l *= 2) {
-      while (h1 || h2) {
-        int tl = l - 1;
-        cur = prev;
-        while (tl-- && h2)
-          h2 = h2->next;
-        if (h2) {
-          ListNode *tmp = h2->next;
-          h2->next = nullptr;
-          h2 = tmp;
-        }
-
-        while (h1 && h2) {
-          if (h1->val <= h2->val) {
-            cur->next = h1;
-            h1 = h1->next;
-          } else {
-            cur->next = h2;
-            h2 = h2->next;
-          }
-          cur = cur->next;
-        }
-        while (h1) {
+      int tl = l;
+      cur = prev;
+      while (tl-- && h2)
+        h2 = h2->next;
+      while (h1 && h2) {
+        if (h1->val <= h2->val) {
           cur->next = h1;
           h1 = h1->next;
-          cur = cur->next;
-        }
-        while (h2) {
+        } else {
           cur->next = h2;
           h2 = h2->next;
-          cur = cur->next;
         }
-        prev = cur;
-        h1 = cur->next;
-        h2 = h1;
+        cur = cur->next;
       }
+      while (h1) {
+        cur->next = h1;
+        h1 = h1->next;
+        cur = cur->next;
+      }
+      while (h2) {
+        cur->next = h2;
+        h2 = h2->next;
+        cur = cur->next;
+      }
+      prev = cur;
+      h1 = cur->next;
+      h2 = h1;
     }
 
     return dummy.next;
@@ -88,8 +80,8 @@ public:
 
 int main() {
   Solution s;
-  vector<int> v = {3, 8, 4};
-  // v = {3, 1};
+  vector<int> v = {3, 1, 2, 3, 8, 4, 9};
+  // v = {3, 1, 3};
   ListNode *l = buildChainTable(v);
   ListNode *r = s.sortList(l);
   ListNode *t1 = r;
