@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(leetCode)
 
 # 设置 C++ 标准（保持不变）
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 1. 强制设置构建类型为 Debug（关键：确保调试模式）

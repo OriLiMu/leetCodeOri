@@ -1,0 +1,12 @@
+{
+  "name": "acwing-opener",
+  "version": "1.0.0",
+  "description": "Puppeteer script to open AcWing content",
+  "main": "open_acwing.js",
+  "scripts": {
+    "start": "node open_acwing.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  }
+}

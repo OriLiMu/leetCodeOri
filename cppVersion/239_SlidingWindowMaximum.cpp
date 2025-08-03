@@ -2,6 +2,7 @@
 #include <climits>
 #include <cmath>
 #include <cstddef>
+#include <deque>
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
@@ -11,24 +12,29 @@ using namespace std;
 class Solution {
 public:
   vector<int> maxSlidingWindow(vector<int> &nums, int k) {
-    // get first
-    vector<int> result;
-    int curMax = *max_element(nums.begin(), nums.begin() + k);
-    result.push_back(curMax);
-    for (int i = 1; i <= nums.size() - k; i++) {
-      if (nums[i - 1] != curMax) {
-        curMax = max(curMax, nums[i + k - 1]);
-      } else {
-        curMax = *max_element(nums.begin() + i, nums.begin() + i + k);
-      }
-      result.push_back(curMax);
+    deque<int> q;
+    vector<int> r;
+    for (int i = 0; i < k - 1; i++) {
+      while (q.size() && q.back() < nums[i])
+        q.pop_back();
+      q.push_back(nums[i]);
     }
-    return result;
+    for (int i = k - 1; i < nums.size(); i++) {
+      while (q.size() && q.back() < nums[i])
+        q.pop_back();
+      q.push_back(nums[i]);
+      if (i >= k && q.front() == nums[i - k])
+        q.pop_front();
+      r.push_back(q.front());
+    }
+
+    return r;
   }
 };
 int main() {
   Solution s;
   vector<int> n = {1, 3, -1, -3, 5, 3, 6, 7};
+  // vector<int> n = {1, -1};
   // vector<int> n = {1};
   int k = 3;
   for (auto n : s.maxSlidingWindow(n, k)) {

@@ -1,29 +1,34 @@
-#include <deque>
 #include <iostream>
-using namespace std;
+#include <string>
+#include <unordered_map>
 
 int main() {
-  // 1) 错误示范：用迭代器遍历并 pop_front —— UB！
-  {
-    deque<int> dq{1, 2, 3, 4};
-    cout << "=== Wrong way (UB) ===\n";
-    for (auto it = dq.begin(); it != dq.end(); ++it) {
-      cout << *it << ' ';
-      dq.pop_front(); // 删除首元素，迭代器失效
-    }
-    cout << "\nAfter loop, dq.size() = " << dq.size() << "\n\n";
+  std::unordered_map<std::string, int> fruitStock = {
+      {"apple", 5}, {"orange", 3}, {"banana", 7}};
+
+  // 1. Simple presence check
+  if (fruitStock.contains("apple")) {
+    std::cout << "We have apples.\n";
   }
 
-  // 2) 正确写法：用 while 循环
-  {
-    deque<int> dq{1, 2, 3, 4};
-    cout << "=== Correct way ===\n";
-    while (!dq.empty()) {
-      int val = dq.front();
-      cout << val << ' ';
-      dq.pop_front(); // 安全：不依赖迭代器
-    }
-    cout << "\nafter loop, dq.size() = " << dq.size() << '\n';
+  // 2. Conditional insertion (only when absent)
+  const std::string kiwiKey = "kiwi";
+  if (!fruitStock.contains(kiwiKey)) {
+    fruitStock.emplace(kiwiKey, 10);
   }
+
+  // 3. Safe read (avoid accidental insertion via operator[])
+  const std::string grapeKey = "grape";
+  if (fruitStock.contains(grapeKey)) {
+    std::cout << grapeKey << " count = " << fruitStock.at(grapeKey) << '\n';
+  } else {
+    std::cout << grapeKey << " not in stock.\n";
+  }
+
+  // 4. Bulk check
+  for (const auto &item : {"banana", "pear", "orange"}) {
+    std::cout << item << (fruitStock.contains(item) ? " ✔\n" : " ✖\n");
+  }
+
   return 0;
 }
