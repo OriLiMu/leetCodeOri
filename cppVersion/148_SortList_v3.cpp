@@ -44,9 +44,7 @@ public:
     ListNode dummy(0, head), *prev = &dummy, *h1 = head, *h2 = h1,
                              *next = nullptr;
     for (int l = 1; l < len; l *= 2) {
-      // prev = &dummy, h1 = h2 = head; // 这个部分的init忘了 h1 h2
-      // 不能等于head, head有可能变
-      prev = &dummy, h1 = h2 = dummy.next; // 这个部分的init忘了
+      prev = &dummy, h1 = h2 = head; // 这个部分的init忘了
       while (h1 || h2) {
         tmp = prev; // 这个还没有接到链表上后面都是空的
         int tl = l;
@@ -55,10 +53,7 @@ public:
         if (tmp) {
           h2 = tmp->next;
           tmp->next = nullptr;
-        } else
-          h2 = nullptr;
-        // 这个地方逻辑没有判断完全
-
+        }
         tmp = h2;
         tl = l - 1;
         while (tl-- > 0 && tmp)
@@ -104,7 +99,6 @@ int main() {
   Solution s;
   vector<int> v = {3, 1, 2, 3, 8, 4, 9};
   v = {3, 8, 4, 9};
-  v = {5, 3, 4, 0};
   v = {-1, 5, 3, 4, 0};
   // v = {1, 2};
   // v = {3, 1};
