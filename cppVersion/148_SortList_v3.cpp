@@ -34,21 +34,20 @@ class Solution {
 public:
   ListNode *sortList(ListNode *head) {
     ListNode *tmp = head;
-    int len = 0, m, n;
+    int n = 0;
     while (tmp) {
-      len++;
+      n++;
       tmp = tmp->next;
     }
     ListNode dummy(0, head), *h1 = head, *h2 = head, *cur = &dummy,
                              *next = nullptr; // this head need process
-    for (int l = 1; l < len;
-         l *= 2) { // 典中典这个n给改了, 所以这个命名还是要规范一些
+    for (int l = 1; l < n; l *= 2) {
       // move h2 ahead
       cur = &dummy, h1 = cur->next,
-      h2 = cur->next; // 这里有错误一开始没有初始化, h1, h2 已经在下面处理了.
+      h2 = cur->next; // 这里有错误一开始没有初始化
       while (h1) {
-        m = n = l;
-        // 需要断开, 断开需要一个prev指针, 断开之后还需要补上不然下次就没路走了
+        int m = n = l;
+        // 需要断开, 断开需要一个prev指针
         // move h2
         while (m-- && h2)
           h2 = h2->next;
@@ -84,9 +83,9 @@ public:
           h2 = h2->next;
         }
 
-        // cur->next = nullptr; // 这里可以断吗, 下次就没路走了
-        cur->next = h1 = h2 = next; // 这里的问题还是我们要做断开,
-                                    // 那么就需要保存一开始的next指针
+        cur->next = nullptr;
+        h1 = h2 = next; // 这里的问题还是我们要做断开,
+                        // 那么就需要保存一开始的next指针
       }
     }
 
@@ -98,7 +97,6 @@ int main() {
   Solution s;
   vector<int> v = {3, 1};
   v = {5, 3, 4};
-  v = {-1, 5, 3, 4, 0};
   ListNode *r = buildChainTable(v);
   ListNode *r2 = s.sortList(r);
   r = r2;
