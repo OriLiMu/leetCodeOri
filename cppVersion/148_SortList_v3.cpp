@@ -3,9 +3,8 @@
 #include <cmath>
 #include <cstddef>
 #include <iostream>
-#include <numeric>
-#include <unordered_map>
-#include <unordered_set>
+#include <pthread.h>
+#include <stdexcept>
 #include <vector>
 
 using namespace std;
@@ -34,85 +33,80 @@ ListNode *buildChainTable(const std::vector<int> &nums) {
 class Solution {
 public:
   ListNode *sortList(ListNode *head) {
-    int len = 0;
     ListNode *tmp = head;
+    int n = 0;
     while (tmp) {
-      len++;
+      n++;
       tmp = tmp->next;
     }
-
-    ListNode dummy(0, head), *prev = &dummy, *h1 = head, *h2 = h1,
-                             *next = nullptr;
-    for (int l = 1; l < len; l *= 2) {
-      prev = &dummy, h1 = h2 = head; // 这个部分的init忘了
-      while (h1 || h2) {
-        tmp = prev; // 这个还没有接到链表上后面都是空的
-        int tl = l;
-        while (tl-- && tmp)
-          tmp = tmp->next;
-        if (tmp) {
-          h2 = tmp->next;
-          tmp->next = nullptr;
-        }
-        tmp = h2;
-        tl = l - 1;
-        while (tl-- > 0 && tmp)
-          tmp = tmp->next;
-        next = tmp ? tmp->next : tmp;
-        if (tmp)
-          tmp->next = nullptr;
-
-        ListNode *cur = prev;
-        while (h1 && h2) {
+    ListNode dummy(0, head), *h1 = head, *h2 = head, *cur = &dummy,
+                             *next = nullptr; // this head need process
+    for (int l = 1; l < n; l *= 2) {
+      // move h2 ahead
+      cur = &dummy, h1 = cur->next,
+      h2 = cur->next; // 这里有错误一开始没有初始化
+      while (h1) {
+        int m = n = l;
+        // 需要断开, 断开需要一个prev指针
+        // move h2
+        while (m-- && h2)
+          h2 = h2->next;
+        next = h2;
+        m = l;
+        // save next ptr
+        while (m-- && next)
+          next = next->next;
+        // tmp = tmp->next; // the tmp is not be nullptr here
+        // tmp->next = nullptr; // 断了一个还差一个, 如果你想断开, 需要走过去,
+        // 这样看计数好一些
+        m = l;
+        while (m && n && h1 && h2) {
           if (h1->val <= h2->val) {
-            cur->next = h1;
+            cur = cur->next = h1;
             h1 = h1->next;
+            m--;
           } else {
-            cur->next = h2;
+            cur = cur->next = h2;
             h2 = h2->next;
+            n--;
           }
-          cur = cur->next;
         }
-        // 最后这两个地方的代码还是补全了,
-        // 问题就是不能过于依赖某种逻辑的成立你的代码才是有效的,
-        // 这个前提去写代码, 而是扎扎实实不能留弱点
-        while (h1) {
-          cur->next = h1;
-          cur = cur->next;
+
+        while (m-- && h1) {
+          cur = cur->next = h1;
           h1 = h1->next;
         }
 
-        while (h2) {
-          cur->next = h2;
-          cur = cur->next;
+        // 这里有问题, 你在这里没有赋值为nullptr, 所以这里直接出界
+        while (n-- && h2) {
+          cur = cur->next = h2;
           h2 = h2->next;
         }
-        prev = cur;
-        h1 = h2 = cur->next = next;
+
+        cur->next = nullptr;
+        h1 = h2 = next; // 这里的问题还是我们要做断开,
+                        // 那么就需要保存一开始的next指针
       }
     }
+
     return dummy.next;
   }
 };
 
 int main() {
   Solution s;
-  vector<int> v = {3, 1, 2, 3, 8, 4, 9};
-  v = {3, 8, 4, 9};
-  v = {-1, 5, 3, 4, 0};
-  // v = {1, 2};
-  // v = {3, 1};
-  ListNode *l = buildChainTable(v);
-  ListNode *r = s.sortList(l);
-  ListNode *t1 = r;
-  while (r) {
-    cout << r->val << ", ";
-    r = r->next;
+  vector<int> v = {3, 1};
+  v = {5, 3, 4};
+  ListNode *r = buildChainTable(v);
+  ListNode *r2 = s.sortList(r);
+  r = r2;
+  while (r2) {
+    cout << r2->val << ", ";
+    r2 = r2->next;
   }
-
-  while (t1) {
-    ListNode *t = t1->next;
-    delete t1;
-    t1 = t;
+  while (r) {
+    ListNode *t = r->next;
+    delete r;
+    r = t;
   }
 }
