@@ -17,7 +17,6 @@ struct ListNode {
   ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
 
-// Build the chain table from a vector
 ListNode *buildChainTable(const std::vector<int> &nums) {
   if (nums.empty())
     return nullptr;
@@ -34,54 +33,65 @@ ListNode *buildChainTable(const std::vector<int> &nums) {
 
 class Solution {
 public:
-  vector<ListNode *> quick_sort(ListNode *head) {
+  ListNode *sortList(ListNode *head) {
     if (!head)
-      return {nullptr, nullptr};
-    if (!head->next)
-      return {head, head};
-    ListNode *pivot = head, *left = head, *iter = head->next, *preIter = head;
-    while (iter) {
-      if (iter->val < pivot->val) {
-        ListNode *tmp1 = left->next;
-        ListNode *tmp2 = iter->next;
-        left->next = iter;
-        left = iter;
-        iter->next = tmp1;
-        iter = tmp2;
-        preIter->next = iter;
-      } else {
-        preIter = iter;
-        iter = iter->next;
-      }
+      return head;
+    int len = 0;
+    ListNode *cur = head;
+    while (cur) {
+      len++;
+      cur = cur->next;
     }
 
-    ListNode *tmp = left->next;
-    ListNode *h1 = head->next;
-    ListNode *h2 = left->next;
-    left->next = nullptr;
-    vector<ListNode *> r1 = quick_sort(h1);
-    vector<ListNode *> r2 = quick_sort(h2);
-    if (r1[1])
-      r1[1]->next = pivot;
-    if (r2[0])
-      pivot->next = r2[0];
+    ListNode *h1 = head, *h2 = h1, dummy(0, nullptr), *prev = &dummy;
+    for (int l = 1; l < len; l *= 2) {
+      int tl = l;
+      cur = prev;
+      while (tl-- && h2)
+        h2 = h2->next;
+      while (h1 && h2) {
+        if (h1->val <= h2->val) {
+          cur->next = h1;
+          h1 = h1->next;
+        } else {
+          cur->next = h2;
+          h2 = h2->next;
+        }
+        cur = cur->next;
+      }
+      while (h1) {
+        cur->next = h1;
+        h1 = h1->next;
+        cur = cur->next;
+      }
+      while (h2) {
+        cur->next = h2;
+        h2 = h2->next;
+        cur = cur->next;
+      }
+      prev = cur;
+      h1 = cur->next;
+      h2 = h1;
+    }
 
-    return {r1[0], r2[1]};
-  }
-
-  ListNode *sortList(ListNode *head) {
-    vector<ListNode *> r = quick_sort(head);
-    return r[0];
+    return dummy.next;
   }
 };
+
 int main() {
   Solution s;
-  vector<int> v = {3};
+  vector<int> v = {3, 1, 2, 3, 8, 4, 9};
+  // v = {3, 1, 3};
   ListNode *l = buildChainTable(v);
-  ListNode *l1 = s.sortList(l);
-  ListNode *cur = l1;
-  while (cur) {
-    cout << cur->val << endl;
-    cur = cur->next;
+  ListNode *r = s.sortList(l);
+  ListNode *t1 = r;
+  while (r) {
+    cout << r->val << ", ";
+    r = r->next;
+  }
+  while (t1) {
+    ListNode *t = t1->next;
+    delete t1;
+    t1 = t;
   }
 }
