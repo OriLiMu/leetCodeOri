@@ -1,97 +1,110 @@
-#include <algorithm>
-#include <bits/stdc++.h>
-#include <climits>
-#include <cmath>
-#include <cstddef>
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 
-using namespace std;
-struct TreeNode {
-  int val;
-  TreeNode *left;
-  TreeNode *right;
-  TreeNode() : val(0), left(nullptr), right(nullptr) {}
-  TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-  TreeNode(int x, TreeNode *left, TreeNode *right)
-      : val(x), left(left), right(right) {}
-};
-
-TreeNode *buildTree(const string &raw) {
-  if (raw.empty())
-    return nullptr;
-
-  vector<string> tokens;
-  string cur;
-  for (char c : raw) {
-    if (c == '{' || c == '}' || c == '[' || c == ']' || c == ',') {
-      if (!cur.empty()) {
-        tokens.push_back(cur);
-        cur.clear();
-      }
-    } else if (!isspace(c)) {
-      cur += c;
-    }
-  }
-  if (!cur.empty())
-    tokens.push_back(cur);
-  if (tokens.empty())
-    return nullptr;
-
-  TreeNode *root = new TreeNode(stoi(tokens[0]));
-  queue<TreeNode *> q;
-  q.push(root);
-  size_t idx = 1;
-
-  while (!q.empty() && idx < tokens.size()) {
-    TreeNode *node = q.front();
-    q.pop();
-
-    if (idx < tokens.size()) {
-      string &left = tokens[idx++];
-      if (strcasecmp(left.c_str(), "null") != 0) {
-        node->left = new TreeNode(stoi(left));
-        q.push(node->left);
-      }
-    }
-    if (idx < tokens.size()) {
-      string &right = tokens[idx++];
-      if (strcasecmp(right.c_str(), "null") != 0) {
-        node->right = new TreeNode(stoi(right));
-        q.push(node->right);
-      }
-    }
-  }
-  return root;
-}
-
-class Solution {
+template <typename T> class MinHeap {
 public:
-  bool func_recur(TreeNode *root, int lo, int hi, int direction) {
-    if (!root)
-      return true;
-    if (root->val <= lo || root->val >= hi)
-      return false;
-    if (direction == -1)
-      hi = root->val;
-    else if (direction == 1)
-      lo = root->val;
-    else
-      return func_recur(root->left, lo, root->val, -1) &&
-             func_recur(root->right, root->val, hi, 1);
+  MinHeap() = default;
 
-    return func_recur(root->left, lo, hi, -1) &&
-           func_recur(root->right, lo, hi, 1);
+  /* 构造堆：O(n) 建堆算法 */
+  explicit MinHeap(const std::vector<T> &data) : heap_(data) { buildHeap(); }
+
+  /* 元素个数 */
+  size_t size() const { return heap_.size(); }
+
+  /* 是否为空 */
+  bool empty() const { return heap_.empty(); }
+
+  /* 查看最小值（堆顶） */
+  const T &top() const {
+    if (empty())
+      throw std::runtime_error("Heap is empty");
+    return heap_.front();
   }
 
-  bool isValidBST(TreeNode *root) {
-    return func_recur(root, INT_MIN, INT_MAX, 0);
+  /* 插入元素：上浮 */
+  void push(const T &value) {
+    heap_.push_back(value);
+    siftUp(heap_.size() - 1);
+  }
+
+  /* 删除最小值：下沉 */
+  void pop() {
+    if (empty())
+      throw std::runtime_error("Heap is empty");
+    std::swap(heap_.front(), heap_.back());
+    heap_.pop_back();
+    if (!empty())
+      siftDown(0);
+  }
+
+  /* 打印堆（调试用） */
+  void print() const {
+    for (const auto &v : heap_)
+      std::cout << v << ' ';
+    std::cout << '\n';
+  }
+
+private:
+  std::vector<T> heap_;
+
+  /* 建堆：自底向上下沉 */
+  void buildHeap() {
+    for (int i = static_cast<int>(heap_.size() / 2) - 1; i >= 0; --i)
+      siftDown(i);
+  }
+
+  /* 上浮：当前节点小于父节点时交换 */
+  void siftUp(size_t idx) {
+    while (idx > 0) {
+      size_t parent = (idx - 1) / 2;
+      if (heap_[idx] < heap_[parent]) {
+        std::swap(heap_[idx], heap_[parent]);
+        idx = parent;
+      } else {
+        break;
+      }
+    }
+  }
+
+  /* 下沉：当前节点大于子节点时交换 */
+  void siftDown(size_t idx) {
+    size_t n = heap_.size();
+    while (true) {
+      size_t left = 2 * idx + 1;
+      size_t right = 2 * idx + 2;
+      size_t smallest = idx;
+
+      if (left < n && heap_[left] < heap_[smallest])
+        smallest = left;
+      if (right < n && heap_[right] < heap_[smallest])
+        smallest = right;
+      if (smallest == idx)
+        break;
+
+      std::swap(heap_[idx], heap_[smallest]);
+      idx = smallest;
+    }
   }
 };
 
+/* 演示 */
 int main() {
-  Solution s;
-  string str = "[3,1,5,0,2,4,6]";
-  TreeNode *t = buildTree(str);
-  cout << s.isValidBST(t) << endl;
+  MinHeap<int> h;
+  h.push(9);
+  h.push(4);
+  h.push(7);
+  h.push(1);
+  h.push(3);
+  h.print(); // 可能输出：1 3 7 9 4
+
+  std::cout << "min = " << h.top() << '\n'; // 1
+  h.pop();
+  h.print(); // 可能输出：3 4 7 9
+
+  /* 用已有数组建堆 */
+  std::vector<int> v{5, 2, 8, 4, 1, 9};
+  MinHeap<int> h2(v);
+  h2.print(); // 可能输出：1 2 8 4 5 9
+  return 0;
 }

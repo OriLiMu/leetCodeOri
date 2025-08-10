@@ -3,6 +3,7 @@
 #include <climits>
 #include <cmath>
 #include <cstddef>
+#include <future>
 #include <iostream>
 #include <vector>
 
@@ -67,31 +68,24 @@ TreeNode *buildTree(const string &raw) {
 
 class Solution {
 public:
-  bool func_recur(TreeNode *root, int lo, int hi, int direction) {
+  bool func_recur(TreeNode *root, long lo, long hi) {
     if (!root)
       return true;
     if (root->val <= lo || root->val >= hi)
       return false;
-    if (direction == -1)
-      hi = root->val;
-    else if (direction == 1)
-      lo = root->val;
-    else
-      return func_recur(root->left, lo, root->val, -1) &&
-             func_recur(root->right, root->val, hi, 1);
-
-    return func_recur(root->left, lo, hi, -1) &&
-           func_recur(root->right, lo, hi, 1);
+    return func_recur(root->left, lo, (long)root->val) &&
+           func_recur(root->right, (long)root->val, hi);
   }
 
   bool isValidBST(TreeNode *root) {
-    return func_recur(root, INT_MIN, INT_MAX, 0);
+    return func_recur(root, LONG_MIN, LONG_MAX);
   }
 };
 
 int main() {
   Solution s;
   string str = "[3,1,5,0,2,4,6]";
+  str = "[3,1,5]";
   TreeNode *t = buildTree(str);
   cout << s.isValidBST(t) << endl;
 }
