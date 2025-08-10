@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int climbStairs(int n) {
+    int searchInsert(vector<int>& nums, int target) {
         
     }
 };
