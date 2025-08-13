@@ -151,6 +151,8 @@ def create_leetcode_file(problem_number):
 #include <cstddef>
 #include <iostream>
 #include <vector>
+#include <unordered_map>
+#include <unordered_set>
 
 using namespace std;
 """ + content + """
