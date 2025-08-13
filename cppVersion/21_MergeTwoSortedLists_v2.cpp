@@ -1,3 +1,11 @@
+#include <algorithm>
+#include <climits>
+#include <cmath>
+#include <cstddef>
+#include <iostream>
+#include <vector>
+
+using namespace std;
 /**
  * Definition for singly-linked list.
  * struct ListNode {
@@ -10,7 +18,9 @@
  */
 class Solution {
 public:
-    ListNode* mergeKLists(vector<ListNode*>& lists) {
-        
-    }
+  ListNode *mergeTwoLists(ListNode *list1, ListNode *list2) {}
 };
+int main() {
+  Solution s;
+  cout << "hello" << endl;
+}

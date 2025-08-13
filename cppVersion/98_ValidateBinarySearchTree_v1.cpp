@@ -68,13 +68,16 @@ TreeNode *buildTree(const string &raw) {
 
 class Solution {
 public:
+  long getMin(long a, long b) { return a < b ? a : b; }
+  long getMax(long a, long b) { return a > b ? a : b; }
+
   bool func_recur(TreeNode *root, long lo, long hi) {
     if (!root)
       return true;
     if (root->val <= lo || root->val >= hi)
       return false;
-    return func_recur(root->left, lo, (long)root->val) &&
-           func_recur(root->right, (long)root->val, hi);
+    return func_recur(root->left, lo, getMin((long)root->val, hi)) &&
+           func_recur(root->right, getMax((long)root->val, lo), hi);
   }
 
   bool isValidBST(TreeNode *root) {
