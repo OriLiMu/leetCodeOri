@@ -25,3 +25,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -U_GLIBCXX_DEBUG")
 
 # 添加可执行文件（保持不变）
 add_executable(leetCode main.cpp)
+
+# set for zed editor
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

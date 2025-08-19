@@ -23,7 +23,6 @@ class Solution {
 public:
   TreeNode *func(vector<int> &preorder, vector<int> &inorder, int pre_start,
                  int in_start) {
-    // 想明白你需要维护几个变量
     if (pre_start >= preorder.size() ||
         in_start >= inorder.size()) // 这里的in_start是否需要判断
       return nullptr;
@@ -41,8 +40,7 @@ public:
       root->left = nullptr;
     else {
       left_subtree_size = dist - in_start;
-      root->left =
-          new TreeNode(preorder[pre_start + 1]); // 这里确实没有考虑出界的问题
+      root->left = new TreeNode(preorder[pre_start + 1]);
     }
 
     // 3. 最后在preorder里面用root的位置+ left-subtree.size() + 1就是right的位置
@@ -51,8 +49,6 @@ public:
     if (right_idx < preorder.size())
       root->right = new TreeNode(preorder[right_idx]);
 
-    // 这里in_start的更新确实有问题
-    // 这个pre_start + 应该是left存在的情况下
     func(preorder, inorder, pre_start + 1, in_start);
     func(preorder, inorder, right_idx, in_start + 1);
     return root;
