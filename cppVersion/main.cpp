@@ -1,74 +1,26 @@
-#include <algorithm>
-#include <climits>
-#include <cmath>
-#include <cstddef>
+#include <deque>
 #include <iostream>
-#include <iterator>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
-
-using namespace std;
-struct TreeNode {
-  int val;
-  TreeNode *left;
-  TreeNode *right;
-  TreeNode() : val(0), left(nullptr), right(nullptr) {}
-  TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-  TreeNode(int x, TreeNode *left, TreeNode *right)
-      : val(x), left(left), right(right) {}
-};
-
-class Solution {
-public:
-  TreeNode *func(vector<int> &preorder, vector<int> &inorder, int pre_start,
-                 int in_start) {
-    // 想明白你需要维护几个变量
-    if (pre_start >= preorder.size() ||
-        in_start >= inorder.size()) // 这里的in_start是否需要判断
-      return nullptr;
-    // 1. preorder的第一个就是 root
-    int root_value = preorder[pre_start];
-    TreeNode *root = new TreeNode(root_value);
-    // 2. 然后在inorder 里面搜索这个 root. 这样可以得出left subtree的大小,
-    // 有可能是0
-    auto it = find(inorder.begin() + in_start, inorder.end(), root_value);
-    // 根据条件, 必然能找到, 但是这时候还不能确定 left-subtree是存在的,
-    // 还需要确定大小
-    int dist = distance(inorder.begin(), it);
-    int left_subtree_size = 0;
-    if (dist <= in_start)
-      root->left = nullptr;
-    else {
-      left_subtree_size = dist - in_start;
-      root->left =
-          new TreeNode(preorder[pre_start + 1]); // 这里确实没有考虑出界的问题
-    }
-
-    // 3. 最后在preorder里面用root的位置+ left-subtree.size() + 1就是right的位置
-    root->right = nullptr;
-    int right_idx = pre_start + left_subtree_size + 1;
-    if (right_idx < preorder.size())
-      root->right = new TreeNode(preorder[right_idx]);
-
-    // 这里in_start的更新确实有问题
-    // 这个pre_start + 应该是left存在的情况下
-    func(preorder, inorder, pre_start + 1, in_start);
-    func(preorder, inorder, right_idx, in_start + 1);
-    return root;
-  }
-
-  TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder) {
-    if (!preorder.size())
-      return nullptr;
-    return func(preorder, inorder, 0, 0);
-  }
-};
+#include <set>
 
 int main() {
-  Solution s;
-  vector<int> preorder = {1, 2, 3};
-  vector<int> inorder = {2, 1, 3};
-  TreeNode *root = s.buildTree(preorder, inorder);
-  cout << "hello" << endl;
+  // 原始 deque
+  std::deque<int> dq = {10, 20, 30};
+
+  // 从尾部插入（push_back）
+  dq.push_back(40); // dq: [10, 20, 30, 40]
+
+  // 从头部插入（push_front）
+  dq.push_front(5); // dq: [5, 10, 20, 30, 40]
+
+  // 插入 set 的所有元素到 deque 尾部
+  std::set<int> s = {100, 200};
+  dq.insert(dq.end(), s.begin(), s.end()); // dq: [5, 10, 20, 30, 40, 100, 200]
+
+  // 在指定位置插入单个元素（比如第 3 个位置）
+  dq.insert(dq.begin() + 2, 999); // dq: [5, 10, 999, 20, 30, 40, 100, 200]
+
+  // 遍历输出
+  for (int x : dq)
+    std::cout << x << " ";
+  return 0;
 }
