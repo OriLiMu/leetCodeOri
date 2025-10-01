@@ -24,16 +24,20 @@ public:
       nodes[key].insert(value);
     }
 
-    unordered_set<int> visitedNodes;
+    unordered_set<int> visitedNodesThisTurn;
+    unordered_set<int> checkedNodes;
     deque<int> dq;
     // dq 记录需要遍历的节点
+    // dq的逻辑是层序处理节点, 但是显然不行, 因为这个是根据完整的路径来处理的
+    // 简单来讲, 就是和你一级的其他节点的父节点是谁和你的逻辑完全没关系,
+    // 你只需要关注, 你这条线上的逻辑就好了
     bool isCourseWorked = true;
     for (auto &kv : nodes) {
       dq = {kv.first};
-      visitedNodes = {kv.first};
+      visitedNodesThisTurn.clear();
       while (dq.size() && isCourseWorked) {
         int parent = dq.front();
-        visitedNodes.insert(parent);
+        visitedNodesThisTurn.insert(parent);
         // 是否会出现一个节点存在于树中，但是词典没有记录的情况。
         // 可能尾部节点不会被放到unordered_map中但是 如果,
         // 这个叶子节点正好在环上会不会出现错误, 如果这个是实际上的叶子节点,
@@ -44,19 +48,24 @@ public:
         // 检查是否有任何子节点之前被访问过
         // 一个编码的问题就是, 变量的意义记不清
         for (auto child : nodes[parent]) {
-          if (visitedNodes.contains(child)) {
+          if (visitedNodesThisTurn.contains(child)) {
             isCourseWorked = false;
             break;
-          }
-
-          dq.push_back(child);
+          } else if (checkedNodes.contains(child))
+            continue;
+          else
+            dq.push_back(child);
         }
         if (isCourseWorked) {
+          checkedNodes.insert(parent);
           dq.pop_front();
           // 这一步是有问题的，对于parent的同级之间, 也可能出现课程依赖关系
           // 这还是对题目没有理解透彻。
           // 但是如果一个一个的添加, 那代码的复杂度急剧上升
-          visitedNodes.insert(nodes[parent].begin(), nodes[parent].end());
+          // notice :我觉得这个代码有一个问题,就是你把这个visited
+          // node在一次循环中处理了两遍. 上面已经添加过一次了
+          // visitedNodesThisTurn.insert(nodes[parent].begin(),
+          //                             nodes[parent].end());
         }
       }
     }
