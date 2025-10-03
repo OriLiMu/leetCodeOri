@@ -15,21 +15,23 @@
 using namespace std;
 class Solution {
 public:
-  bool dfs(int curNode, unordered_set<int> &curPath,
-           unordered_set<int> &checkedNodes,
+  // 这个方法合并1 的 curPath 和 checkedNodes 到一个
+  // 每次一个路径走完之后, 要么中途发现无效点, 要么回来所有点都是有效点
+  bool dfs(int curNode, unordered_map<int, int> &nodeStatus,
            unordered_map<int, unordered_set<int>> &nodes) {
-    if (checkedNodes.contains(curNode))
-      return true;
-    else if (find(curPath.begin(), curPath.end(), curNode) != curPath.end())
-      return false;
-    curPath.insert(curNode);
+    if (nodeStatus.contains(curNode)) {
+      if (nodeStatus[curNode] == 0)
+        return false;
+      else
+        return true;
+    }
+    nodeStatus[curNode] = 0;
     for (auto &child : nodes[curNode]) {
-      if (!dfs(child, curPath, checkedNodes, nodes))
+      if (!dfs(child, nodeStatus, nodes))
         return false;
     }
 
-    checkedNodes.insert(curNode); // 这个位置搞错了, 之前放在上面是不对的
-    curPath.erase(curNode);
+    nodeStatus[curNode] = 1;
     return true;
   }
   bool canFinish(int numCourses, vector<vector<int>> &prerequisites) {
@@ -41,12 +43,10 @@ public:
       nodes[key].insert(value);
     }
 
-    unordered_set<int> visitedNodesThisTurn;
-    unordered_set<int> checkedNodes;
+    unordered_map<int, int> nodeStatus;
     bool isCourseWorked = true;
     for (auto &kv : nodes) {
-      visitedNodesThisTurn.clear();
-      if (!dfs(kv.first, visitedNodesThisTurn, checkedNodes, nodes))
+      if (!dfs(kv.first, nodeStatus, nodes))
         return false;
     }
 
