@@ -1,5 +1,3 @@
-#include <climits>
-#include <cmath>
 #include <iostream>
 #include <unordered_map>
 #include <vector>
@@ -86,8 +84,3 @@ int main() {
   RangeFreqQuery rfq(v);
   cout << rfq.query(6, 8, 4) << endl;
 }
-
-
-
-
-
