@@ -1,19 +1,17 @@
+#include <array>
 #include <iostream>
 #include <string>
-#include <vector>
 
 using namespace std;
 
+// 代码效率的提升居然来源于array
 class Trie {
 public:
   struct TreeNode {
     // char c;     // 这个没必要
     bool isEnd; // 这里需要一个end标记, size被resize无法判断是不是还有child
-    vector<TreeNode *> children;
-    TreeNode() {
-      children.resize(26, nullptr);
-      isEnd = false; // 这里的值怎么设置
-    }
+    array<TreeNode *, 26> children;
+    TreeNode() : isEnd(false) { children.fill(nullptr); }
   };
   TreeNode *dummy;
   Trie() { dummy = new TreeNode(); } // 这里的初始化值需要注意
