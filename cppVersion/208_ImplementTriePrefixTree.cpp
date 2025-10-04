@@ -16,29 +16,26 @@ using namespace std;
 class Trie {
 public:
   struct TreeNode {
-    char c;
+    // char c;     // 这个没必要
     bool isEnd; // 这里需要一个end标记, size被resize无法判断是不是还有child
     vector<TreeNode *> children;
-    TreeNode(char cc) : c(cc) {
+    TreeNode() {
       children.resize(26);
       isEnd = false; // 这里的值怎么设置
     }
   };
   TreeNode *dummy;
-  Trie() { dummy = new TreeNode('\0'); } // 这里的初始化值需要注意
+  Trie() { dummy = new TreeNode(); } // 这里的初始化值需要注意
   // 其中的一个索引表是不需要的
 
   void insert(string word) {
-    if (!word.size())
-      return;
     // 这里还有一个最大的错误就是指针虚表的问题.
     // 如果你想修改一个指针所指向的内容你需要找到他爹
     TreeNode *parent = dummy;
     for (int i = 0; i < word.size(); ++i) {
-      int cIdx = static_cast<int>(word[i] - 'a');
-      if (!parent->children[cIdx])
-        parent->children[cIdx] = new TreeNode(word[i]);
-      parent = parent->children[cIdx];
+      if (!parent->children[word[i] - 'a'])
+        parent->children[word[i] - 'a'] = new TreeNode();
+      parent = parent->children[word[i] - 'a'];
     }
     parent->isEnd = true;
   }
@@ -46,22 +43,21 @@ public:
   bool search(string word) {
     TreeNode *p = dummy;
     for (int i = 0; i < word.size(); ++i) {
-      int idx = static_cast<int>(word[i] - 'a');
-      if (!p->children[idx])
+      if (!p->children[word[i] - 'a'])
         return false;
-      p = p->children[idx];
+      p = p->children[word[i] - 'a'];
     }
 
     return p->isEnd;
   }
 
   bool startsWith(string prefix) {
-    vector<TreeNode *> children = dummy->children;
+    vector<TreeNode *> children =
+        dummy->children; // 这里有一个vector拷贝, 消耗性能
     for (int i = 0; i < prefix.size(); ++i) {
-      int idx = static_cast<int>(prefix[i] - 'a');
-      if (!children[idx])
+      if (!children[prefix[i] - 'a'])
         return false;
-      children = children[idx]->children;
+      children = children[prefix[i] - 'a']->children;
     }
 
     return true;
