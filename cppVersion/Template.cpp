@@ -1,6 +1,6 @@
 class Solution {
 public:
-    vector<vector<int>> permute(vector<int>& nums) {
+    vector<int> findXSum(vector<int>& nums, int k, int x) {
         
     }
 };
