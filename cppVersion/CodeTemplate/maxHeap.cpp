@@ -25,19 +25,26 @@ void siftUp() {
 
 void siftDown() {
   int fatherIdx = 0;
-  int c1 = fatherIdx * 2, c2 = fatherIdx * 2 + 1;
+  int c1 = fatherIdx * 2 + 1, c2 = fatherIdx * 2 + 2;
   while (true) {
-    if (c1 < mh_size && mh[fatherIdx] < mh[c1]) {
+    // 这里不是谁比father大就能上, 还要比兄弟大
+    // 这里可能 c1是在范围之内，但是c2在范围之外
+    if (c1 < mh_size && mh[fatherIdx] < mh[c1] && mh[c1] > mh[c2]) {
       swap(mh[fatherIdx], mh[c1]);
       fatherIdx = c1;
-      c1 = fatherIdx * 2, c2 = fatherIdx * 2 + 1;
-    } else if (c2 < mh_size && mh[fatherIdx] < mh[c2]) {
+      c1 = fatherIdx * 2 + 1, c2 = fatherIdx * 2 + 2;
+    } else if (c2 < mh_size && mh[fatherIdx] < mh[c2] && mh[c1] < mh[c2]) {
       swap(mh[fatherIdx], mh[c2]);
       fatherIdx = c2;
-      c1 = fatherIdx * 2, c2 = fatherIdx * 2 + 1;
+      c1 = fatherIdx * 2 + 1, c2 = fatherIdx * 2 + 2;
     }
 
-    if (fatherIdx > mh_size)
+    // 注意
+    // 如果这里的 c1, c2超出范围, 那么上面两个流程都不会走
+    // fatherIdx永远在范围之后, c1, c2在范围之内陷入死循环
+    // 核心问题就是, 如果你需要fatherIdx作为判断跳出条件
+    // 那么, 需要注意严格更新 fatherIdx的值, 不能被其他因素影响
+    if (c1 >= mh_size)
       break;
   }
 }
@@ -58,8 +65,14 @@ void displayTree() {
 
 void insert(int n) {
   mh_size++;
-  mh[mh_size] = n;
+  mh[mh_size - 1] = n;
   siftUp();
+}
+
+void popTop() {
+  mh[0] = mh[mh_size - 1];
+  mh_size--;
+  siftDown();
 }
 
 int main() {
