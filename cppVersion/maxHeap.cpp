@@ -14,14 +14,12 @@ vector<int> mh(100);
 int mh_size = 0;
 
 void siftUp() {
-  int curIdx = mh_size;
-  int fatherIdx = mh_size / 2;
-  while (mh[curIdx] > mh[fatherIdx]) {
+  int curIdx = mh_size - 1; // 这里可能是-1
+  int fatherIdx = (curIdx - 1) / 2;
+  while (curIdx > 0 && mh[curIdx] > mh[fatherIdx]) {
     swap(mh[curIdx], mh[fatherIdx]);
     curIdx = fatherIdx;
-    if (fatherIdx == 0)
-      break;
-    fatherIdx = curIdx / 2;
+    fatherIdx = (curIdx - 1) / 2;
   }
 }
 
