@@ -20,14 +20,19 @@ public:
   // startIdx是当前的可选项目, 从哪里开始
   void func(int leftLen, int startIdx, vector<int> &cur, vector<int> &nums,
             vector<vector<int>> &result) {
-    if (!leftLen || startIdx >= nums.size()) {
+    // if (!leftLen ||
+    //     startIdx >=
+    //         nums.size()) { // 这里虽然考虑了剩余参数过剩的问题,
+    //                        //
+    //                        也引入了数字还没选够但是startIdx已经超过size的情况
+    if (!leftLen) {
       result.push_back(cur);
-      cur.pop_back();
+      // cur.pop_back(); // 经典的错误 这里导致了重复的pop_back, 会引发空vector
+      // pop_back
       return;
     }
 
     for (int j = startIdx; j < nums.size(); ++j) {
-      cout << "j :" << j << "nums[j]: " << nums[j] << endl;
       cur.push_back(nums[j]);
       func(leftLen - 1, j + 1, cur, nums, result);
       cur.pop_back();
@@ -35,7 +40,7 @@ public:
   }
 
   vector<vector<int>> subsets(vector<int> &nums) {
-    vector<vector<int>> result;
+    vector<vector<int>> result = {{}};
     vector<int> cur;
     int startIdx = 0;
     for (int i = 0; i < nums.size(); ++i)
@@ -48,10 +53,14 @@ int main() {
   Solution s;
   vector<int> nums = {1, 2, 3};
   vector<vector<int>> r = s.subsets(nums);
+  cout << "Total subsets: " << r.size() << endl;
   for (auto &v : r) {
-    for (auto &n : v) {
-      cout << n << ", ";
+    cout << "[";
+    for (size_t i = 0; i < v.size(); ++i) {
+      if (i > 0)
+        cout << ", ";
+      cout << v[i];
     }
-    cout << endl;
+    cout << "]" << endl;
   }
 }
