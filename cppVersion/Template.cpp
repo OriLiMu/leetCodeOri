@@ -1,6 +1,6 @@
 class Solution {
 public:
-    vector<string> generateParenthesis(int n) {
+    bool exist(vector<vector<char>>& board, string word) {
         
     }
 };
