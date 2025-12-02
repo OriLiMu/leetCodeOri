@@ -15,6 +15,11 @@ class Solution {
 public:
   bool func(vector<vector<char>> &board, string &word, string &cur,
             vector<int> &curPath, int r, int c, int rowCnt, int colCnt) {
+    // if (cur == "ABEDCB") {
+    if (cur == "A") {
+      cout << "here" << endl;
+    }
+    cout << cur << endl;
     if (cur == word)
       return true;
 
@@ -84,11 +89,15 @@ public:
     int c = board[0].size();
     string cur;
     vector<int> curPath;
-    vector<vector<int>> accessedMap(r, vector<int>(c));
     for (int i = 0; i < r; ++i) {
       for (int j = 0; j < c; ++j) {
+        // 没有验证
+        cur.push_back(board[i][j]);
+        curPath.push_back(i * r + j);
         if (func(board, word, cur, curPath, i, j, r, c))
           return true;
+        cur.pop_back();
+        curPath.pop_back();
       }
     }
 
@@ -98,7 +107,9 @@ public:
 
 int main() {
   Solution s;
-  vector<vector<char>> b = {
-      {'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}};
-  cout << s.exist(b, "SEE") << endl;
+  vector<vector<char>> b = {{'Z', 'Z', 'Z', 'Z', 'Z'},
+                            {'Z', 'C', 'B', 'A', 'B'},
+                            {'A', 'D', 'E', 'D', 'C'},
+                            {'B', 'E', 'Z', 'Z', 'Z'}};
+  cout << s.exist(b, "ABEDCBA") << endl;
 }
