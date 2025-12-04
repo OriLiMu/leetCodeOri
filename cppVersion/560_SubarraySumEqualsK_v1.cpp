@@ -8,7 +8,7 @@ using namespace std;
 class Solution {
 public:
   int subarraySum(vector<int> &nums, int k) {
-    // 注意这里有一个0, 这个是需要的
+    // 注意这里有一个0, 这个是需要的 需要的就是这个
     unordered_map<int, int> preSumCountUom = {{0, 1}};
     int curPreSum = nums[0];
     int result = 0;
