@@ -16,9 +16,9 @@ set(CMAKE_CXX_COMPILER clang++)
 # -O0：关闭所有优化（避免变量被编译器优化掉，确保变量存在于内存中）
 # -g3：生成最详细的调试信息（包含宏定义、局部变量、函数参数等）
 # -fsanitize=undefined,address：保留用户原有的 sanitizer 需求（不影响调试）
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3 -fsanitize=undefined,address")
-set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=undefined,address")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -U_GLIBCXX_DEBUG")
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3 -fsanitize=undefined,address")
+#set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=undefined,address")
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -U_GLIBCXX_DEBUG")
 
 # 4. 释放模式 Flags（可选，不影响调试）
 # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
