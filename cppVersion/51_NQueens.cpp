@@ -23,21 +23,22 @@ public:
         ans[usedRow[i]][i] = 'Q';
       }
 
-      for (int r = 0; r < msize; ++r) {
-        if (find(usedRow.begin(), usedRow.end(), r) == usedRow.end()) {
-          usedRow.push_back(r);
-          dfs(c + 1);
-          usedRow.pop_back();
-        }
-      }
-
       result.push_back(ans);
       return;
+    }
+
+    for (int r = 0; r < msize; ++r) {
+      if (find(usedRow.begin(), usedRow.end(), r) == usedRow.end()) {
+        usedRow.push_back(r);
+        dfs(c + 1);
+        usedRow.pop_back();
+      }
     }
   }
 
   vector<vector<string>> solveNQueens(int n) {
     msize = n;
+    dfs(0);
     return result;
   }
 };
