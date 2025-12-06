@@ -15,6 +15,9 @@
 using namespace std;
 class Solution {
 public:
+  vector<int> a1, a2; // get left edge list
+  vector<vector<string>> result;
+
   int leftEdge(int idx, string &s, bool isDouble) {
     int left = idx, right = idx;
     if (isDouble) {
@@ -31,8 +34,7 @@ public:
     return left + 1;
   }
 
-  void func(int leftEdge, string &s, vector<vector<int>> &cur, vector<int> &a1,
-            vector<int> &a2, vector<vector<vector<int>>> &result) {
+  void func(int leftEdge, string &s, vector<string> &cur) {
     if (leftEdge == -1)
       return;
     if (leftEdge == s.size()) {
@@ -42,8 +44,8 @@ public:
     for (int i = leftEdge; i < a1.size(); ++i) {
       if (a1[i] <= leftEdge) {
         int rightEdge = i + i - leftEdge;
-        cur.push_back({leftEdge, rightEdge});
-        func(rightEdge + 1, s, cur, a1, a2, result);
+        cur.push_back(s.substr(leftEdge, rightEdge - leftEdge + 1));
+        func(rightEdge + 1, s, cur);
         cur.pop_back();
       }
     }
@@ -58,15 +60,14 @@ public:
                       // 达到效果, 但是有点"非意义定义", 有点卡数字的嫌疑
         // 看似精巧但是实际上还是把逻辑复杂化了
         int rightEdge = leftCt + 1 + leftCt - leftEdge;
-        cur.push_back({leftEdge, rightEdge});
-        func(rightEdge + 1, s, cur, a1, a2, result);
+        cur.push_back(s.substr(leftEdge, rightEdge - leftEdge + 1));
+        func(rightEdge + 1, s, cur);
         cur.pop_back();
       }
     }
   }
 
   vector<vector<string>> partition(string s) {
-    vector<int> a1, a2; // get left edge list
     for (int i = 0; i < s.size(); ++i) {
       // 很有意思, 这个a1, a2实际上你之前已经设置了大小,
       // 所以这个时候再用push_back就会放到更后面
@@ -78,20 +79,19 @@ public:
     }
     a2.pop_back(); // 最后一个值无效, 因为没有右中点
 
-    vector<vector<vector<int>>> result;
-    vector<vector<int>> cur;
-    func(0, s, cur, a1, a2, result);
-    vector<vector<string>> r;
-    vector<string> cur_r;
-    for (auto &vvi : result) {
-      for (auto &vi : vvi) {
-        cur_r.push_back(s.substr(vi[0], vi[1] - vi[0] + 1));
-      }
-      r.push_back(cur_r);
-      cur_r.clear();
-    }
+    vector<string> cur;
+    func(0, s, cur);
+    // vector<vector<string>> r;
+    // vector<string> cur_r;
+    // for (auto &vvi : result) {
+    //   for (auto &vi : vvi) {
+    //     cur_r.push_back(s.substr(vi[0], vi[1] - vi[0] + 1));
+    //   }
+    //   r.push_back(cur_r);
+    //   cur_r.clear();
+    // }
 
-    return r;
+    return result;
   }
 };
 
