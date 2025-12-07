@@ -14,24 +14,35 @@ using namespace std;
 class Solution {
 public:
   vector<vector<string>> result;
-  vector<int> usedRow;
+  unordered_map<int, int> usedRow;
   int msize;
   void dfs(int c) {
     if (c == msize) {
       vector<string> ans(msize, string(msize, '.'));
-      for (int i = 0; i < msize; ++i) {
-        ans[usedRow[i]][i] = 'Q';
-      }
+      int idx = 0;
+      for (auto &r : usedRow)
+        ans[r.first][idx++] = 'Q';
 
       result.push_back(ans);
       return;
     }
 
     for (int r = 0; r < msize; ++r) {
-      if (find(usedRow.begin(), usedRow.end(), r) == usedRow.end()) {
-        usedRow.push_back(r);
-        dfs(c + 1);
-        usedRow.pop_back();
+      // 直线判断
+      if (usedRow.find(r) == usedRow.end()) {
+        bool isOnDiagonal = false;
+        for (auto &ur : usedRow) {
+          if (abs(ur.first - r) == abs(ur.second - c)) {
+            isOnDiagonal = true;
+            break;
+          }
+        }
+
+        if (!isOnDiagonal) {
+          usedRow.insert({r, c});
+          dfs(c + 1);
+          usedRow.erase(r);
+        }
       }
     }
   }
@@ -44,5 +55,11 @@ public:
 };
 int main() {
   Solution s;
-  cout << "hello" << endl;
+  vector<vector<string>> r = s.solveNQueens(4);
+  for (auto &vs : r) {
+    for (auto &s : vs) {
+      cout << s << endl;
+    }
+    cout << endl;
+  }
 }
