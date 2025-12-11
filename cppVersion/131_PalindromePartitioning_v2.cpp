@@ -13,8 +13,34 @@
 using namespace std;
 class Solution {
 public:
+  vector<int> l1, l2;
+  void dfs(vector<string> &cur, string &s, int leftIdx,
+           vector<vector<string>> &r) {
+    if (leftIdx == s.size()) {
+      r.push_back(cur);
+      return;
+    }
+
+    for (int i = 0; i < l1.size(); i++) {
+      if (l1[i] <= leftIdx) {
+        string t = s.substr(leftIdx, (i - leftIdx) * 2 + 1);
+        cur.push_back(t);
+        dfs(cur, s, i + i - leftIdx + 1, r);
+        cur.pop_back();
+      }
+    }
+
+    for (int i = 0; i < l2.size(); i++) {
+      if (l2[i] <= leftIdx) {
+        string t = s.substr(leftIdx, (i - leftIdx) * 2 + 1);
+        cur.push_back(t);
+        dfs(cur, s, i + i - leftIdx + 1, r);
+        cur.pop_back();
+      }
+    }
+  }
+
   vector<vector<string>> partition(string s) {
-    vector<int> l1, l2;
     int left, right;
     for (int i = 0; i < s.size(); ++i) {
       left = right = i;
@@ -42,16 +68,8 @@ public:
       l2.push_back(left);
     }
 
-    for (auto &cc : l2) {
-      cout << cc << ", ";
-    }
-    cout << endl;
-
     vector<vector<string>> r;
     return r;
   }
 };
-int main() {
-  Solution s;
-  s.partition("AABBAA");
-}
+int main() { Solution s; }
