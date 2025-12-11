@@ -13,87 +13,33 @@
 using namespace std;
 class Solution {
 public:
-  bool func(vector<vector<char>> &board, string &word, string &cur,
-            vector<int> &curPath, int r, int c, int rowCnt, int colCnt) {
-    if (cur == word)
+  vector<int> dx = {-1, 1, 0, 0};
+  vector<int> dy = {0, 0, -1, 1};
+  bool dfs(vector<vector<char>> &board, int r, int c, int curIdx,
+           string &targetWord) {
+    if (board[r][c] != targetWord[curIdx])
+      return false;
+    if (curIdx == targetWord.size() - 1)
       return true;
-
-    // 下面这个逻辑我理解的是合并不了, 需要单独的处理
-    // go up 有效性检验
-    if (r - 1 >= 0) {
-      int upIdx = (r - 1) * colCnt + c;
-      char upChar = board[r - 1][c];
-      if (upChar == word[cur.size()] &&
-          find(curPath.begin(), curPath.end(), upIdx) == curPath.end()) {
-        cur.push_back(upChar);
-        curPath.push_back(upIdx);
-        if (func(board, word, cur, curPath, r - 1, c, rowCnt, colCnt))
+    char t = board[r][c];
+    board[r][c] = '.';
+    for (int i = 0; i < 4; ++i) {
+      int a = r + dx[i];
+      int b = c + dy[i];
+      if (a >= 0 && a < board.size() && b >= 0 && b < board[0].size())
+        if (dfs(board, a, b, curIdx + 1, targetWord))
           return true;
-        cur.pop_back();
-        curPath.pop_back();
-      }
     }
-
-    if (r + 1 < rowCnt) {
-      int downIdx = (r + 1) * colCnt + c;
-      char downChar = board[r + 1][c];
-      if (downChar == word[cur.size()] &&
-          find(curPath.begin(), curPath.end(), downIdx) == curPath.end()) {
-        cur.push_back(downChar);
-        curPath.push_back(downIdx);
-        if (func(board, word, cur, curPath, r + 1, c, rowCnt, colCnt))
-          return true;
-        cur.pop_back();
-        curPath.pop_back();
-      }
-    }
-
-    if (c - 1 >= 0) {
-      int leftIdx = r * colCnt + c - 1;
-      char leftChar = board[r][c - 1];
-      if (leftChar == word[cur.size()] &&
-          find(curPath.begin(), curPath.end(), leftIdx) == curPath.end()) {
-        cur.push_back(leftChar);
-        curPath.push_back(leftIdx);
-        if (func(board, word, cur, curPath, r, c - 1, rowCnt, colCnt))
-          return true;
-        cur.pop_back();
-        curPath.pop_back();
-      }
-    }
-
-    if (c + 1 < colCnt) {
-      int rightIdx = r * colCnt + c + 1;
-      char rightChar = board[r][c + 1];
-      if (rightChar == word[cur.size()] &&
-          find(curPath.begin(), curPath.end(), rightIdx) == curPath.end()) {
-        cur.push_back(rightChar);
-        curPath.push_back(rightIdx);
-        if (func(board, word, cur, curPath, r, c + 1, rowCnt, colCnt))
-          return true;
-        cur.pop_back();
-        curPath.pop_back();
-      }
-    }
+    board[r][c] = t;
 
     return false;
   }
 
   bool exist(vector<vector<char>> &board, string word) {
-    int r = board.size();
-    int c = board[0].size();
-    string cur;
-    vector<int> curPath;
-    for (int i = 0; i < r; ++i) {
-      for (int j = 0; j < c; ++j) {
-        // 没有验证
-        cur.push_back(board[i][j]);
-        // 这里是 i * c, 不是 i * r
-        curPath.push_back(i * c + j);
-        if (func(board, word, cur, curPath, i, j, r, c))
+    for (int i = 0; i < board.size(); ++i) {
+      for (int j = 0; j < board[0].size(); ++j) {
+        if (dfs(board, i, j, 0, word))
           return true;
-        cur.pop_back();
-        curPath.pop_back();
       }
     }
 
@@ -102,10 +48,8 @@ public:
 };
 
 int main() {
+  vector<vector<char>> b = {
+      {'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}};
   Solution s;
-  vector<vector<char>> b = {{'Z', 'Z', 'Z', 'Z', 'Z'},
-                            {'Z', 'C', 'B', 'A', 'B'},
-                            {'A', 'D', 'E', 'D', 'C'},
-                            {'B', 'E', 'Z', 'Z', 'Z'}};
-  cout << s.exist(b, "ABEDCBA") << endl;
+  cout << s.exist(b, "ABCCED") << endl;
 }
