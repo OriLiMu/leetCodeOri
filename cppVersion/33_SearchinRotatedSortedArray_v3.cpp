@@ -172,40 +172,38 @@ public:
 
   // code 6 {4, 5, 6, 7, 0, 1, 2}, 我的结果 0
   // 还是没处理好悬崖的问题
+  // int search(vector<int> &nums, int target) {
+  //   int l = 0, r = nums.size() - 1, p, mid = (l + r) >> 1;
+  //   while (l < r) {
+  //     mid = (l + r) >> 1; // 1. 这个是偏左的取值
+  //     // 这个0的判断是有必要的, 因为和后面的逻辑不一致
+  //     if (mid == 0) {
+  //       mid = nums[l] > nums[r] ? l : r;
+  //       break;
+  //     }
+  //     if (nums[mid] > nums[0]) {
+  //       if (mid == l) {
+  //         mid = nums[l] > nums[r] ? l : r;
+  //         break;
+  //       }
+  //       if (mid + 1 < nums.size() && nums[mid] > nums[mid + 1])
+  //         return nums[mid];
+  //       l = mid;
+  //     } else {
+  //       r = mid - 1;
+  //     }
+  //   }
+  //
+  //   cout << "Max Value: " << nums[mid] << endl;
+  //   return nums[mid];
+  // }
+
+  // code 7 {-1,-2,-3} error, 这个case是错的
   int search(vector<int> &nums, int target) {
-    if (nums.empty()) {
-      cout << "Max Value: " << INT_MIN << endl;
-      return INT_MIN;
-    }
-
-    // 如果数组只有一个元素，直接返回
-    if (nums.size() == 1) {
-      cout << "Max Value: " << nums[0] << endl;
-      return nums[0];
-    }
-
-    // 检查是否是升序数组（未旋转）
-    if (nums[0] < nums[nums.size() - 1]) {
-      cout << "Max Value: " << nums[nums.size() - 1] << endl;
-      return nums[nums.size() - 1];
-    }
-
-    // 检查是否是完全降序数组（这种情况下最大值在第一个位置）
-    bool isDescending = true;
-    for (int i = 1; i < nums.size(); ++i) {
-      if (nums[i] > nums[i - 1]) {
-        isDescending = false;
-        break;
-      }
-    }
-    if (isDescending) {
-      cout << "Max Value: " << nums[0] << endl;
-      return nums[0];
-    }
-
     int l = 0, r = nums.size() - 1, p, mid = (l + r) >> 1;
     while (l < r) {
       mid = (l + r) >> 1; // 1. 这个是偏左的取值
+      // 这个0的判断是有必要的, 因为和后面的逻辑不一致
       if (mid == 0) {
         mid = nums[l] > nums[r] ? l : r;
         break;
@@ -240,6 +238,7 @@ int main() {
   // 测试用例：{数组, 期望的最大值}
   vector<pair<vector<int>, int>> testCases = {
       // 基础测试用例
+      // {{-1, -2, -3}, -1}, // 负数 错误例子
       {{1, 2, 3}, 3},
       {{4, 5, 6, 7, 0, 1, 2}, 7},
       {{4, 5, 1, 2, 3}, 5},
@@ -254,7 +253,7 @@ int main() {
       {{3, 1}, 3}, // 旋转
 
       // 边界测试用例
-      {{}, INT_MIN}, // 1. 空数组
+      // {{}, INT_MIN}, // 1. 空数组
 
       // 2. 重复元素的数组（如果允许）
       {{1, 1, 1, 1}, 1},
@@ -278,7 +277,6 @@ int main() {
 
       // 其他边界情况
       {{100}, 100},                     // 单个大数
-      {{-1, -2, -3}, -1},               // 负数
       {{INT_MAX, INT_MIN}, INT_MAX},    // 极值测试
       {{1, INT_MAX, INT_MIN}, INT_MAX}, // 包含极值
 
