@@ -16,7 +16,6 @@ public:
   int search(vector<int> &nums, int target) {
     int l = 0, r = nums.size() - 1, p, mid;
     while (l < r) {
-      cout << l << ", " << r << endl;
       mid = (l + r) >> 1;
       if (nums[mid] >= nums[0]) {
         if (mid == l)
