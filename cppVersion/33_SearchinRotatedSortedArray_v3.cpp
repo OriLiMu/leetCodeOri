@@ -54,47 +54,56 @@ int findMaxCorrect(const vector<int> &nums) {
 class Solution {
 public:
   // code 1 error case {2, 1}
-  // int search(vector<int> &nums, int target) {
-  //   int l = 0, r = nums.size() - 1, p, mid = (l + r) >> 1;
-  //   while (l < r) {
-  //     mid = (l + r) >> 1; // 1. 这个是偏左的取值
-  //     cout << l << ", " << r << ", mid:" << mid << endl;
-  //     if (nums[mid] >= nums[0]) {
-  //       l = mid; // 2. 加上上面偏左的取值, 这里会陷入死循环
-  //       // 3.这个错误的核心在哪?
-  //       // nums[mid] >= nums[0] 这个逻辑可能出现 mid == 0的情况,
-  //       // 意味着这个比较逻辑没有意义, 因为 nums[0] 必然等于 nums[0]
-  //       // 那么一开始为什么写成 >= 呢, 因为 nums[0] 也可能是最大值, >=
-  //       似乎是对
-  //       // nums[0]为最大值的一种保护
-  //       // 我们分析这种逻辑是否成立:
-  //       // 如果 nums[mid] >= nums[0] 意味着我需要摒弃左面, 如果nums[0]
-  //       // 在这种情况之中就是被兵器的对象. 所以这个逻辑是错的
-  //     } else
-  //       r = mid - 1; // 这种情况是 nums[mid] < nums[0], 因为你需要找最大值,
-  //                    // 那么这个mid 肯定不是, mid - 1没有问题
-  //   }
-  //
-  //   cout << "mid: " << mid << ", value: " << nums[mid] << endl;
-  //   return 0;
-  // }
+  int search1(vector<int> &nums, int target) {
+    int l = 0, r = nums.size() - 1, p, mid = (l + r) >> 1;
+    while (l < r) {
+      mid = (l + r) >> 1; // 1. 这个是偏左的取值
+      cout << l << ", " << r << ", mid:" << mid << endl;
+      if (nums[mid] >= nums[0]) {
+        l = mid; // 2. 加上上面偏左的取值, 这里会陷入死循环
+        // 3.这个错误的核心在哪? 核心在于,
+        // 当左右两个端点，差一个或者重合时，之前的中点计算的意义就不存在了,这时候之前应用于端点的逻辑也会应用在终点上，所以会出现冲突
+        // ,就会出现一种特殊情况. 比如: nums[mid] >= nums[0]
+        // 这个逻辑是针对两个点的比较, 但是如果重合实际上就变成了一个点的比较,
+        // 这个逻辑就会混乱, nums[mid] 这个点可以是最大点, 也可以不是.
+        // 但是原本的意思是如果重点大于左端点, 整个区间右移, 这个逻辑就不存在了
+        // nums[mid] >= nums[0] 这个逻辑可能出现 mid ==
+        // 0的情况, 意味着这个比较逻辑没有意义, 因为 nums[0] 必然等于 nums[0]
+        // 那么一开始为什么写成 >= 呢, 因为 nums[0] 也可能是最大值, >=
+        // 似乎是对
+        // nums[0]为最大值的一种保护
+        // 我们分析这种逻辑是否成立:
+        // 如果 nums[mid] >= nums[0] 意味着我需要摒弃左面, 如果nums[0]
+        // 在这种情况之中就是被兵器的对象. 所以这个逻辑是错的
+      } else
+        r = mid - 1; // 这种情况是 nums[mid] < nums[0], 因为你需要找最大值,
+                     // 那么这个mid 肯定不是, mid - 1没有问题
+    }
 
-  // code 2 error case {1, 2, 3}
-  // int search(vector<int> &nums, int target) {
-  //   int l = 0, r = nums.size() - 1, p, mid = (l + r) >> 1;
-  //   while (l < r) {
-  //     mid = (l + r) >> 1; // 1. 这个是偏左的取值
-  //     cout << l << ", " << r << ", mid:" << mid << endl;
-  //     if (nums[mid] > nums[0]) {
-  //       l = mid;
-  //     } else
-  //       r = mid - 1; // 这种情况是 nums[mid] < nums[0], 因为你需要找最大值,
-  //                    // 那么这个mid 肯定不是, mid - 1没有问题
-  //   }
-  //
-  //   cout << "mid: " << mid << ", value: " << nums[mid] << endl;
-  //   return 0;
-  // }
+    cout << "mid: " << mid << ", value: " << nums[mid] << endl;
+    return 0;
+  }
+
+  // code 2 error case {1, 2, 3}, 死循环
+  // 这个解法尝试把nums[mid] >= nums[0] 编程 > nums[0],
+  // 这样还是没有解决核心的问题, 就是如何处理端点重合的问题
+  // 自然也是错的
+  // 这里的 r = mid - 1也非常危险
+  int search2(vector<int> &nums, int target) {
+    int l = 0, r = nums.size() - 1, p, mid = (l + r) >> 1;
+    while (l < r) {
+      mid = (l + r) >> 1; // 1. 这个是偏左的取值
+      cout << l << ", " << r << ", mid:" << mid << endl;
+      if (nums[mid] > nums[0]) {
+        l = mid;
+      } else
+        r = mid - 1; // 这种情况是 nums[mid] < nums[0], 因为你需要找最大值,
+                     // 那么这个mid 肯定不是, mid - 1没有问题
+    }
+
+    cout << "mid: " << mid << ", value: " << nums[mid] << endl;
+    return 0;
+  }
 
   // code 3, error case {4, 5, 1, 2, 3}, result is 4
   // int search(vector<int> &nums, int target) {
@@ -199,7 +208,7 @@ public:
   // }
 
   // code 7 {-1,-2,-3} error, 这个case是错的
-  int search(vector<int> &nums, int target) {
+  int search7(vector<int> &nums, int target) {
     int l = 0, r = nums.size() - 1, p, mid = (l + r) >> 1;
     while (l < r) {
       mid = (l + r) >> 1; // 1. 这个是偏左的取值
@@ -223,6 +232,33 @@ public:
 
     cout << "Max Value: " << nums[mid] << endl;
     return nums[mid];
+  }
+
+  // 这个方法是最容易理解的
+  int search8(vector<int> &nums, int target) {
+    if (nums.size() == 1 || nums[0] > nums[1])
+      return nums[0];
+    int mid, l = 0, r = nums.size() - 1;
+    while (l <= r) {
+      mid = (l + r) / 2;
+      if (l == r) // 按照当前的mid算法只要 mid 等于右边界, l 就等于 r
+        return nums[mid];
+      else if (l + 1 == r)
+        return nums[l] > nums[r] ? nums[l] : nums[r];
+
+      if (nums[mid] > nums[mid + 1]) {
+        return nums[mid];
+      }
+      // 已经不会出现等于零的情况, 上面已经把这些情况过滤了
+      if (nums[mid] > nums[0]) {
+        // 有可能是mid, 也有可能是mid后面
+        l = mid + 1;
+      } else {
+        r = mid - 1;
+      }
+    }
+
+    return -1000;
   }
 };
 
@@ -293,7 +329,7 @@ int main() {
 
     auto &[input, expected] = testCases[i];
 
-    int yourResult = s.search(input, 0); // target unused
+    int yourResult = s.search8(input, 0); // target unused
 
     int correctResult = findMaxCorrect(input);
 
