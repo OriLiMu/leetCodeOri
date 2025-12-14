@@ -260,6 +260,37 @@ public:
 
     return -1000;
   }
+
+  // 这个方法是最容易理解的 简化方法8
+  // 核心问题就在于, 如果剩下两个数字, mid = (l + r) / 2 获取的是左面的哪个数字.
+  // 如果你的l仍然等于 mid, 那么就会进入死循环, 因为这个过程, 你没有
+  int search9(vector<int> &nums, int target) {
+    // 这个可以删掉. 如果是一个好测试. 考虑两个数字的情况
+    // if (nums.size() == 1 || nums[0] > nums[1]) //
+    //   return nums[0];
+
+    int mid, l = 0, r = nums.size() - 1;
+    while (l <= r) {
+      mid = (l + r) / 2;
+      if (l == r) // 按照当前的mid算法只要 mid 等于右边界, l 就等于 r
+        return nums[mid];
+      else if (l + 1 == r) // 这种情况考虑了两个数字的情况
+        return nums[l] > nums[r] ? nums[l] : nums[r];
+
+      if (nums[mid] > nums[mid + 1]) {
+        return nums[mid];
+      }
+      // 已经不会出现等于零的情况, 上面已经把这些情况过滤了
+      if (nums[mid] > nums[0]) {
+        // 有可能是mid, 也有可能是mid后面
+        l = mid + 1;
+      } else {
+        r = mid - 1;
+      }
+    }
+
+    return -1000;
+  }
 };
 
 int main() {

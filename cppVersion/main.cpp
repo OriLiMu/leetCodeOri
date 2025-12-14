@@ -234,9 +234,37 @@ public:
     return nums[mid];
   }
 
+  // 这个方法是最容易理解的
   int search8(vector<int> &nums, int target) {
     if (nums.size() == 1 || nums[0] > nums[1])
       return nums[0];
+    int mid, l = 0, r = nums.size() - 1;
+    while (l <= r) {
+      mid = (l + r) / 2;
+      if (l == r) // 按照当前的mid算法只要 mid 等于右边界, l 就等于 r
+        return nums[mid];
+      else if (l + 1 == r)
+        return nums[l] > nums[r] ? nums[l] : nums[r];
+
+      if (nums[mid] > nums[mid + 1]) {
+        return nums[mid];
+      }
+      // 已经不会出现等于零的情况, 上面已经把这些情况过滤了
+      if (nums[mid] > nums[0]) {
+        // 有可能是mid, 也有可能是mid后面
+        l = mid + 1;
+      } else {
+        r = mid - 1;
+      }
+    }
+
+    return -1000;
+  }
+
+  // 这个方法是最容易理解的 简化方法8
+  int search9(vector<int> &nums, int target) {
+    // if (nums.size() == 1 || nums[0] > nums[1])
+    //   return nums[0];
     int mid, l = 0, r = nums.size() - 1;
     while (l <= r) {
       mid = (l + r) / 2;
