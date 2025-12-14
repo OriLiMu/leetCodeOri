@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int search(vector<int>& nums, int target) {
+    int findMin(vector<int>& nums) {
         
     }
 };
