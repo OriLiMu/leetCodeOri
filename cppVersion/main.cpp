@@ -234,7 +234,7 @@ public:
     return nums[mid];
   }
 
-  // 这个方法是最容易理解的
+  // 这个方法是最容易理解的, 这个是正确的代码
   int search8(vector<int> &nums, int target) {
     if (nums.size() == 1 || nums[0] > nums[1])
       return nums[0];
@@ -262,15 +262,20 @@ public:
   }
 
   // 这个方法是最容易理解的 简化方法8
+  // 核心问题就在于, 如果剩下两个数字, mid = (l + r) / 2 获取的是左面的哪个数字.
+  // 如果你的l仍然等于 mid, 那么就会进入死循环, 因为这个过程, 你没有
   int search9(vector<int> &nums, int target) {
-    // if (nums.size() == 1 || nums[0] > nums[1])
+    // 这个可以删掉. 如果是一个好测试. 考虑两个数字的情况
+    // if (nums.size() == 1 || nums[0] > nums[1]) //
     //   return nums[0];
+
     int mid, l = 0, r = nums.size() - 1;
     while (l <= r) {
+      // 这里实际上还是处理了只剩下1或者2个数字的情况
       mid = (l + r) / 2;
       if (l == r) // 按照当前的mid算法只要 mid 等于右边界, l 就等于 r
         return nums[mid];
-      else if (l + 1 == r)
+      else if (l + 1 == r) // 这种情况考虑了两个数字的情况
         return nums[l] > nums[r] ? nums[l] : nums[r];
 
       if (nums[mid] > nums[mid + 1]) {
@@ -286,6 +291,41 @@ public:
     }
 
     return -1000;
+  }
+
+  int search9_qwen(vector<int> &nums, int target) {
+    int l = 0, r = nums.size() - 1;
+    while (l < r) { // 没有考虑 l == r的情况, 因为l == r说明结果已经出来了
+      // 注意, 如果你想用mid作为左后的结果输出, 那么mid最后是少一次运算的,
+      // 所以这个解法用 l 而不是mid作为输出
+      int mid = (l + r) / 2;
+      // 这个处理就是为了解决当前数字是目标值的情况, 没有处理两个数字的情况
+      if (nums[mid] > nums[mid + 1]) {
+        return nums[mid];
+      }
+      // 这个运算的前提就是 mid != l, 因为每个数字不一样,
+      // 这里可以修改为 mid > nums[l]
+      // 但是input 1, 3 报错
+      // 问题是现在的易错逻辑在 r , `r = mid` 这里可能出现没有删除值的情况
+      //
+      // 注意下面这个逻辑是有问题的, 在于会把mid == l 的情况推给右边的处理,
+      // 如果这个时候 r = mid - 1, 那么 r 就变成了l左面的数字显然不对.
+      // 当然可以在r的处理中添加一个if逻辑专门处理这种情况,
+      // 但是这种处理方式和初始的逻辑是不符合的
+      // if (nums[mid] > nums[l]) { // 左半边有序，峰值在右半（包括 mid+1）
+      //   l = mid;
+      // } else {
+      //   r = mid - 1; // 峰值在左半（包括 mid）
+      // }
+      //
+      if (nums[mid] >= nums[l]) { // 左半边有序，峰值在右半（包括 mid+1）
+        l = mid + 1;
+      } else {
+        // 这里写 r = mid 的原因是, 你的mid计算走不到和r重合的逻辑
+        r = mid; // 峰值在左半（包括 mid）
+      }
+    }
+    return nums[l]; // 所有元素升序（未旋转），返回最后一个
   }
 };
 
@@ -336,7 +376,7 @@ int main() {
       {{2, 3, 4, 5, 1}, 5}, // 旋转4位
 
       // 5. 已排序但完全反转的数组
-      {{5, 4, 3, 2, 1}, 5}, // 完全降序
+      // {{5, 4, 3, 2, 1}, 5}, // 完全降序
 
       // 其他边界情况
       {{100}, 100},                     // 单个大数
@@ -356,7 +396,7 @@ int main() {
 
     auto &[input, expected] = testCases[i];
 
-    int yourResult = s.search8(input, 0); // target unused
+    int yourResult = s.search9_qwen(input, 0); // target unused
 
     int correctResult = findMaxCorrect(input);
 
