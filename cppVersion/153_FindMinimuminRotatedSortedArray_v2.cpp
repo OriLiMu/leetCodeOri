@@ -19,7 +19,7 @@ public:
   // 那么这里必须 l = mid, 不然可能丢掉值 所以 判断条件的等号, mid的计算方法和l
   // r 的赋值这三个是一体的关系, 必须对应
   // 当前这个也是错误示例
-  int findMin(vector<int> &nums) {
+  int findMin_Ori(vector<int> &nums) {
     int l = 0, r = nums.size() - 1, mid;
     // 如果这里把等于也加进去, 那么就会出现死循环, 在 l = mid这里
     // 这个循环的结果, 最终结果一定是 l == r 因为 = mid 的操作一定在l r之间
@@ -39,6 +39,10 @@ public:
       //
       // 这个代码错误的原因在于, 判断条件模糊, 因为大于的是不要的, 等于是要得,
       // 所以你这里一个判断出来两个方向有问题
+      //
+      //
+      // 我之前的想法是, 这个等于号或者大于号不能乱加实际上应该是无所谓
+      // 看我的findMin4, 我的推断是对的
       if (nums[mid] <= nums[r]) {
         r = mid;
       } else {
@@ -77,6 +81,24 @@ public:
     }
 
     return nums[r];
+  }
+
+  int findMin4(vector<int> &nums) {
+    int l = 0, r = nums.size() - 1, mid;
+    while (l < r) {
+      mid = (l + r) / 2; // 这种计算等于必须给r, r = mid
+
+      if (nums[mid] > nums[r]) { // 因为最小值, 这里是大于, 所以mid不能要
+        // 如果是mid > r 最小值在右面, 那么左面大不要了
+        // 因为mid不用要
+        l = mid + 1;
+      } else {
+        r = mid;
+      }
+    }
+
+    cout << "lizhe" << endl;
+    return nums[l];
   }
 };
 
