@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int findMin(vector<int>& nums) {
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
         
     }
 };
