@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="lemonade">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode 第4题 - 寻找两个正序数组的中位数</title>
+
+    <!-- DaisyUI CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style>
+        /* 自定义字体 */
+        @font-face {
+            font-family: 'Sauce Code Pro NF';
+            src: url('assets/Sauce Code Pro NF.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* 应用自定义字体到整个页面 */
+        body {
+            font-family: 'Sauce Code Pro NF', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* 方块样式 */
+        .block {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .block:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .block.selected {
+            background-color: #ef4444 !important;
+            color: white;
+            transform: scale(1.15);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
+        }
+
+        /* 数列容器 */
+        .blocks-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* 上部分区域 */
+        .top-section {
+            height: 20vh;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2px solid hsl(var(--bc) / 0.2);
+        }
+
+        /* 下部分区域 */
+        .bottom-section {
+            height: 80vh;
+            min-height: 600px;
+        }
+
+        /* 输入区域 */
+        .input-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .block {
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        /* 滚动条样式 */
+        .blocks-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .blocks-container::-webkit-scrollbar-track {
+            background: hsl(var(--b2));
+            border-radius: 4px;
+        }
+
+        .blocks-container::-webkit-scrollbar-thumb {
+            background: hsl(var(--bc) / 0.3);
+            border-radius: 4px;
+        }
+
+        .blocks-container::-webkit-scrollbar-thumb:hover {
+            background: hsl(var(--bc) / 0.5);
+        }
+    </style>
+</head>
+<body class="bg-base-200">
+
+    <!-- 上部分区域 (1/5) -->
+    <div class="top-section bg-base-100">
+        <h2 class="text-2xl font-bold mb-4 text-center">寻找两个正序数组的中位数 - 可视化</h2>
+
+        <!-- 输入区域 -->
+        <div class="input-section">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">数组 A 的长度</span>
+                </label>
+                <input type="number" id="input-a" class="input input-bordered w-24" min="1" max="20" value="5" />
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">数组 B 的长度</span>
+                </label>
+                <input type="number" id="input-b" class="input input-bordered w-24" min="1" max="20" value="5" />
+            </div>
+
+            <button id="generate-btn" class="btn btn-primary mt-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                生成数列
+            </button>
+        </div>
+
+        <!-- 数列方块显示区域 -->
+        <div id="blocks-container" class="blocks-container">
+            <!-- 方块将通过 JavaScript 动态生成 -->
+        </div>
+
+        <!-- 提示信息 -->
+        <div class="alert alert-info mt-4 max-w-2xl">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>点击方块将其选中（变红），再次点击取消选中</span>
+        </div>
+    </div>
+
+    <!-- 下部分区域 (4/5) - 预留用于后续扩展 -->
+    <div class="bottom-section bg-base-200 p-8">
+        <div class="card bg-base-100 shadow-xl max-w-4xl mx-auto">
+            <div class="card-body">
+                <h3 class="card-title text-2xl">算法说明区域</h3>
+                <p class="opacity-70">此区域将用于显示算法的可视化演示和说明...</p>
+
+                <div class="divider"></div>
+
+                <h4 class="text-lg font-semibold">当前选中:</h4>
+                <div id="selected-info" class="bg-base-200 p-4 rounded-lg min-h-[60px]">
+                    <p class="opacity-50">暂未选中任何方块</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 存储选中的方块
+        let selectedBlocks = new Set();
+
+        // 获取DOM元素
+        const inputA = document.getElementById('input-a');
+        const inputB = document.getElementById('input-b');
+        const generateBtn = document.getElementById('generate-btn');
+        const blocksContainer = document.getElementById('blocks-container');
+        const selectedInfo = document.getElementById('selected-info');
+
+        // 生成数列方块
+        function generateBlocks() {
+            const lengthA = parseInt(inputA.value) || 0;
+            const lengthB = parseInt(inputB.value) || 0;
+            const totalLength = lengthA + lengthB;
+
+            // 清空现有方块
+            blocksContainer.innerHTML = '';
+            selectedBlocks.clear();
+            updateSelectedInfo();
+
+            // 验证输入
+            if (lengthA < 1 || lengthB < 1) {
+                blocksContainer.innerHTML = '<p class="text-error">请输入有效的数组长度（至少为1）</p>';
+                return;
+            }
+
+            if (totalLength > 40) {
+                blocksContainer.innerHTML = '<p class="text-error">总长度不能超过40，请减少输入值</p>';
+                return;
+            }
+
+            // 生成方块
+            for (let i = 1; i <= totalLength; i++) {
+                const block = document.createElement('div');
+                block.className = 'block bg-info text-info-content';
+                block.style.width = '50px';
+                block.style.height = '50px';
+                block.style.display = 'flex';
+                block.style.alignItems = 'center';
+                block.style.justifyContent = 'center';
+                block.style.borderRadius = '8px';
+                block.style.fontWeight = 'bold';
+                block.style.fontSize = '18px';
+                block.textContent = i;
+                block.dataset.value = i;
+                block.style.animationDelay = `${i * 0.05}s`;
+
+                // 添加点击事件
+                block.addEventListener('click', () => toggleBlock(block, i));
+
+                blocksContainer.appendChild(block);
+            }
+        }
+
+        // 切换方块选中状态
+        function toggleBlock(block, value) {
+            if (selectedBlocks.has(value)) {
+                // 取消选中
+                selectedBlocks.delete(value);
+                block.classList.remove('selected');
+                block.classList.add('bg-info', 'text-info-content');
+            } else {
+                // 选中
+                selectedBlocks.add(value);
+                block.classList.add('selected');
+                block.classList.remove('bg-info', 'text-info-content');
+            }
+
+            updateSelectedInfo();
+        }
+
+        // 更新选中信息显示
+        function updateSelectedInfo() {
+            if (selectedBlocks.size === 0) {
+                selectedInfo.innerHTML = '<p class="opacity-50">暂未选中任何方块</p>';
+            } else {
+                const selectedArray = Array.from(selectedBlocks).sort((a, b) => a - b);
+                selectedInfo.innerHTML = `
+                    <div class="flex flex-wrap gap-2">
+                        <span class="font-semibold">已选中方块:</span>
+                        ${selectedArray.map(v => `<span class="badge badge-error">${v}</span>`).join('')}
+                        <span class="badge badge-info">共 ${selectedBlocks.size} 个</span>
+                    </div>
+                `;
+            }
+        }
+
+        // 生成按钮点击事件
+        generateBtn.addEventListener('click', generateBlocks);
+
+        // 支持回车键生成
+        inputA.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') generateBlocks();
+        });
+
+        inputB.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') generateBlocks();
+        });
+
+        // 页面加载时自动生成一次
+        document.addEventListener('DOMContentLoaded', generateBlocks);
+    </script>
+
+</body>
+</html>

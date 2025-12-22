@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaisyUI 组件示例</title>
+
+    <!-- DaisyUI CDN - 包含所有主题 -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- 自定义样式 -->
+    <style>
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* 主题选择器样式 */
+        .theme-selector {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* 自定义滚动条 */
+        .theme-selector::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .theme-selector::-webkit-scrollbar-track {
+            background: hsl(var(--b2));
+        }
+
+        .theme-selector::-webkit-scrollbar-thumb {
+            background: hsl(var(--bc) / 0.3);
+            border-radius: 3px;
+        }
+
+        .theme-selector::-webkit-scrollbar-thumb:hover {
+            background: hsl(var(--bc) / 0.5);
+        }
+
+        /* 主题卡片悬停效果 */
+        .theme-card {
+            transition: all 0.3s ease;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-base-200">
+
+    <!-- 导航栏 -->
+    <div class="navbar bg-base-100 shadow-lg sticky top-0 z-50">
+        <div class="navbar-start">
+            <!-- 移动端菜单按钮 -->
+            <label for="drawer-toggle" class="btn btn-square btn-ghost lg:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </label>
+            <!-- Logo -->
+            <a href="#" class="btn btn-ghost text-xl font-bold text-primary">DaisyUI Demo</a>
+        </div>
+
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="#hero">首页</a></li>
+                <li><a href="#components">组件</a></li>
+                <li><a href="#forms">表单</a></li>
+                <li><a href="#themes">主题</a></li>
+                <li><a href="#contact">联系</a></li>
+            </ul>
+        </div>
+
+        <div class="navbar-end gap-2">
+            <!-- 主题选择器按钮 -->
+            <div class="dropdown dropdown-end">
+                <label tabindex="0" class="btn btn-circle btn-ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                    </svg>
+                </label>
+                <div tabindex="0" class="dropdown-content bg-base-100 text-base-content rounded-box top-px max-h-[70vh] w-80 overflow-y-auto shadow-2xl mt-16">
+                    <div class="grid grid-cols-1 gap-3 p-3" tabindex="0">
+                        <div class="grid grid-cols-5 gap-3">
+                            <div class="col-span-5 col-start-1">
+                                <h3 class="font-semibold text-lg">选择主题</h3>
+                                <p class="text-sm opacity-70">共 35 个主题可选</p>
+                            </div>
+                        </div>
+                        <!-- 主题选择器将通过 JavaScript 动态填充 -->
+                        <div id="theme-selector" class="grid grid-cols-2 gap-2">
+                            <!-- 主题卡片将在这里动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速明暗切换按钮 -->
+            <label class="swap swap-rotate">
+                <input type="checkbox" class="theme-controller" value="dark" />
+
+                <!-- 太阳图标 -->
+                <svg class="swap-off w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
+                </svg>
+
+                <!-- 月亮图标 -->
+                <svg class="swap-on w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,21.69Z"/>
+                </svg>
+            </label>
+        </div>
+    </div>
+
+    <!-- 移动端侧边栏 -->
+    <input id="drawer-toggle" type="checkbox" class="drawer-toggle" />
+    <div class="drawer-side">
+        <label for="drawer-toggle" class="drawer-overlay"></label>
+        <aside class="menu bg-base-200 min-h-full w-80 p-4">
+            <h2 class="text-2xl font-bold mb-4">菜单</h2>
+            <ul>
+                <li><a href="#hero">首页</a></li>
+                <li><a href="#components">组件</a></li>
+                <li><a href="#forms">表单</a></li>
+                <li><a href="#themes">主题</a></li>
+                <li><a href="#contact">联系</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <!-- 英雄区域 -->
+    <div id="hero" class="hero min-h-screen bg-gradient-to-br from-primary via-secondary to-accent relative overflow-hidden">
+        <!-- 背景装饰 -->
+        <div class="absolute inset-0 bg-black/20"></div>
+        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-transparent to-black/30"></div>
+
+        <div class="hero-content text-center relative z-10">
+            <div class="max-w-2xl">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-lg">
+                    DaisyUI 组件库
+                </h1>
+                <p class="text-lg md:text-xl mb-8 text-white/95 drop-shadow-md max-w-xl mx-auto">
+                    最流行的 Tailwind CSS 组件库 - 让您快速构建美观的界面
+                </p>
+                <div class="space-x-4">
+                    <button class="btn btn-lg btn-accent shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        开始使用
+                    </button>
+                    <button class="btn btn-lg btn-outline border-white text-white hover:bg-white hover:text-primary transition-all duration-300 hover:scale-105">
+                        查看文档
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 按钮组件展示 -->
+    <section id="components" class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold text-center mb-12">按钮组件</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- 基础按钮 -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">基础按钮</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="btn btn-primary">Primary</button>
+                        <button class="btn btn-secondary">Secondary</button>
+                        <button class="btn btn-accent">Accent</button>
+                        <button class="btn btn-neutral">Neutral</button>
+                        <button class="btn btn-success">Success</button>
+                        <button class="btn btn-error">Error</button>
+                        <button class="btn btn-warning">Warning</button>
+                        <button class="btn btn-info">Info</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 按钮尺寸 -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">按钮尺寸</h3>
+                    <div class="space-y-2">
+                        <button class="btn btn-lg btn-primary">Large</button>
+                        <button class="btn btn-primary">Default</button>
+                        <button class="btn btn-sm btn-primary">Small</button>
+                        <button class="btn btn-xs btn-primary">Extra Small</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 轮廓和幽灵按钮 -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">轮廓和幽灵按钮</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="btn btn-outline btn-primary">Outline</button>
+                        <button class="btn btn-ghost btn-primary">Ghost</button>
+                        <button class="btn btn-link">Link</button>
+                        <button class="btn btn-square btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 卡片组件展示 -->
+    <section class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold text-center mb-12">卡片组件</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- 简单卡片 -->
+            <div class="card bg-primary text-primary-content">
+                <div class="card-body">
+                    <h2 class="card-title">主题卡片</h2>
+                    <p>这是一个使用主题颜色的卡片。</p>
+                    <div class="card-actions justify-end">
+                        <button class="btn">查看更多</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 带图片的卡片 -->
+            <div class="card bg-base-100 shadow-xl">
+                <figure>
+                    <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Shoes" />
+                </figure>
+                <div class="card-body">
+                    <h2 class="card-title">精美图片卡片</h2>
+                    <p>如果一只狗咬人，那它就不是好狗。这是一只狗，是一只绝对完美的狗。</p>
+                    <div class="card-actions justify-end">
+                        <button class="btn btn-primary">购买</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 侧边布局卡片 -->
+            <div class="card card-side bg-base-100 shadow-xl">
+                <figure>
+                    <img src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp" alt="Movie" />
+                </figure>
+                <div class="card-body">
+                    <h2 class="card-title">侧边布局</h2>
+                    <p>内容在图片的旁边，适合展示更多细节。</p>
+                    <div class="card-actions justify-end">
+                        <button class="btn btn-sm btn-primary">观看</button>
+                        <button class="btn btn-sm">稍后</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 其他组件展示 -->
+    <section class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold text-center mb-12">更多组件</h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- 徽章组件 -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">徽章组件</h3>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <span class="badge badge-primary">Primary</span>
+                        <span class="badge badge-secondary">Secondary</span>
+                        <span class="badge badge-accent">Accent</span>
+                        <span class="badge badge-lg">Large</span>
+                        <span class="badge badge-md">Medium</span>
+                        <span class="badge badge-sm">Small</span>
+                        <span class="badge badge-xs">Extra Small</span>
+                        <div class="indicator">
+                            <span class="indicator-item badge badge-error">新</span>
+                            <button class="btn">通知</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 进度条组件 -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">进度条</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <span class="w-12">0%</span>
+                            <progress class="progress w-full" value="0" max="100"></progress>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="w-12">30%</span>
+                            <progress class="progress progress-primary w-full" value="30" max="100"></progress>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="w-12">60%</span>
+                            <progress class="progress progress-secondary w-full" value="60" max="100"></progress>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="w-12">100%</span>
+                            <progress class="progress progress-success w-full" value="100" max="100"></progress>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 提示框组件 -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">提示框</h3>
+                    <div class="space-y-2">
+                        <div class="alert alert-info">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>信息提示：这是一个信息提示框。</span>
+                        </div>
+                        <div class="alert alert-success">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>成功提示：操作已成功完成！</span>
+                        </div>
+                        <div class="alert alert-warning">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <span>警告提示：请注意检查。</span>
+                        </div>
+                        <div class="alert alert-error">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>错误提示：操作失败，请重试。</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 折叠面板 -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">折叠面板</h3>
+                    <div class="join join-vertical w-full">
+                        <div class="collapse collapse-arrow join-item border border-base-300">
+                            <input type="radio" name="my-accordion-4" checked="checked" />
+                            <div class="collapse-title text-xl font-medium">点击打开项目 1</div>
+                            <div class="collapse-content">
+                                <p>这是第一个项目的内容。可以放置任何内容。</p>
+                            </div>
+                        </div>
+                        <div class="collapse collapse-arrow join-item border border-base-300">
+                            <input type="radio" name="my-accordion-4" />
+                            <div class="collapse-title text-xl font-medium">点击打开项目 2</div>
+                            <div class="collapse-content">
+                                <p>这是第二个项目的内容。</p>
+                            </div>
+                        </div>
+                        <div class="collapse collapse-arrow join-item border border-base-300">
+                            <input type="radio" name="my-accordion-4" />
+                            <div class="collapse-title text-xl font-medium">点击打开项目 3</div>
+                            <div class="collapse-content">
+                                <p>这是第三个项目的内容。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 表单组件展示 -->
+    <section id="forms" class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold text-center mb-12">表单组件</h2>
+
+        <div class="card bg-base-100 shadow-xl max-w-2xl mx-auto">
+            <div class="card-body">
+                <form class="space-y-6">
+                    <!-- 输入框 -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">姓名</span>
+                        </label>
+                        <input type="text" placeholder="请输入您的姓名" class="input input-bordered" />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">邮箱</span>
+                        </label>
+                        <input type="email" placeholder="example@email.com" class="input input-bordered" />
+                        <label class="label">
+                            <span class="label-text-alt">我们不会分享您的邮箱</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">密码</span>
+                        </label>
+                        <input type="password" placeholder="请输入密码" class="input input-bordered" />
+                    </div>
+
+                    <!-- 选择框 -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">选择城市</span>
+                        </label>
+                        <select class="select select-bordered">
+                            <option disabled selected>请选择</option>
+                            <option>北京</option>
+                            <option>上海</option>
+                            <option>广州</option>
+                            <option>深圳</option>
+                        </select>
+                    </div>
+
+                    <!-- 复选框和单选框 -->
+                    <div class="form-control">
+                        <label class="label cursor-pointer">
+                            <span class="label-text">记住我</span>
+                            <input type="checkbox" class="checkbox checkbox-primary" />
+                        </label>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">性别</span>
+                        </label>
+                        <div class="flex gap-4">
+                            <label class="label cursor-pointer">
+                                <span class="label-text mr-2">男</span>
+                                <input type="radio" name="gender" class="radio radio-primary" checked />
+                            </label>
+                            <label class="label cursor-pointer">
+                                <span class="label-text mr-2">女</span>
+                                <input type="radio" name="gender" class="radio radio-primary" />
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 文件上传 -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">上传文件</span>
+                        </label>
+                        <input type="file" class="file-input file-input-bordered" />
+                    </div>
+
+                    <!-- 文本域 -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">留言</span>
+                        </label>
+                        <textarea class="textarea textarea-bordered h-24" placeholder="请输入您的留言"></textarea>
+                    </div>
+
+                    <!-- 开关按钮 -->
+                    <div class="form-control">
+                        <label class="label cursor-pointer">
+                            <span class="label-text">接收通知</span>
+                            <input type="checkbox" class="toggle toggle-primary" checked />
+                        </label>
+                    </div>
+
+                    <!-- 评分 -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">评分</span>
+                        </label>
+                        <div class="rating">
+                            <input type="radio" name="rating-1" class="mask mask-star" />
+                            <input type="radio" name="rating-1" class="mask mask-star" />
+                            <input type="radio" name="rating-1" class="mask mask-star" />
+                            <input type="radio" name="rating-1" class="mask mask-star" checked />
+                            <input type="radio" name="rating-1" class="mask mask-star" />
+                        </div>
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <div class="form-control">
+                        <button class="btn btn-primary">提交表单</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- 主题展示 -->
+    <section id="themes" class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold text-center mb-12">主题展示</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- 主题卡片 -->
+            <div data-theme="light" class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">Light 主题</h3>
+                    <p>明亮清新的主题</p>
+                    <button class="btn btn-primary">Light Button</button>
+                </div>
+            </div>
+
+            <div data-theme="dark" class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">Dark 主题</h3>
+                    <p>深色护眼主题</p>
+                    <button class="btn btn-primary">Dark Button</button>
+                </div>
+            </div>
+
+            <div data-theme="cupcake" class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">Cupcake 主题</h3>
+                    <p>甜美可爱的主题</p>
+                    <button class="btn btn-primary">Cupcake Button</button>
+                </div>
+            </div>
+
+            <div data-theme="retro" class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">Retro 主题</h3>
+                    <p>复古风格主题</p>
+                    <button class="btn btn-primary">Retro Button</button>
+                </div>
+            </div>
+
+            <div data-theme="cyberpunk" class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">Cyberpunk 主题</h3>
+                    <p>赛博朋克风格</p>
+                    <button class="btn btn-primary">Cyberpunk Button</button>
+                </div>
+            </div>
+
+            <div data-theme="valentine" class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">Valentine 主题</h3>
+                    <p>浪漫情人节主题</p>
+                    <button class="btn btn-primary">Valentine Button</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 分页组件 -->
+    <section class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold text-center mb-12">分页组件</h2>
+
+        <div class="flex justify-center">
+            <div class="join">
+                <button class="join-item btn">«</button>
+                <button class="join-item btn">1</button>
+                <button class="join-item btn btn-active">2</button>
+                <button class="join-item btn">3</button>
+                <button class="join-item btn">4</button>
+                <button class="join-item btn">»</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 统计数据 -->
+    <section class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold text-center mb-12">统计数据</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="stat">
+                <div class="stat-title">总下载量</div>
+                <div class="stat-value">89,400</div>
+                <div class="stat-desc">从1月到现在</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-title">新用户</div>
+                <div class="stat-value text-secondary">4,200</div>
+                <div class="stat-desc text-secondary">↗︎ 10%</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-title">新注册</div>
+                <div class="stat-value">1,200</div>
+                <div class="stat-desc">↘︎ 5%</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-figure text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <div class="stat-title">总收入</div>
+                <div class="stat-value text-primary">$25.6k</div>
+                <div class="stat-desc">月度收入</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 步骤条 -->
+    <section class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold text-center mb-12">步骤条</h2>
+
+        <ul class="steps w-full">
+            <li class="step step-primary">注册</li>
+            <li class="step step-primary">选择计划</li>
+            <li class="step">购买</li>
+            <li class="step">接收产品</li>
+        </ul>
+    </section>
+
+    <!-- 联系表单 -->
+    <section id="contact" class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold text-center mb-12">联系我们</h2>
+
+        <div class="card bg-base-100 shadow-xl max-w-2xl mx-auto">
+            <div class="card-body">
+                <form class="space-y-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">您的名字</span>
+                        </label>
+                        <input type="text" class="input input-bordered" />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">您的邮箱</span>
+                        </label>
+                        <input type="email" class="input input-bordered" />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">消息</span>
+                        </label>
+                        <textarea class="textarea textarea-bordered h-32"></textarea>
+                    </div>
+
+                    <div class="form-control">
+                        <button class="btn btn-primary">发送消息</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer footer-center p-10 bg-base-200 text-base-content">
+        <div class="grid grid-flow-col gap-4">
+            <a class="link link-hover">关于我们</a>
+            <a class="link link-hover">联系方式</a>
+            <a class="link link-hover">职业</a>
+            <a class="link link-hover">新闻</a>
+        </div>
+        <div>
+            <div class="grid grid-flow-col gap-4">
+                <a>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-current">
+                        <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path>
+                    </svg>
+                </a>
+                <a>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-current">
+                        <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"></path>
+                    </svg>
+                </a>
+                <a>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-current">
+                        <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div>
+            <p>Copyright © 2024 - DaisyUI 示例页面</p>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="btn btn-circle btn-primary fixed bottom-8 right-8" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <!-- 主题切换 JavaScript -->
+    <script>
+        // 所有 DaisyUI 主题列表
+        const themes = [
+            { name: 'light', desc: '明亮清新' },
+            { name: 'dark', desc: '深色护眼' },
+            { name: 'cupcake', desc: '甜美可爱' },
+            { name: 'bumblebee', desc: '蜜蜂黄' },
+            { name: 'emerald', desc: '翡翠绿' },
+            { name: 'corporate', desc: '商务风' },
+            { name: 'synthwave', desc: '合成波' },
+            { name: 'retro', desc: '复古风' },
+            { name: 'cyberpunk', desc: '赛博朋克' },
+            { name: 'valentine', desc: '情人节' },
+            { name: 'halloween', desc: '万圣节' },
+            { name: 'garden', desc: '花园' },
+            { name: 'forest', desc: '森林' },
+            { name: 'aqua', desc: '水蓝色' },
+            { name: 'lofi', desc: '低保真' },
+            { name: 'pastel', desc: '马卡龙' },
+            { name: 'fantasy', desc: '幻想' },
+            { name: 'wireframe', desc: '线框' },
+            { name: 'black', desc: '纯黑' },
+            { name: 'luxury', desc: '奢华' },
+            { name: 'dracula', desc: '德古拉' },
+            { name: 'cmyk', desc: '印刷色' },
+            { name: 'autumn', desc: '秋天' },
+            { name: 'business', desc: '商业' },
+            { name: 'acid', desc: '酸性' },
+            { name: 'lemonade', desc: '柠檬水' },
+            { name: 'night', desc: '夜晚' },
+            { name: 'coffee', desc: '咖啡' },
+            { name: 'winter', desc: '冬天' },
+            { name: 'dim', desc: '昏暗' },
+            { name: 'nord', desc: '北欧' },
+            { name: 'sunset', desc: '日落' },
+            { name: 'caramellatte', desc: '焦糖拿铁' },
+            { name: 'abyss', desc: '深渊' },
+            { name: 'silk', desc: '丝绸' }
+        ];
+
+        // 初始化主题选择器
+        function initThemeSelector() {
+            const selector = document.getElementById('theme-selector');
+
+            // 生成主题卡片
+            themes.forEach(theme => {
+                const themeCard = document.createElement('div');
+                themeCard.className = 'card card-compact bg-base-100 shadow-md cursor-pointer theme-card';
+                themeCard.onclick = () => changeTheme(theme.name);
+
+                themeCard.innerHTML = `
+                    <div class="card-body p-3">
+                        <h4 class="card-title text-sm capitalize">${theme.name}</h4>
+                        <p class="text-xs opacity-70">${theme.desc}</p>
+                        <div class="card-actions justify-end">
+                            <div class="w-full h-8 rounded" data-theme="${theme.name}" style="border: 1px solid hsl(var(--bc) / 0.2);">
+                                <div class="w-full h-full flex items-center justify-center text-xs" style="background: hsl(var(--b1)); color: hsl(var(--bc));">
+                                    预览
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                selector.appendChild(themeCard);
+            });
+        }
+
+        // 切换主题
+        function changeTheme(themeName) {
+            // 移除所有现有的主题控制器
+            document.querySelectorAll('.theme-controller').forEach(input => {
+                input.remove();
+            });
+
+            // 添加新的主题控制器
+            const themeController = document.createElement('input');
+            themeController.type = 'checkbox';
+            themeController.className = 'theme-controller';
+            themeController.value = themeName;
+            themeController.checked = true;
+
+            // 将控制器添加到导航栏
+            const navbarEnd = document.querySelector('.navbar-end');
+            navbarEnd.appendChild(themeController);
+
+            // 设置文档主题
+            document.documentElement.setAttribute('data-theme', themeName);
+
+            // 保存到本地存储
+            localStorage.setItem('daisyui-theme', themeName);
+
+            // 关闭下拉菜单
+            document.activeElement.blur();
+
+            // 显示提示
+            showNotification(`主题已切换到 ${themeName}`);
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'toast toast-top toast-center z-50';
+            notification.innerHTML = `
+                <div class="alert alert-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        // 从本地存储加载主题
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('daisyui-theme');
+            if (savedTheme && themes.find(t => t.name === savedTheme)) {
+                changeTheme(savedTheme);
+            }
+        }
+
+        // 处理快速明暗切换
+        function handleQuickToggle() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            // 如果当前不是明暗主题之一，先切换到对应主题
+            if (!['light', 'dark'].includes(currentTheme)) {
+                changeTheme('light');
+            } else {
+                changeTheme(newTheme);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initThemeSelector();
+            loadTheme();
+
+            // 为快速明暗切换按钮添加事件监听
+            const quickToggle = document.querySelector('.theme-controller[value="dark"]');
+            if (quickToggle) {
+                quickToggle.addEventListener('change', handleQuickToggle);
+            }
+        });
+
+        // 键盘快捷键支持 (Ctrl/Cmd + Shift + T)
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+                e.preventDefault();
+                const themeSelector = document.getElementById('theme-selector');
+                const dropdown = themeSelector.closest('.dropdown');
+                if (dropdown) {
+                    const button = dropdown.querySelector('label');
+                    button.click();
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
