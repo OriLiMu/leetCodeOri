@@ -1,4 +1,10 @@
 {
+  "name": "leetcode4-visualization",
+  "version": "1.0.0",
+  "description": "LeetCode 第4题可视化 - 寻找两个正序数组的中位数",
+  "scripts": {
+    "dev": "./dev-server-python.sh"
+  },
   "devDependencies": {
     "daisyui": "^5.5.14"
   }

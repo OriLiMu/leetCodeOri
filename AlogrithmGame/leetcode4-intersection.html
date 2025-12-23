@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="lemonade">
+<html lang="zh-CN" data-theme="retro">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,6 +56,40 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
+        }
+
+        /* 闪烁动画 */
+        @keyframes flashAnimation {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                border-color: hsl(var(--bc) / 0.2);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.7);
+                border-color: #ef4444;
+            }
+        }
+
+        .flash-animation {
+            animation: flashAnimation 0.5s ease-in-out 3;
+        }
+
+        /* 竖线分割线 */
+        .divider-line {
+            position: absolute;
+            width: 3px;
+            height: 60px;
+            background: linear-gradient(to bottom, transparent, #ef4444, transparent);
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
+        /* 子数组中的方块 */
+        .subarray-block {
+            position: relative;
         }
 
         /* 上部分区域 */
@@ -133,21 +167,35 @@
                 <label class="label">
                     <span class="label-text font-semibold">数组 A 的长度</span>
                 </label>
-                <input type="number" id="input-a" class="input input-bordered w-24" min="1" max="20" value="5" />
+                <input type="number" id="input-a" class="input input-bordered w-24" min="0" max="20" value="5" />
             </div>
 
             <div class="form-control">
                 <label class="label">
                     <span class="label-text font-semibold">数组 B 的长度</span>
                 </label>
-                <input type="number" id="input-b" class="input input-bordered w-24" min="1" max="20" value="5" />
+                <input type="number" id="input-b" class="input input-bordered w-24" min="0" max="20" value="5" />
             </div>
 
-            <button id="generate-btn" class="btn btn-primary mt-6">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">总长度</span>
+                </label>
+                <input type="number" id="input-total" class="input input-bordered w-24 bg-base-200" readonly value="10" />
+            </div>
+
+            <button id="generate-btn" class="btn btn-primary self-end">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
                 生成数列
+            </button>
+
+            <button id="random-btn" class="btn btn-secondary self-end">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                </svg>
+                随机插入
             </button>
         </div>
 
@@ -155,28 +203,45 @@
         <div id="blocks-container" class="blocks-container">
             <!-- 方块将通过 JavaScript 动态生成 -->
         </div>
-
-        <!-- 提示信息 -->
-        <div class="alert alert-info mt-4 max-w-2xl">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span>点击方块将其选中（变红），再次点击取消选中</span>
-        </div>
     </div>
 
-    <!-- 下部分区域 (4/5) - 预留用于后续扩展 -->
+    <!-- 下部分区域 (4/5) - 算法可视化 -->
     <div class="bottom-section bg-base-200 p-8">
-        <div class="card bg-base-100 shadow-xl max-w-4xl mx-auto">
-            <div class="card-body">
-                <h3 class="card-title text-2xl">算法说明区域</h3>
-                <p class="opacity-70">此区域将用于显示算法的可视化演示和说明...</p>
+        <!-- 信息标签 -->
+        <div class="flex justify-center gap-8 mb-6">
+            <div class="badge badge-lg badge-primary">
+                总长度: <span id="total-label">0</span>
+            </div>
+            <div class="badge badge-lg badge-secondary">
+                一半长度: <span id="half-label">0</span>
+            </div>
+        </div>
 
-                <div class="divider"></div>
+        <!-- 两个子数组展示区域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- 子数组 A -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title text-xl mb-4">
+                        子数组 A
+                        <span class="badge badge-info ml-2" id="length-a-badge">0</span>
+                    </h3>
+                    <div id="subarray-a-container" class="blocks-container min-h-[100px] bg-base-200 rounded-lg p-4">
+                        <p class="opacity-50">点击生成数列后显示</p>
+                    </div>
+                </div>
+            </div>
 
-                <h4 class="text-lg font-semibold">当前选中:</h4>
-                <div id="selected-info" class="bg-base-200 p-4 rounded-lg min-h-[60px]">
-                    <p class="opacity-50">暂未选中任何方块</p>
+            <!-- 子数组 B -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title text-xl mb-4">
+                        子数组 B
+                        <span class="badge badge-info ml-2" id="length-b-badge">0</span>
+                    </h3>
+                    <div id="subarray-b-container" class="blocks-container min-h-[100px] bg-base-200 rounded-lg p-4">
+                        <p class="opacity-50">点击生成数列后显示</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -184,30 +249,42 @@
 
     <!-- JavaScript -->
     <script>
-        // 存储选中的方块
-        let selectedBlocks = new Set();
-
         // 获取DOM元素
         const inputA = document.getElementById('input-a');
         const inputB = document.getElementById('input-b');
+        const inputTotal = document.getElementById('input-total');
         const generateBtn = document.getElementById('generate-btn');
+        const randomBtn = document.getElementById('random-btn');
         const blocksContainer = document.getElementById('blocks-container');
-        const selectedInfo = document.getElementById('selected-info');
+        const subarrayAContainer = document.getElementById('subarray-a-container');
+        const subarrayBContainer = document.getElementById('subarray-b-container');
+        const totalLabel = document.getElementById('total-label');
+        const halfLabel = document.getElementById('half-label');
+        const lengthABadge = document.getElementById('length-a-badge');
+        const lengthBBadge = document.getElementById('length-b-badge');
+
+        // 存储总长度和选中的方块
+        let totalLength = 0;
+        let selectedBlocks = new Set();
 
         // 生成数列方块
         function generateBlocks() {
             const lengthA = parseInt(inputA.value) || 0;
             const lengthB = parseInt(inputB.value) || 0;
-            const totalLength = lengthA + lengthB;
+            totalLength = lengthA + lengthB;
+
+            // 更新总长度显示
+            inputTotal.value = totalLength;
+
+            // 清空选中的方块
+            selectedBlocks.clear();
 
             // 清空现有方块
             blocksContainer.innerHTML = '';
-            selectedBlocks.clear();
-            updateSelectedInfo();
 
             // 验证输入
-            if (lengthA < 1 || lengthB < 1) {
-                blocksContainer.innerHTML = '<p class="text-error">请输入有效的数组长度（至少为1）</p>';
+            if (lengthA < 0 || lengthB < 0) {
+                blocksContainer.innerHTML = '<p class="text-error">请输入有效的数组长度（不能为负数）</p>';
                 return;
             }
 
@@ -216,10 +293,15 @@
                 return;
             }
 
-            // 生成方块
+            if (totalLength === 0) {
+                blocksContainer.innerHTML = '<p class="text-warning">请输入数组长度后点击生成数列</p>';
+                return;
+            }
+
+            // 生成方块 - 默认半透明
             for (let i = 1; i <= totalLength; i++) {
                 const block = document.createElement('div');
-                block.className = 'block bg-info text-info-content';
+                block.className = 'block bg-info/30 text-info-content/30';
                 block.style.width = '50px';
                 block.style.height = '50px';
                 block.style.display = 'flex';
@@ -237,52 +319,297 @@
 
                 blocksContainer.appendChild(block);
             }
+
+            updateSelectedInfo();
+
+            // 生成子数组并启动动画
+            setTimeout(() => {
+                generateSubArrays(lengthA, lengthB);
+            }, 300);
         }
 
-        // 切换方块选中状态
-        function toggleBlock(block, value) {
-            if (selectedBlocks.has(value)) {
-                // 取消选中
-                selectedBlocks.delete(value);
-                block.classList.remove('selected');
-                block.classList.add('bg-info', 'text-info-content');
-            } else {
-                // 选中
-                selectedBlocks.add(value);
-                block.classList.add('selected');
-                block.classList.remove('bg-info', 'text-info-content');
+        // 生成子数组并执行PPT动画
+        function generateSubArrays(lengthA, lengthB) {
+            // 更新标签显示
+            const halfLength = Math.floor(totalLength / 2);
+            totalLabel.textContent = totalLength;
+            halfLabel.textContent = halfLength;
+            lengthABadge.textContent = lengthA;
+            lengthBBadge.textContent = lengthB;
+
+            // 确定较长的子数组
+            const isLongerA = lengthA >= lengthB;
+            const longerLength = Math.max(lengthA, lengthB);
+            const shorterLength = Math.min(lengthA, lengthB);
+            const longerHalf = Math.floor(longerLength / 2);
+
+            // 清空子数组容器
+            subarrayAContainer.innerHTML = '';
+            subarrayBContainer.innerHTML = '';
+            subarrayAContainer.className = 'blocks-container min-h-[100px] bg-base-200 rounded-lg p-4';
+            subarrayBContainer.className = 'blocks-container min-h-[100px] bg-base-200 rounded-lg p-4';
+
+            // 生成子数组A的方块
+            for (let i = 1; i <= lengthA; i++) {
+                const block = createSubArrayBlock(i, 'A');
+                subarrayAContainer.appendChild(block);
             }
 
+            // 生成子数组B的方块
+            for (let i = 1; i <= lengthB; i++) {
+                const block = createSubArrayBlock(i, 'B');
+                subarrayBContainer.appendChild(block);
+            }
+
+            // 对较长的子数组应用闪烁动画
+            const longerContainer = isLongerA ? subarrayAContainer : subarrayBContainer;
+            longerContainer.classList.add('flash-animation');
+
+            // 动画结束后移除class并添加分割线
+            setTimeout(() => {
+                longerContainer.classList.remove('flash-animation');
+
+                // 计算分割线位置
+                // n = 长子数组的一半长度
+                // m = 总数组的一半长度
+                const n = longerHalf;
+                const m = halfLength;
+
+                if (isLongerA) {
+                    // 在长子数组A的第n个元素后加竖线
+                    addDividerLine(subarrayAContainer, n);
+                    // 在短数组B的第(m-n)个元素后加竖线
+                    const bDividerPosition = m - n;
+                    if (bDividerPosition > 0 && bDividerPosition <= lengthB) {
+                        addDividerLine(subarrayBContainer, bDividerPosition);
+                    }
+                } else {
+                    // 在长子数组B的第n个元素后加竖线
+                    addDividerLine(subarrayBContainer, n);
+                    // 在短数组A的第(m-n)个元素后加竖线
+                    const aDividerPosition = m - n;
+                    if (aDividerPosition > 0 && aDividerPosition <= lengthA) {
+                        addDividerLine(subarrayAContainer, aDividerPosition);
+                    }
+                }
+            }, 1500); // 3次闪烁，每次0.5秒，总共1.5秒
+        }
+
+        // 创建子数组方块
+        function createSubArrayBlock(index, arrayName) {
+            const blockWrapper = document.createElement('div');
+            blockWrapper.className = 'subarray-block';
+            blockWrapper.style.position = 'relative';
+            blockWrapper.style.display = 'inline-block';
+
+            const block = document.createElement('div');
+            block.className = 'block bg-info/70 text-info-content/70';
+            block.style.width = '40px';
+            block.style.height = '40px';
+            block.style.display = 'flex';
+            block.style.alignItems = 'center';
+            block.style.justifyContent = 'center';
+            block.style.borderRadius = '8px';
+            block.style.fontWeight = 'bold';
+            block.style.fontSize = '16px';
+            block.textContent = index;
+
+            blockWrapper.appendChild(block);
+            return blockWrapper;
+        }
+
+        // 添加分割线
+        function addDividerLine(container, position) {
+            const blocks = container.querySelectorAll('.block');
+            if (position >= 1 && position <= blocks.length) {
+                const targetBlockWrapper = blocks[position - 1].parentElement;
+                const divider = document.createElement('div');
+                divider.className = 'divider-line';
+                targetBlockWrapper.appendChild(divider);
+            }
+        }
+
+        // 切换方块选中状态（可以多选）
+        function toggleBlock(block, value) {
+            if (selectedBlocks.has(value)) {
+                // 已选中，取消选中
+                selectedBlocks.delete(value);
+                block.className = 'block bg-info/30 text-info-content/30';
+            } else {
+                // 未选中，选中它
+                selectedBlocks.add(value);
+                block.className = 'block bg-error/70 text-error-content/70 selected';
+            }
+
+            // 更新数组A和B的长度
+            updateArrayLengths();
             updateSelectedInfo();
         }
 
-        // 更新选中信息显示
-        function updateSelectedInfo() {
-            if (selectedBlocks.size === 0) {
-                selectedInfo.innerHTML = '<p class="opacity-50">暂未选中任何方块</p>';
-            } else {
-                const selectedArray = Array.from(selectedBlocks).sort((a, b) => a - b);
-                selectedInfo.innerHTML = `
-                    <div class="flex flex-wrap gap-2">
-                        <span class="font-semibold">已选中方块:</span>
-                        ${selectedArray.map(v => `<span class="badge badge-error">${v}</span>`).join('')}
-                        <span class="badge badge-info">共 ${selectedBlocks.size} 个</span>
-                    </div>
-                `;
+        // 更新数组A和B的长度
+        function updateArrayLengths() {
+            const selectedArray = Array.from(selectedBlocks).sort((a, b) => a - b);
+            inputA.value = selectedArray.length;
+            inputB.value = totalLength - selectedArray.length;
+        }
+
+        // 根据数组A的长度更新选中状态
+        function updateSelectedBlocksByLengthA(lengthA) {
+            const blocks = blocksContainer.querySelectorAll('.block');
+            const selectedArray = Array.from(selectedBlocks).sort((a, b) => a - b);
+
+            // 清除所有选中
+            selectedBlocks.clear();
+            blocks.forEach(b => {
+                b.className = 'block bg-info/30 text-info-content/30';
+            });
+
+            // 选中方块
+            for (let i = 0; i < Math.min(lengthA, blocks.length); i++) {
+                blocks[i].className = 'block bg-error/70 text-error-content/70 selected';
+                selectedBlocks.add(parseInt(blocks[i].dataset.value));
             }
+
+            inputB.value = totalLength - lengthA;
+            updateSelectedInfo();
+        }
+
+        // 更新总长度（从尾部增减）
+        function updateTotalLength(newTotal) {
+            const oldTotal = totalLength;
+            totalLength = Math.max(0, Math.min(40, newTotal));
+            inputTotal.value = totalLength;
+
+            const blocks = blocksContainer.querySelectorAll('.block');
+
+            if (totalLength > oldTotal) {
+                // 添加新方块
+                for (let i = oldTotal + 1; i <= totalLength; i++) {
+                    const block = document.createElement('div');
+                    block.className = 'block bg-info/30 text-info-content/30';
+                    block.style.width = '50px';
+                    block.style.height = '50px';
+                    block.style.display = 'flex';
+                    block.style.alignItems = 'center';
+                    block.style.justifyContent = 'center';
+                    block.style.borderRadius = '8px';
+                    block.style.fontWeight = 'bold';
+                    block.style.fontSize = '18px';
+                    block.textContent = i;
+                    block.dataset.value = i;
+
+                    block.addEventListener('click', () => toggleBlock(block, i));
+                    blocksContainer.appendChild(block);
+                }
+            } else if (totalLength < oldTotal) {
+                // 移除尾部方块
+                for (let i = blocks.length - 1; i >= totalLength; i--) {
+                    const value = parseInt(blocks[i].dataset.value);
+                    selectedBlocks.delete(value);
+                    blocks[i].remove();
+                }
+            }
+
+            // 更新数组B的长度
+            inputB.value = totalLength - selectedBlocks.size;
+            updateSelectedInfo();
+        }
+
+        // 更新选中信息显示（简化版，因为selectedInfo已被删除）
+        function updateSelectedInfo() {
+            // 这个函数现在只用于更新内部状态，不显示信息
+        }
+
+        // 滚轮事件处理
+        function handleWheel(e, input, type) {
+            e.preventDefault();
+            let currentValue = parseInt(input.value) || 0;
+            let newValue = currentValue;
+
+            if (e.deltaY < 0) {
+                // 向上滚动，增加
+                newValue = currentValue + 1;
+            } else {
+                // 向下滚动，减少
+                newValue = currentValue - 1;
+            }
+
+            // 限制范围
+            if (type === 'total') {
+                newValue = Math.max(0, Math.min(40, newValue));
+                updateTotalLength(newValue);
+            } else if (type === 'A') {
+                newValue = Math.max(0, Math.min(totalLength, newValue));
+                input.value = newValue;
+                inputB.value = totalLength - newValue;
+                updateSelectedBlocksByLengthA(newValue);
+            } else if (type === 'B') {
+                newValue = Math.max(0, Math.min(totalLength, newValue));
+                input.value = newValue;
+                inputA.value = totalLength - newValue;
+                updateSelectedBlocksByLengthA(totalLength - newValue);
+            }
+        }
+
+        // 为输入框添加滚轮事件
+        [inputA, inputB, inputTotal].forEach(input => {
+            input.addEventListener('wheel', (e) => {
+                if (input === inputA) {
+                    handleWheel(e, input, 'A');
+                } else if (input === inputB) {
+                    handleWheel(e, input, 'B');
+                } else if (input === inputTotal) {
+                    handleWheel(e, input, 'total');
+                }
+            });
+        });
+
+        // 随机插入功能
+        function randomInsert() {
+            const blocks = blocksContainer.querySelectorAll('.block');
+            if (blocks.length === 0) {
+                return;
+            }
+
+            // 获取当前A的长度
+            const lengthA = parseInt(inputA.value) || 0;
+
+            // 清除所有选中
+            selectedBlocks.clear();
+            blocks.forEach(b => {
+                b.className = 'block bg-info/30 text-info-content/30';
+            });
+
+            // 生成所有可能的索引
+            const allIndices = Array.from({ length: totalLength }, (_, i) => i + 1);
+
+            // Fisher-Yates 洗牌算法
+            for (let i = allIndices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allIndices[i], allIndices[j]] = [allIndices[j], allIndices[i]];
+            }
+
+            // 选择前 lengthA 个作为选中
+            const selectedIndices = allIndices.slice(0, lengthA);
+
+            // 更新方块的选中状态
+            selectedIndices.forEach(index => {
+                const block = Array.from(blocks).find(b => parseInt(b.dataset.value) === index);
+                if (block) {
+                    block.className = 'block bg-error/70 text-error-content/70 selected';
+                    selectedBlocks.add(index);
+                }
+            });
+
+            // 更新显示
+            updateSelectedInfo();
         }
 
         // 生成按钮点击事件
         generateBtn.addEventListener('click', generateBlocks);
 
-        // 支持回车键生成
-        inputA.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') generateBlocks();
-        });
-
-        inputB.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') generateBlocks();
-        });
+        // 随机插入按钮点击事件
+        randomBtn.addEventListener('click', randomInsert);
 
         // 页面加载时自动生成一次
         document.addEventListener('DOMContentLoaded', generateBlocks);
