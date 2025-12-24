@@ -298,6 +298,17 @@
                 return;
             }
 
+            // 计算中位数位置（终点）
+            const medianPositions = [];
+            if (totalLength % 2 === 1) {
+                // 奇数长度：一个终点
+                medianPositions.push(Math.floor(totalLength / 2) + 1);
+            } else {
+                // 偶数长度：两个终点
+                medianPositions.push(totalLength / 2);
+                medianPositions.push(totalLength / 2 + 1);
+            }
+
             // 生成方块 - 默认半透明
             for (let i = 1; i <= totalLength; i++) {
                 const block = document.createElement('div');
@@ -312,7 +323,13 @@
                 block.style.fontSize = '18px';
                 block.textContent = i;
                 block.dataset.value = i;
+                block.dataset.isMedian = medianPositions.includes(i) ? 'true' : 'false';
                 block.style.animationDelay = `${i * 0.05}s`;
+
+                // 如果是中位数位置，数字用accent色标识
+                if (medianPositions.includes(i)) {
+                    block.classList.add('text-accent');
+                }
 
                 // 添加点击事件
                 block.addEventListener('click', () => toggleBlock(block, i));
@@ -441,14 +458,25 @@
 
         // 切换方块选中状态（可以多选）
         function toggleBlock(block, value) {
+            const isMedian = block.dataset.isMedian === 'true';
+
             if (selectedBlocks.has(value)) {
                 // 已选中，取消选中
                 selectedBlocks.delete(value);
                 block.className = 'block bg-info/30 text-info-content/30';
+                // 如果是中位数位置，保持accent色
+                if (isMedian) {
+                    block.classList.add('text-accent');
+                }
             } else {
                 // 未选中，选中它
                 selectedBlocks.add(value);
                 block.className = 'block bg-error/70 text-error-content/70 selected';
+                // 如果是中位数位置，保持accent色
+                if (isMedian) {
+                    block.classList.remove('text-error-content/70');
+                    block.classList.add('text-accent');
+                }
             }
 
             // 更新数组A和B的长度
@@ -471,12 +499,21 @@
             // 清除所有选中
             selectedBlocks.clear();
             blocks.forEach(b => {
+                const isMedian = b.dataset.isMedian === 'true';
                 b.className = 'block bg-info/30 text-info-content/30';
+                if (isMedian) {
+                    b.classList.add('text-accent');
+                }
             });
 
             // 选中方块
             for (let i = 0; i < Math.min(lengthA, blocks.length); i++) {
+                const isMedian = blocks[i].dataset.isMedian === 'true';
                 blocks[i].className = 'block bg-error/70 text-error-content/70 selected';
+                if (isMedian) {
+                    blocks[i].classList.remove('text-error-content/70');
+                    blocks[i].classList.add('text-accent');
+                }
                 selectedBlocks.add(parseInt(blocks[i].dataset.value));
             }
 
@@ -491,6 +528,15 @@
             inputTotal.value = totalLength;
 
             const blocks = blocksContainer.querySelectorAll('.block');
+
+            // 计算中位数位置
+            const medianPositions = [];
+            if (totalLength % 2 === 1) {
+                medianPositions.push(Math.floor(totalLength / 2) + 1);
+            } else {
+                medianPositions.push(totalLength / 2);
+                medianPositions.push(totalLength / 2 + 1);
+            }
 
             if (totalLength > oldTotal) {
                 // 添加新方块
@@ -507,6 +553,12 @@
                     block.style.fontSize = '18px';
                     block.textContent = i;
                     block.dataset.value = i;
+                    block.dataset.isMedian = medianPositions.includes(i) ? 'true' : 'false';
+
+                    // 如果是中位数位置，数字用accent色标识
+                    if (medianPositions.includes(i)) {
+                        block.classList.add('text-accent');
+                    }
 
                     block.addEventListener('click', () => toggleBlock(block, i));
                     blocksContainer.appendChild(block);
@@ -587,7 +639,11 @@
             // 清除所有选中
             selectedBlocks.clear();
             blocks.forEach(b => {
+                const isMedian = b.dataset.isMedian === 'true';
                 b.className = 'block bg-info/30 text-info-content/30';
+                if (isMedian) {
+                    b.classList.add('text-accent');
+                }
             });
 
             // 生成所有可能的索引
@@ -606,7 +662,12 @@
             selectedIndices.forEach(index => {
                 const block = Array.from(blocks).find(b => parseInt(b.dataset.value) === index);
                 if (block) {
+                    const isMedian = block.dataset.isMedian === 'true';
                     block.className = 'block bg-error/70 text-error-content/70 selected';
+                    if (isMedian) {
+                        block.classList.remove('text-error-content/70');
+                        block.classList.add('text-accent');
+                    }
                     selectedBlocks.add(index);
                 }
             });
