@@ -483,54 +483,54 @@
         function addDividerMarkerOnMergedArray(longerDividerPos, shorterDividerPos, shorterLength, isLongerA) {
             const allBlocks = blocksContainer.querySelectorAll('.block');
 
-            // 计数器，用于跟踪在各自数组中的位置
-            let longerIndex = 0;
-            let shorterIndex = 0;
+            // 首先找到长数组和短数组在合并数组中的位置
+            const longerPositions = [];
+            const shorterPositions = [];
 
             allBlocks.forEach((block, index) => {
                 const isSelected = block.classList.contains('selected');
                 const isLongerBlock = isLongerA ? isSelected : !isSelected;
 
                 if (isLongerBlock) {
-                    longerIndex++;
-                    // 检查是否在长数组分割线位置
-                    if (longerIndex === longerDividerPos) {
-                        // 检查是否有下一个方块也是长数组
-                        const nextBlock = allBlocks[index + 1];
-                        const hasNextLonger = nextBlock && (isLongerA ? nextBlock.classList.contains('selected') : !nextBlock.classList.contains('selected'));
-
-                        addBraceMarker(block, hasNextLonger, 'blue');
-                    }
+                    longerPositions.push(index);
                 } else {
-                    shorterIndex++;
-                    // 检查是否在短数组分割线位置
-                    if (shorterIndex === shorterDividerPos && shorterLength > 0) {
-                        // 检查是否有下一个方块也是短数组
-                        const nextBlock = allBlocks[index + 1];
-                        const hasNextShorter = nextBlock && (isLongerA ? !nextBlock.classList.contains('selected') : nextBlock.classList.contains('selected'));
-
-                        addBraceMarker(block, hasNextShorter, 'red');
-                    }
+                    shorterPositions.push(index);
                 }
             });
+
+            // 长数组分割线相邻：第longerDividerPos和longerDividerPos+1个元素
+            if (longerDividerPos >= 1 && longerDividerPos <= longerPositions.length) {
+                const leftIndex = longerPositions[longerDividerPos - 1];
+                addDotToBlock(allBlocks[leftIndex], 'blue');
+
+                if (longerDividerPos < longerPositions.length) {
+                    const rightIndex = longerPositions[longerDividerPos];
+                    addDotToBlock(allBlocks[rightIndex], 'blue');
+                }
+            }
+
+            // 短数组分割线相邻：第shorterDividerPos和shorterDividerPos+1个元素
+            if (shorterLength > 0 && shorterDividerPos >= 1 && shorterDividerPos <= shorterPositions.length) {
+                const leftIndex = shorterPositions[shorterDividerPos - 1];
+                addDotToBlock(allBlocks[leftIndex], 'red');
+
+                if (shorterDividerPos < shorterPositions.length) {
+                    const rightIndex = shorterPositions[shorterDividerPos];
+                    addDotToBlock(allBlocks[rightIndex], 'red');
+                }
+            }
         }
 
-        // 添加点标记（全部使用点）
-        function addBraceMarker(block, hasNextBlock, color) {
-            // 添加圆点到当前方块
+        // 给指定方块添加圆点标记
+        function addDotToBlock(block, color) {
             const dot = document.createElement('div');
             dot.className = `marker-dot ${color}`;
             block.appendChild(dot);
+        }
 
-            // 如果有下一个方块，也给它加圆点
-            if (hasNextBlock) {
-                const nextBlock = block.nextElementSibling;
-                if (nextBlock) {
-                    const nextDot = document.createElement('div');
-                    nextDot.className = `marker-dot ${color}`;
-                    nextBlock.appendChild(nextDot);
-                }
-            }
+        // 添加大括号标记（已废弃）
+        function addBraceMarker(block, hasNextBlock, color) {
+            // 这个函数已不再使用
         }
 
         // 添加分割线相邻方块标记（已废弃，保留用于兼容）
