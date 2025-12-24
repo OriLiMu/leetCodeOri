@@ -54,6 +54,18 @@
             outline-offset: -2px;
         }
 
+        /* 竖线分割线 */
+        .divider-line {
+            position: absolute;
+            width: 3px;
+            height: 60px;
+            background: linear-gradient(to bottom, transparent, #eab308, transparent);
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
         /* 数列容器 */
         .blocks-container {
             display: flex;
@@ -322,14 +334,17 @@
             generateSubArrays(selectedBlocks.size, totalLength - selectedBlocks.size);
         }
 
-        // 生成子数组 - 根据颜色直接分开
+        // 生成子数组 - 长数组放左面，添加分割线
         function generateSubArrays(lengthA, lengthB) {
             // 更新标签显示
             const halfLength = Math.floor(totalLength / 2);
             totalLabel.textContent = totalLength;
             halfLabel.textContent = halfLength;
-            lengthABadge.textContent = lengthA;
-            lengthBBadge.textContent = lengthB;
+
+            // 确定长数组和短数组
+            const isLongerA = lengthA >= lengthB;
+            const longerLength = Math.max(lengthA, lengthB); // l1
+            const shorterLength = Math.min(lengthA, lengthB);
 
             // 清空子数组容器
             subarrayAContainer.innerHTML = '';
@@ -337,26 +352,79 @@
             subarrayAContainer.className = 'blocks-container min-h-[100px] bg-base-200 rounded-lg p-4';
             subarrayBContainer.className = 'blocks-container min-h-[100px] bg-base-200 rounded-lg p-4';
 
-            // 获取所有选中的方块（红色）作为子数组A
+            // 更新标签：左边是长数组，右边是短数组
+            if (isLongerA) {
+                lengthABadge.textContent = lengthA;
+                lengthBBadge.textContent = lengthB;
+            } else {
+                lengthABadge.textContent = lengthB;
+                lengthBBadge.textContent = lengthA;
+            }
+
+            // 获取所有方块
             const allBlocks = blocksContainer.querySelectorAll('.block');
             const selectedBlocks = Array.from(allBlocks).filter(b => b.classList.contains('selected'));
             const unselectedBlocks = Array.from(allBlocks).filter(b => !b.classList.contains('selected'));
 
-            // 子数组A显示选中方块的值（红色）
-            selectedBlocks.forEach(block => {
-                const value = block.dataset.value;
-                const isMedian = block.dataset.isMedian === 'true';
-                const newBlock = createSubArrayBlock(value, 'A', true, isMedian);
-                subarrayAContainer.appendChild(newBlock);
-            });
+            // 把长数组放到左边的子数组A容器
+            if (isLongerA) {
+                // 选中的方块是长数组，放左面
+                selectedBlocks.forEach(block => {
+                    const value = block.dataset.value;
+                    const isMedian = block.dataset.isMedian === 'true';
+                    const newBlock = createSubArrayBlock(value, 'A', true, isMedian);
+                    subarrayAContainer.appendChild(newBlock);
+                });
+                // 未选中的方块是短数组，放右面
+                unselectedBlocks.forEach(block => {
+                    const value = block.dataset.value;
+                    const isMedian = block.dataset.isMedian === 'true';
+                    const newBlock = createSubArrayBlock(value, 'B', false, isMedian);
+                    subarrayBContainer.appendChild(newBlock);
+                });
+            } else {
+                // 未选中的方块是长数组，放左面
+                unselectedBlocks.forEach(block => {
+                    const value = block.dataset.value;
+                    const isMedian = block.dataset.isMedian === 'true';
+                    const newBlock = createSubArrayBlock(value, 'A', false, isMedian);
+                    subarrayAContainer.appendChild(newBlock);
+                });
+                // 选中的方块是短数组，放右面
+                selectedBlocks.forEach(block => {
+                    const value = block.dataset.value;
+                    const isMedian = block.dataset.isMedian === 'true';
+                    const newBlock = createSubArrayBlock(value, 'B', true, isMedian);
+                    subarrayBContainer.appendChild(newBlock);
+                });
+            }
 
-            // 子数组B显示未选中方块的值（蓝色）
-            unselectedBlocks.forEach(block => {
-                const value = block.dataset.value;
-                const isMedian = block.dataset.isMedian === 'true';
-                const newBlock = createSubArrayBlock(value, 'B', false, isMedian);
-                subarrayBContainer.appendChild(newBlock);
-            });
+            // 添加分割线（仅在短数组长度大于0时）
+            if (shorterLength > 0) {
+                const n = totalLength;
+                const l1 = longerLength;
+                const longerDividerPos = Math.floor(l1 / 2);
+                const shorterDividerPos = Math.floor(n / 2) - Math.floor(l1 / 2);
+
+                // 在长数组指定位置后加分割线
+                addDividerLine(subarrayAContainer, longerDividerPos);
+
+                // 在短数组指定位置后加分割线
+                if (shorterDividerPos > 0 && shorterDividerPos <= shorterLength) {
+                    addDividerLine(subarrayBContainer, shorterDividerPos);
+                }
+            }
+        }
+
+        // 添加分割线
+        function addDividerLine(container, position) {
+            const blocks = container.querySelectorAll('.block');
+            if (position >= 1 && position <= blocks.length) {
+                const targetBlockWrapper = blocks[position - 1].parentElement;
+                const divider = document.createElement('div');
+                divider.className = 'divider-line';
+                targetBlockWrapper.appendChild(divider);
+            }
         }
 
         // 创建子数组方块
