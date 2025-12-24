@@ -48,6 +48,12 @@
             box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
         }
 
+        /* 中位数终点方块边框样式 */
+        .median-block {
+            border: 3px solid hsl(var(--a)) !important;
+            box-shadow: 0 0 10px hsl(var(--a) / 0.5);
+        }
+
         /* 数列容器 */
         .blocks-container {
             display: flex;
@@ -290,14 +296,13 @@
                 if (isSelected) {
                     block.className = 'block bg-error text-error-content selected';
                     if (isMedian) {
-                        block.classList.remove('text-error-content');
-                        block.classList.add('text-accent');
+                        block.classList.add('median-block');
                     }
                     selectedBlocks.add(i);
                 } else {
                     block.className = 'block bg-info text-info-content';
                     if (isMedian) {
-                        block.classList.add('text-accent');
+                        block.classList.add('median-block');
                     }
                 }
 
@@ -365,17 +370,15 @@
             // 根据是否选中设置不同的颜色：选中=红色，未选中=蓝色
             if (isSelected) {
                 block.className = 'block bg-error text-error-content';
-                // 如果是中位数位置，使用accent色
+                // 如果是中位数位置，添加边框
                 if (isMedian) {
-                    block.classList.remove('text-error-content');
-                    block.classList.add('text-accent');
+                    block.classList.add('median-block');
                 }
             } else {
                 block.className = 'block bg-info text-info-content';
-                // 如果是中位数位置，使用accent色
+                // 如果是中位数位置，添加边框
                 if (isMedian) {
-                    block.classList.remove('text-info-content');
-                    block.classList.add('text-accent');
+                    block.classList.add('median-block');
                 }
             }
             block.style.width = '40px';
@@ -400,18 +403,17 @@
                 // 已选中，取消选中
                 selectedBlocks.delete(value);
                 block.className = 'block bg-info text-info-content';
-                // 如果是中位数位置，保持accent色
+                // 如果是中位数位置，添加边框
                 if (isMedian) {
-                    block.classList.add('text-accent');
+                    block.classList.add('median-block');
                 }
             } else {
                 // 未选中，选中它
                 selectedBlocks.add(value);
                 block.className = 'block bg-error text-error-content selected';
-                // 如果是中位数位置，保持accent色
+                // 如果是中位数位置，添加边框
                 if (isMedian) {
-                    block.classList.remove('text-error-content');
-                    block.classList.add('text-accent');
+                    block.classList.add('median-block');
                 }
             }
 
@@ -438,7 +440,7 @@
                 const isMedian = b.dataset.isMedian === 'true';
                 b.className = 'block bg-info text-info-content';
                 if (isMedian) {
-                    b.classList.add('text-accent');
+                    b.classList.add('median-block');
                 }
             });
 
@@ -447,8 +449,7 @@
                 const isMedian = blocks[i].dataset.isMedian === 'true';
                 blocks[i].className = 'block bg-error text-error-content selected';
                 if (isMedian) {
-                    blocks[i].classList.remove('text-error-content');
-                    blocks[i].classList.add('text-accent');
+                    blocks[i].classList.add('median-block');
                 }
                 selectedBlocks.add(parseInt(blocks[i].dataset.value));
             }
@@ -478,7 +479,11 @@
                 // 添加新方块
                 for (let i = oldTotal + 1; i <= totalLength; i++) {
                     const block = document.createElement('div');
+                    const isMedian = medianPositions.includes(i);
                     block.className = 'block bg-info text-info-content';
+                    if (isMedian) {
+                        block.classList.add('median-block');
+                    }
                     block.style.width = '50px';
                     block.style.height = '50px';
                     block.style.display = 'flex';
@@ -489,12 +494,7 @@
                     block.style.fontSize = '18px';
                     block.textContent = i;
                     block.dataset.value = i;
-                    block.dataset.isMedian = medianPositions.includes(i) ? 'true' : 'false';
-
-                    // 如果是中位数位置，数字用accent色标识
-                    if (medianPositions.includes(i)) {
-                        block.classList.add('text-accent');
-                    }
+                    block.dataset.isMedian = isMedian ? 'true' : 'false';
 
                     block.addEventListener('click', () => toggleBlock(block, i));
                     blocksContainer.appendChild(block);
@@ -578,7 +578,7 @@
                 const isMedian = b.dataset.isMedian === 'true';
                 b.className = 'block bg-info text-info-content';
                 if (isMedian) {
-                    b.classList.add('text-accent');
+                    b.classList.add('median-block');
                 }
             });
 
@@ -601,8 +601,7 @@
                     const isMedian = block.dataset.isMedian === 'true';
                     block.className = 'block bg-error text-error-content selected';
                     if (isMedian) {
-                        block.classList.remove('text-error-content');
-                        block.classList.add('text-accent');
+                        block.classList.add('median-block');
                     }
                     selectedBlocks.add(index);
                 }
