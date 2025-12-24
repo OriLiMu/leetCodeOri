@@ -285,14 +285,14 @@
 
                 // 设置初始状态：前lengthA个为红色（选中），其余为蓝色
                 if (isSelected) {
-                    block.className = 'block bg-error/70 text-error-content/70 selected';
+                    block.className = 'block bg-error text-error-content selected';
                     if (isMedian) {
-                        block.classList.remove('text-error-content/70');
+                        block.classList.remove('text-error-content');
                         block.classList.add('text-accent');
                     }
                     selectedBlocks.add(i);
                 } else {
-                    block.className = 'block bg-info/30 text-info-content/30';
+                    block.className = 'block bg-info text-info-content';
                     if (isMedian) {
                         block.classList.add('text-accent');
                     }
@@ -357,17 +357,17 @@
             const block = document.createElement('div');
             // 根据是否选中设置不同的颜色：选中=红色，未选中=蓝色
             if (isSelected) {
-                block.className = 'block bg-error/70 text-error-content/70';
+                block.className = 'block bg-error text-error-content';
                 // 如果是中位数位置，使用accent色
                 if (isMedian) {
-                    block.classList.remove('text-error-content/70');
+                    block.classList.remove('text-error-content');
                     block.classList.add('text-accent');
                 }
             } else {
-                block.className = 'block bg-info/70 text-info-content/70';
+                block.className = 'block bg-info text-info-content';
                 // 如果是中位数位置，使用accent色
                 if (isMedian) {
-                    block.classList.remove('text-info-content/70');
+                    block.classList.remove('text-info-content');
                     block.classList.add('text-accent');
                 }
             }
@@ -392,7 +392,7 @@
             if (selectedBlocks.has(value)) {
                 // 已选中，取消选中
                 selectedBlocks.delete(value);
-                block.className = 'block bg-info/30 text-info-content/30';
+                block.className = 'block bg-info text-info-content';
                 // 如果是中位数位置，保持accent色
                 if (isMedian) {
                     block.classList.add('text-accent');
@@ -400,10 +400,10 @@
             } else {
                 // 未选中，选中它
                 selectedBlocks.add(value);
-                block.className = 'block bg-error/70 text-error-content/70 selected';
+                block.className = 'block bg-error text-error-content selected';
                 // 如果是中位数位置，保持accent色
                 if (isMedian) {
-                    block.classList.remove('text-error-content/70');
+                    block.classList.remove('text-error-content');
                     block.classList.add('text-accent');
                 }
             }
@@ -429,7 +429,7 @@
             selectedBlocks.clear();
             blocks.forEach(b => {
                 const isMedian = b.dataset.isMedian === 'true';
-                b.className = 'block bg-info/30 text-info-content/30';
+                b.className = 'block bg-info text-info-content';
                 if (isMedian) {
                     b.classList.add('text-accent');
                 }
@@ -438,9 +438,9 @@
             // 选中方块
             for (let i = 0; i < Math.min(lengthA, blocks.length); i++) {
                 const isMedian = blocks[i].dataset.isMedian === 'true';
-                blocks[i].className = 'block bg-error/70 text-error-content/70 selected';
+                blocks[i].className = 'block bg-error text-error-content selected';
                 if (isMedian) {
-                    blocks[i].classList.remove('text-error-content/70');
+                    blocks[i].classList.remove('text-error-content');
                     blocks[i].classList.add('text-accent');
                 }
                 selectedBlocks.add(parseInt(blocks[i].dataset.value));
@@ -471,7 +471,7 @@
                 // 添加新方块
                 for (let i = oldTotal + 1; i <= totalLength; i++) {
                     const block = document.createElement('div');
-                    block.className = 'block bg-info/30 text-info-content/30';
+                    block.className = 'block bg-info text-info-content';
                     block.style.width = '50px';
                     block.style.height = '50px';
                     block.style.display = 'flex';
@@ -569,7 +569,7 @@
             selectedBlocks.clear();
             blocks.forEach(b => {
                 const isMedian = b.dataset.isMedian === 'true';
-                b.className = 'block bg-info/30 text-info-content/30';
+                b.className = 'block bg-info text-info-content';
                 if (isMedian) {
                     b.classList.add('text-accent');
                 }
@@ -592,9 +592,9 @@
                 const block = Array.from(blocks).find(b => parseInt(b.dataset.value) === index);
                 if (block) {
                     const isMedian = block.dataset.isMedian === 'true';
-                    block.className = 'block bg-error/70 text-error-content/70 selected';
+                    block.className = 'block bg-error text-error-content selected';
                     if (isMedian) {
-                        block.classList.remove('text-error-content/70');
+                        block.classList.remove('text-error-content');
                         block.classList.add('text-accent');
                     }
                     selectedBlocks.add(index);
