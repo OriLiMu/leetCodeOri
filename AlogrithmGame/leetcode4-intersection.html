@@ -602,9 +602,18 @@
                 }
             }
 
+            // 移除所有圆点标记
+            removeAllDots();
+
             // 更新数组A和B的长度
             updateArrayLengths();
             updateSelectedInfo();
+        }
+
+        // 移除所有圆点标记
+        function removeAllDots() {
+            const allDots = blocksContainer.querySelectorAll('.marker-dot');
+            allDots.forEach(dot => dot.remove());
         }
 
         // 更新数组A和B的长度
@@ -618,6 +627,9 @@
         function updateSelectedBlocksByLengthA(lengthA) {
             const blocks = blocksContainer.querySelectorAll('.block');
             const selectedArray = Array.from(selectedBlocks).sort((a, b) => a - b);
+
+            // 移除所有圆点标记
+            removeAllDots();
 
             // 清除所有选中
             selectedBlocks.clear();
@@ -756,6 +768,9 @@
 
             // 获取当前A的长度
             const lengthA = parseInt(inputA.value) || 0;
+
+            // 移除所有圆点标记
+            removeAllDots();
 
             // 清除所有选中
             selectedBlocks.clear();
