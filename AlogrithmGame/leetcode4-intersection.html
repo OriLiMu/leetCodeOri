@@ -34,8 +34,6 @@
             transition: all 0.3s ease;
             cursor: pointer;
             user-select: none;
-            box-sizing: border-box;
-            border: 4px solid transparent;
         }
 
         .block:hover {
@@ -52,7 +50,8 @@
 
         /* 中位数终点方块边框样式 */
         .median-block {
-            border: 4px solid #eab308 !important;
+            outline: 4px solid #eab308 !important;
+            outline-offset: -2px;
         }
 
         /* 数列容器 */
