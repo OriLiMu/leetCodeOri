@@ -265,10 +265,12 @@
                 medianPositions.push(totalLength / 2 + 1);
             }
 
-            // 生成方块 - 默认半透明
+            // 生成方块 - 根据lengthA自动选中前几个
             for (let i = 1; i <= totalLength; i++) {
                 const block = document.createElement('div');
-                block.className = 'block bg-info/30 text-info-content/30';
+                const isMedian = medianPositions.includes(i);
+                const isSelected = i <= lengthA;
+
                 block.style.width = '50px';
                 block.style.height = '50px';
                 block.style.display = 'flex';
@@ -279,11 +281,21 @@
                 block.style.fontSize = '18px';
                 block.textContent = i;
                 block.dataset.value = i;
-                block.dataset.isMedian = medianPositions.includes(i) ? 'true' : 'false';
+                block.dataset.isMedian = isMedian ? 'true' : 'false';
 
-                // 如果是中位数位置，数字用accent色标识
-                if (medianPositions.includes(i)) {
-                    block.classList.add('text-accent');
+                // 设置初始状态：前lengthA个为红色（选中），其余为蓝色
+                if (isSelected) {
+                    block.className = 'block bg-error/70 text-error-content/70 selected';
+                    if (isMedian) {
+                        block.classList.remove('text-error-content/70');
+                        block.classList.add('text-accent');
+                    }
+                    selectedBlocks.add(i);
+                } else {
+                    block.className = 'block bg-info/30 text-info-content/30';
+                    if (isMedian) {
+                        block.classList.add('text-accent');
+                    }
                 }
 
                 // 添加点击事件
