@@ -70,7 +70,7 @@
         /* 数列容器 */
         .blocks-container {
             display: flex;
-            gap: 8px;
+            gap: 16px;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
@@ -400,20 +400,18 @@
                 });
             }
 
-            // 添加分割线（仅在短数组长度大于0时）
-            if (shorterLength > 0) {
-                const n = totalLength;
-                const l1 = longerLength;
-                const longerDividerPos = Math.floor(l1 / 2);
-                const shorterDividerPos = Math.floor(n / 2) - Math.floor(l1 / 2);
+            // 添加分割线
+            const n = totalLength;
+            const l1 = longerLength;
+            const longerDividerPos = Math.floor(l1 / 2);
+            const shorterDividerPos = Math.floor(n / 2) - Math.floor(l1 / 2);
 
-                // 在长数组指定位置后加分割线
-                addDividerLine(subarrayAContainer, longerDividerPos);
+            // 在长数组指定位置后加分割线（始终添加）
+            addDividerLine(subarrayAContainer, longerDividerPos);
 
-                // 在短数组指定位置后加分割线
-                if (shorterDividerPos > 0 && shorterDividerPos <= shorterLength) {
-                    addDividerLine(subarrayBContainer, shorterDividerPos);
-                }
+            // 在短数组指定位置后加分割线（仅当短数组长度大于0时）
+            if (shorterLength > 0 && shorterDividerPos > 0 && shorterDividerPos <= shorterLength) {
+                addDividerLine(subarrayBContainer, shorterDividerPos);
             }
         }
 
