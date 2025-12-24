@@ -60,7 +60,7 @@
             width: 3px;
             height: 60px;
             background: #3b82f6;
-            right: -6.5px;
+            right: -9.5px;
             top: 50%;
             transform: translateY(-50%);
             z-index: 10;
@@ -82,6 +82,44 @@
         /* 子数组中的方块 */
         .subarray-block {
             position: relative;
+        }
+
+        /* 分割线相邻方块标记 */
+        .marker-dot {
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .marker-dot.blue {
+            background: #3b82f6;
+            box-shadow: 0 0 8px #3b82f6;
+        }
+
+        .marker-dot.red {
+            background: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+        }
+
+        .marker-line {
+            position: absolute;
+            bottom: -12px;
+            height: 4px;
+            border-radius: 9999px;
+        }
+
+        .marker-line.blue {
+            background: #3b82f6;
+            box-shadow: 0 0 8px #3b82f6;
+        }
+
+        .marker-line.red {
+            background: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
         }
 
         /* 上部分区域 */
@@ -414,6 +452,12 @@
             if (shorterLength > 0 && shorterDividerPos > 0 && shorterDividerPos <= shorterLength) {
                 addDividerLine(subarrayBContainer, shorterDividerPos);
             }
+
+            // 添加标记：长数组用蓝色，短数组用红色
+            addDividerMarker(subarrayAContainer, longerDividerPos, 'blue');
+            if (shorterLength > 0 && shorterDividerPos > 0 && shorterDividerPos <= shorterLength) {
+                addDividerMarker(subarrayBContainer, shorterDividerPos, 'red');
+            }
         }
 
         // 添加分割线
@@ -424,6 +468,30 @@
                 const divider = document.createElement('div');
                 divider.className = 'divider-line';
                 targetBlockWrapper.appendChild(divider);
+            }
+        }
+
+        // 添加分割线相邻方块标记
+        function addDividerMarker(container, position, color) {
+            const blocks = container.querySelectorAll('.block');
+            if (position < 1 || position > blocks.length) return;
+
+            const leftBlockWrapper = blocks[position - 1].parentElement;
+            const hasRightBlock = position < blocks.length;
+
+            if (hasRightBlock) {
+                // 有两个方块相邻，用线连接
+                // 线从左边方块右边到右边方块左边，跨越gap(16px)
+                const line = document.createElement('div');
+                line.className = `marker-line ${color}`;
+                line.style.left = '40px'; // 左边方块宽度40px
+                line.style.width = '16px'; // gap宽度
+                leftBlockWrapper.appendChild(line);
+            } else {
+                // 只有一个方块相邻，用圆点
+                const dot = document.createElement('div');
+                dot.className = `marker-dot ${color}`;
+                leftBlockWrapper.appendChild(dot);
             }
         }
 
