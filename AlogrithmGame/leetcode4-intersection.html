@@ -93,6 +93,13 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        /* 只有在悬停时显示圆点 */
+        .block:hover .marker-dot {
+            opacity: 1;
         }
 
         .marker-dot.blue {
