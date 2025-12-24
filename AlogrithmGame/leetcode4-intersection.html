@@ -349,17 +349,24 @@
             subarrayAContainer.className = 'blocks-container min-h-[100px] bg-base-200 rounded-lg p-4';
             subarrayBContainer.className = 'blocks-container min-h-[100px] bg-base-200 rounded-lg p-4';
 
-            // 生成子数组A的方块
-            for (let i = 1; i <= lengthA; i++) {
-                const block = createSubArrayBlock(i, 'A');
-                subarrayAContainer.appendChild(block);
-            }
+            // 获取所有选中的方块（红色）作为子数组A
+            const allBlocks = blocksContainer.querySelectorAll('.block');
+            const selectedBlocks = Array.from(allBlocks).filter(b => b.classList.contains('selected'));
+            const unselectedBlocks = Array.from(allBlocks).filter(b => !b.classList.contains('selected'));
 
-            // 生成子数组B的方块
-            for (let i = 1; i <= lengthB; i++) {
-                const block = createSubArrayBlock(i, 'B');
-                subarrayBContainer.appendChild(block);
-            }
+            // 子数组A显示选中方块的值（红色）
+            selectedBlocks.forEach(block => {
+                const value = block.dataset.value;
+                const newBlock = createSubArrayBlock(value, 'A', true);
+                subarrayAContainer.appendChild(newBlock);
+            });
+
+            // 子数组B显示未选中方块的值（蓝色）
+            unselectedBlocks.forEach(block => {
+                const value = block.dataset.value;
+                const newBlock = createSubArrayBlock(value, 'B', false);
+                subarrayBContainer.appendChild(newBlock);
+            });
 
             // 对较长的子数组应用闪烁动画
             const longerContainer = isLongerA ? subarrayAContainer : subarrayBContainer;
@@ -396,14 +403,17 @@
         }
 
         // 创建子数组方块
-        function createSubArrayBlock(index, arrayName) {
+        function createSubArrayBlock(index, arrayName, isSelected) {
             const blockWrapper = document.createElement('div');
             blockWrapper.className = 'subarray-block';
             blockWrapper.style.position = 'relative';
             blockWrapper.style.display = 'inline-block';
 
             const block = document.createElement('div');
-            block.className = 'block bg-info/70 text-info-content/70';
+            // 根据是否选中设置不同的颜色：选中=红色，未选中=蓝色
+            block.className = isSelected
+                ? 'block bg-error/70 text-error-content/70'
+                : 'block bg-info/70 text-info-content/70';
             block.style.width = '40px';
             block.style.height = '40px';
             block.style.display = 'flex';
