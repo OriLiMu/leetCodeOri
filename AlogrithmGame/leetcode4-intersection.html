@@ -232,6 +232,9 @@
             // 更新总长度显示
             inputTotal.value = totalLength;
 
+            // 保存当前选中的方块值（保留用户的手动选择）
+            const previouslySelected = Array.from(selectedBlocks);
+
             // 清空选中的方块
             selectedBlocks.clear();
 
@@ -265,11 +268,11 @@
                 medianPositions.push(totalLength / 2 + 1);
             }
 
-            // 生成方块 - 根据lengthA自动选中前几个
+            // 生成方块 - 恢复用户之前的选择
             for (let i = 1; i <= totalLength; i++) {
                 const block = document.createElement('div');
                 const isMedian = medianPositions.includes(i);
-                const isSelected = i <= lengthA;
+                const isSelected = previouslySelected.includes(i);
 
                 block.style.width = '50px';
                 block.style.height = '50px';
@@ -304,10 +307,14 @@
                 blocksContainer.appendChild(block);
             }
 
+            // 更新输入框的值为实际选中的数量
+            inputA.value = selectedBlocks.size;
+            inputB.value = totalLength - selectedBlocks.size;
+
             updateSelectedInfo();
 
             // 生成子数组
-            generateSubArrays(lengthA, lengthB);
+            generateSubArrays(selectedBlocks.size, totalLength - selectedBlocks.size);
         }
 
         // 生成子数组 - 根据颜色直接分开
