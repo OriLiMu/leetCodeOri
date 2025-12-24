@@ -93,13 +93,6 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        /* 只有在悬停时显示圆点 */
-        .block:hover .marker-dot {
-            opacity: 1;
         }
 
         .marker-dot.blue {
@@ -528,8 +521,13 @@
             }
         }
 
-        // 给指定方块添加圆点标记
+        // 给指定方块添加圆点标记（每个方块只保留一个圆点）
         function addDotToBlock(block, color) {
+            // 检查是否已经有圆点，如果有则先移除
+            const existingDot = block.querySelector('.marker-dot');
+            if (existingDot) {
+                existingDot.remove();
+            }
             const dot = document.createElement('div');
             dot.className = `marker-dot ${color}`;
             block.appendChild(dot);
