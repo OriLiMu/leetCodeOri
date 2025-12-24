@@ -481,11 +481,14 @@
 
             if (hasRightBlock) {
                 // 有两个方块相邻，用线连接
-                // 线从左边方块右边到右边方块左边，跨越gap(16px)
+                // 线从左边方块右边(40px)延伸到右边方块左边
+                // 总宽度 = 40px(左边方块剩余) + 16px(gap) = 56px
                 const line = document.createElement('div');
                 line.className = `marker-line ${color}`;
-                line.style.left = '40px'; // 左边方块宽度40px
-                line.style.width = '16px'; // gap宽度
+                line.style.position = 'absolute';
+                line.style.left = '40px';
+                line.style.width = '56px'; // 从左边方块右边到跨越gap到右边方块
+                line.style.bottom = '-12px';
                 leftBlockWrapper.appendChild(line);
             } else {
                 // 只有一个方块相邻，用圆点
