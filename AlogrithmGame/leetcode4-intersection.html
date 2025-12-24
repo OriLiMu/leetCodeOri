@@ -59,34 +59,6 @@
             position: relative;
         }
 
-        /* 闪烁动画 */
-        @keyframes flashAnimation {
-            0%, 100% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-                border-color: hsl(var(--bc) / 0.2);
-            }
-            50% {
-                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.7);
-                border-color: #ef4444;
-            }
-        }
-
-        .flash-animation {
-            animation: flashAnimation 0.5s ease-in-out 3;
-        }
-
-        /* 竖线分割线 */
-        .divider-line {
-            position: absolute;
-            width: 3px;
-            height: 60px;
-            background: linear-gradient(to bottom, transparent, #ef4444, transparent);
-            right: -6px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-        }
-
         /* 子数组中的方块 */
         .subarray-block {
             position: relative;
@@ -117,22 +89,6 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
             justify-content: center;
-        }
-
-        /* 动画效果 */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .block {
-            animation: fadeIn 0.3s ease forwards;
         }
 
         /* 滚动条样式 */
@@ -324,7 +280,6 @@
                 block.textContent = i;
                 block.dataset.value = i;
                 block.dataset.isMedian = medianPositions.includes(i) ? 'true' : 'false';
-                block.style.animationDelay = `${i * 0.05}s`;
 
                 // 如果是中位数位置，数字用accent色标识
                 if (medianPositions.includes(i)) {
@@ -339,13 +294,11 @@
 
             updateSelectedInfo();
 
-            // 生成子数组并启动动画
-            setTimeout(() => {
-                generateSubArrays(lengthA, lengthB);
-            }, 300);
+            // 生成子数组
+            generateSubArrays(lengthA, lengthB);
         }
 
-        // 生成子数组并执行PPT动画
+        // 生成子数组 - 根据颜色直接分开
         function generateSubArrays(lengthA, lengthB) {
             // 更新标签显示
             const halfLength = Math.floor(totalLength / 2);
@@ -353,12 +306,6 @@
             halfLabel.textContent = halfLength;
             lengthABadge.textContent = lengthA;
             lengthBBadge.textContent = lengthB;
-
-            // 确定较长的子数组
-            const isLongerA = lengthA >= lengthB;
-            const longerLength = Math.max(lengthA, lengthB);
-            const shorterLength = Math.min(lengthA, lengthB);
-            const longerHalf = Math.floor(longerLength / 2);
 
             // 清空子数组容器
             subarrayAContainer.innerHTML = '';
@@ -374,53 +321,22 @@
             // 子数组A显示选中方块的值（红色）
             selectedBlocks.forEach(block => {
                 const value = block.dataset.value;
-                const newBlock = createSubArrayBlock(value, 'A', true);
+                const isMedian = block.dataset.isMedian === 'true';
+                const newBlock = createSubArrayBlock(value, 'A', true, isMedian);
                 subarrayAContainer.appendChild(newBlock);
             });
 
             // 子数组B显示未选中方块的值（蓝色）
             unselectedBlocks.forEach(block => {
                 const value = block.dataset.value;
-                const newBlock = createSubArrayBlock(value, 'B', false);
+                const isMedian = block.dataset.isMedian === 'true';
+                const newBlock = createSubArrayBlock(value, 'B', false, isMedian);
                 subarrayBContainer.appendChild(newBlock);
             });
-
-            // 对较长的子数组应用闪烁动画
-            const longerContainer = isLongerA ? subarrayAContainer : subarrayBContainer;
-            longerContainer.classList.add('flash-animation');
-
-            // 动画结束后移除class并添加分割线
-            setTimeout(() => {
-                longerContainer.classList.remove('flash-animation');
-
-                // 计算分割线位置
-                // n = 长子数组的一半长度
-                // m = 总数组的一半长度
-                const n = longerHalf;
-                const m = halfLength;
-
-                if (isLongerA) {
-                    // 在长子数组A的第n个元素后加竖线
-                    addDividerLine(subarrayAContainer, n);
-                    // 在短数组B的第(m-n)个元素后加竖线
-                    const bDividerPosition = m - n;
-                    if (bDividerPosition > 0 && bDividerPosition <= lengthB) {
-                        addDividerLine(subarrayBContainer, bDividerPosition);
-                    }
-                } else {
-                    // 在长子数组B的第n个元素后加竖线
-                    addDividerLine(subarrayBContainer, n);
-                    // 在短数组A的第(m-n)个元素后加竖线
-                    const aDividerPosition = m - n;
-                    if (aDividerPosition > 0 && aDividerPosition <= lengthA) {
-                        addDividerLine(subarrayAContainer, aDividerPosition);
-                    }
-                }
-            }, 1500); // 3次闪烁，每次0.5秒，总共1.5秒
         }
 
         // 创建子数组方块
-        function createSubArrayBlock(index, arrayName, isSelected) {
+        function createSubArrayBlock(index, arrayName, isSelected, isMedian) {
             const blockWrapper = document.createElement('div');
             blockWrapper.className = 'subarray-block';
             blockWrapper.style.position = 'relative';
@@ -428,9 +344,21 @@
 
             const block = document.createElement('div');
             // 根据是否选中设置不同的颜色：选中=红色，未选中=蓝色
-            block.className = isSelected
-                ? 'block bg-error/70 text-error-content/70'
-                : 'block bg-info/70 text-info-content/70';
+            if (isSelected) {
+                block.className = 'block bg-error/70 text-error-content/70';
+                // 如果是中位数位置，使用accent色
+                if (isMedian) {
+                    block.classList.remove('text-error-content/70');
+                    block.classList.add('text-accent');
+                }
+            } else {
+                block.className = 'block bg-info/70 text-info-content/70';
+                // 如果是中位数位置，使用accent色
+                if (isMedian) {
+                    block.classList.remove('text-info-content/70');
+                    block.classList.add('text-accent');
+                }
+            }
             block.style.width = '40px';
             block.style.height = '40px';
             block.style.display = 'flex';
@@ -443,17 +371,6 @@
 
             blockWrapper.appendChild(block);
             return blockWrapper;
-        }
-
-        // 添加分割线
-        function addDividerLine(container, position) {
-            const blocks = container.querySelectorAll('.block');
-            if (position >= 1 && position <= blocks.length) {
-                const targetBlockWrapper = blocks[position - 1].parentElement;
-                const divider = document.createElement('div');
-                divider.className = 'divider-line';
-                targetBlockWrapper.appendChild(divider);
-            }
         }
 
         // 切换方块选中状态（可以多选）
