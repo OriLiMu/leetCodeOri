@@ -8,81 +8,106 @@
 #include <strings.h>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 using namespace std;
 class Solution {
 public:
-  // 错误代码
-  // 1. 原因是 mid 的计算是针对 r = mid, 但是题目中不是
-  // 2. 另一个原因是你等于的条件在上面, 就是说 nums[mid] 可能等于 nums[l],
-  // 那么这里必须 l = mid, 不然可能丢掉值 所以 判断条件的等号, mid的计算方法和l
-  // r 的赋值这三个是一体的关系, 必须对应
-  // 当前这个也是错误示例
-  int findMin(vector<int> &nums) {
-    int l = 0, r = nums.size() - 1, mid;
-    // 如果这里把等于也加进去, 那么就会出现死循环, 在 l = mid这里
-    // 这个循环的结果, 最终结果一定是 l == r 因为 = mid 的操作一定在l r之间
-    // 虽然 r = mid - 1, 但是判断条件可以推出, 这个时候最少有两个数字. 所以还是
-    // r >= l- 在合理范围之内
-    // 所以后面 return nums[l] or nums[r] 结果是一样的
-    while (l < r) {
-      mid = (l + r) / 2; // 这种计算等于必须给r, r = mid
-      // 分析1:
-      // 这个逻辑判断的感觉不是很好, 因为求得是最小, 如果出现大于的逻辑,
-      // 整体的抛弃是逻辑上比较干净的. 但是这里加了一个等于,
-      // 那么就需要强行留下来mid. 这个逻辑说到底也不能算错. 但是逻辑不干净
+  // 这个好像是错误的思路. 我的想法是用二分法在a上去做中点
+  // 没有错误只是思路不是我原本的二分法思路
+  double findMedianSortedArrays(vector<int> &nums1, vector<int> &nums2) {
+    int l1 = nums1.size(), l2 = nums2.size();
+    int rl = (l1 + l2) / 2;
+    int l3 = rl;
+    int s1 = 0, s2 = 0;
+    bool isOdd = (l1 + l2) % 2 == 0 ? false : true;
+    while (rl > 0) {
+      if ((nums1.size() - s1) < (nums2.size() - s2)) {
+        swap(nums1, nums2);
+        swap(s1, s2);
+      }
+
+      if (s2 == nums2.size()) {
+        s1 += rl;
+        if (isOdd)
+          return nums1[s1];
+        else
+          return (nums1[s1] + nums1[s1 - 1]) / 2.0;
+      }
+
+      // 还是有可能一半的 rl比l2的总长度还要长
+      // 要截取的长度是整个长度的1/4, 那么长的数组一定是满足在长数组之内的,
+      // 不然长数组和短数组相加的长度就不够了
+      // 这里需要考虑短的不夠的情况
+      // ====
+      // 这里有一个关键的理解问题, 就是切割线的坐标表示.
+      // 切割线的本质是两个坐标之间的数字. 所以如何定义是一个问题
+      // ====
       //
-      // 分析2:
-      // 注意这个条件可能会直接卡死
-      // 因为 mid = (l + r) / 2 和 l = mid
-      //
-      // 这个代码错误的原因在于, 判断条件模糊, 因为大于的是不要的, 等于是要得,
-      // 所以你这里一个判断出来两个方向有问题
-      if (nums[mid] <= nums[r]) {
-        r = mid;
+      // 发现一个问题, sp1 是表示对应坐标前面是切线, 还是后面是切线
+      // 无论前后, 都需要考虑越界的问题. 如果是前面是切线,
+      // 那么如果切线在最开始的地方. sp 就是-1
+      // 发现在后面逻辑容易处理一点,
+      // 在前面计算算式更清楚明确一点, 我这里采用在前面
+      // 我用了"在前面的" 的处理方式, 发现很容易出错,
+      // 因为跟我的默认的理解方式冲突
+      // 修改成: 在后面. 那么这样s1, s2 应该开始等于-1
+      // 所以有一个问题, 就是 数组长度, 切割线位置 和
+      // 起始坐标的关系是一个重要问题
+      // 特例的设置, 一开始是-1, 如果需要距离1的地方设置一个分割线,
+      // 那么这个对应的坐标是0, 如果把坐标对应的元素的后面的位置作为分割线的位置
+      // 我们考虑起始坐标为1 的情况. 如果距离是2,
+      // 因为起始的状态1的分割线就是在后面已经包括了一个长度, 所以如果距离是2,
+      // 这个位置在2的后面,
+      // 就是需要注意开始的这个点什么也不做就已经包括了一个长度 那么可以得出,
+      // 长度对应的坐标应该是-1
+      // 这里感觉我在问题中设置的变量不是很合适.迷惑的地方比较多.概念穿插
+      // 这样理解我感觉, 概念的定义上就非常的复杂了
+      int sp1 = s1 + rl - rl / 2 - 1,
+          sp2 = s2 + rl / 2 - 1; // sp1 把长的断点留给自己
+      if (nums2.size() - s2 < rl / 2) {
+        // 还是明确一下切割点是怎么算出来的
+        // 这里还需要-1吗? 需要 s1 默认包括一个长度
+        sp1 = s1 + rl - (nums2.size() - s2) - 1;
+        sp2 = nums2.size() - 1;
+        if (nums2[sp2] > nums1[sp1]) {
+          s1 = sp1 + 1;
+          rl = nums2.size() - s2;
+        } else {
+          // 因为 sp2后面这个点已经失败了
+          s2 = sp2 + 1;
+          rl -= nums2.size() - s2;
+        }
       } else {
-        l = mid + 1;
+        if (nums1[sp1] > nums2[sp2]) {
+          s2 = sp2 + 1;
+          // 这个地方, 有问题, 可能rl = 1 那么 rl / 2 = 0, 那你这里数据没有迭代
+          rl = rl - max(1, rl / 2);
+        } else {
+          s1 = sp1 + 1;
+          rl = rl / 2;
+        }
       }
     }
 
-    return nums[l];
-  }
-
-  // 正确
-  int findMin2(vector<int> &nums) {
-    int l = 0, r = nums.size() - 1, mid;
-    while (l < r) {
-      mid = (l + r) / 2;
-      if (nums[mid] > nums[r]) {
-        l = mid + 1;
-      } else {
-        r = mid;
-      }
-    }
-
-    return nums[r];
-  }
-
-  // 正确
-  int findMin3(vector<int> &nums) {
-    int l = 0, r = nums.size() - 1, mid;
-    while (l < r) {
-      mid = (l + r) / 2;
-      if (nums[mid] > nums[r]) {
-        l = mid + 1;
-      } else {
-        r = mid;
-      }
-    }
-
-    return nums[r];
+    cout << "s1:" << s1 << ", s2:" << s2 << endl;
+    // 这个时候s过了一位, 如果想找到前一位需要-1, 这样还得判断s1是不是0
+    // 这个奇数是对的.
+    if (isOdd)
+      return nums1[s1] < nums2[s2] ? nums1[s1] : nums2[s2];
+    else
+      // 这个式子是错的, s1, s2都是过位的都是后半段的index
+      // return (nums1[s1] + nums2[s2]) / 2.0;
+      return (min(nums1[s1], nums2[s2]) + max(nums1[s1 - 1], nums2[s2 - 1])) /
+             2.0;
   }
 };
 
 int main() {
   Solution s;
-  vector<int> v = {3, 4, 5, 1, 2};
-  // v = {3, 1};
-  cout << s.findMin(v) << endl;
+  vector<int> v1 = {1, 2};
+  vector<int> v2 = {3, 4};
+  cout << "Answer is: " << s.findMedianSortedArrays(v1, v2) << endl;
+  return 0;
 }
