@@ -21,15 +21,19 @@ public:
     int rl = (l1 + l2) / 2;
     int l3 = rl;
     int s1 = 0, s2 = 0;
+    bool isOdd = (l1 + l2) % 2 == 0 ? false : true;
     while (rl > 0) {
       if ((nums1.size() - s1) < (nums2.size() - s2)) {
         swap(nums1, nums2);
         swap(s1, s2);
       }
 
-      if (s2 == nums2.size() - 1) {
+      if (s2 == nums2.size()) {
         s1 += rl;
-        break;
+        if (isOdd)
+          return nums1[s1];
+        else
+          return (nums1[s1] + nums1[s1 - 1]) / 2.0;
       }
 
       // 还是有可能一半的 rl比l2的总长度还要长
@@ -62,16 +66,48 @@ public:
       // 这样理解我感觉, 概念的定义上就非常的复杂了
       int sp1 = s1 + rl - rl / 2 - 1,
           sp2 = s2 + rl / 2 - 1; // sp1 把长的断点留给自己
-      if (nums2.size() - s2 + 1 < rl / 2) {
+      if (nums2.size() - s2 < rl / 2) {
         // 还是明确一下切割点是怎么算出来的
-        sp1 = s1 + rl - (nums2.size() - s2 - 1);
-        // sp2 = nums2.size(); // 因为在前面, 这个很容易出错
+        // 这里还需要-1吗? 需要 s1 默认包括一个长度
+        sp1 = s1 + rl - (nums2.size() - s2) - 1;
+        sp2 = nums2.size() - 1;
+        if (nums2[sp2] > nums1[sp1]) {
+          s1 = sp1 + 1;
+          rl = nums2.size() - s2;
+        } else {
+          // 因为 sp2后面这个点已经失败了
+          s2 = sp2 + 1;
+          rl -= nums2.size() - s2;
+        }
+      } else {
+        if (nums1[sp1] > nums2[sp2]) {
+          s2 = sp2 + 1;
+          // 这个地方, 有问题, 可能rl = 1 那么 rl / 2 = 0, 那你这里数据没有迭代
+          rl = rl - max(1, rl / 2);
+        } else {
+          s1 = sp1 + 1;
+          rl = rl / 2;
+        }
       }
-      // 我的设置给短数组的切割长度是短的
     }
+
+    cout << "s1:" << s1 << ", s2:" << s2 << endl;
+    // 这个时候s过了一位, 如果想找到前一位需要-1, 这样还得判断s1是不是0
+    // 这个奇数是对的.
+    if (isOdd)
+      return nums1[s1] < nums2[s2] ? nums1[s1] : nums2[s2];
+    else
+      // 这个式子是错的, s1, s2都是过位的都是后半段的index
+      // return (nums1[s1] + nums2[s2]) / 2.0;
+      return (min(nums1[s1], nums2[s2]) + max(nums1[s1 - 1], nums2[s2 - 1])) /
+             2.0;
   }
 };
+
 int main() {
   Solution s;
-  cout << "hello" << endl;
+  vector<int> v1 = {1, 2};
+  vector<int> v2 = {3, 4};
+  cout << "Answer is: " << s.findMedianSortedArrays(v1, v2) << endl;
+  return 0;
 }
