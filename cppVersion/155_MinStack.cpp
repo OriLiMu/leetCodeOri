@@ -49,7 +49,4 @@ public:
  * int param_3 = obj->top();
  * int param_4 = obj->getMin();
  */
-int main() {
-  Solution s;
-  cout << "hello" << endl;
-}
+int main() { cout << "hello" << endl; }
