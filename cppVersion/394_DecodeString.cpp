@@ -1,15 +1,6 @@
-#include <algorithm>
 #include <cctype>
-#include <climits>
-#include <cmath>
-#include <cstddef>
 #include <iostream>
-#include <iterator>
-#include <queue>
 #include <strings.h>
-#include <type_traits>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 using namespace std;
@@ -81,6 +72,7 @@ int main() {
   sv = "4[e1[f]]";
   sv = "2[2[ye1[f]]]";
   // 两数字相连的时候出现问题
+  // 问题在于你下面的1f算完之后直接贴给了ye, 中间没有X2
   sv = "2[ye2[1[f]]]";
   // 这个就暴露出来你代码的问题, 你把上级和下级的字符串放一起了
   // 逻辑理解顺序上有问题的代码是不能接受的
