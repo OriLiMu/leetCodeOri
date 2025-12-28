@@ -1,6 +1,6 @@
 class Solution {
 public:
-    vector<int> dailyTemperatures(vector<int>& temperatures) {
+    int largestRectangleArea(vector<int>& heights) {
         
     }
 };
