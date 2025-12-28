@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cctype>
 #include <iostream>
 #include <strings.h>
@@ -7,60 +8,40 @@ using namespace std;
 class Solution {
 public:
   struct node {
-    string prestr;
-    int cnt;
-    node(string s, int n) : prestr(s), cnt(n) {};
+    int n;
+    string s;
+    node(int n) : n(n) {};
   };
 
   string decodeString(string s) {
-    // 这个r的概念也有点乱
-    string alphaStr, cntStr, r;
-    vector<node> stk;
+    string r;
     int idx = 0;
-    char ch;
-    bool isLBOn = false;
+    vector<node> stk;
+    stk.push_back(node(1));
     while (idx < s.size()) {
-      while (isalpha(s[idx]))
-        if (isLBOn)
-          alphaStr.push_back(s[idx++]);
-        else
-          r += s[idx++];
+      while (isalpha(s[idx])) {
+        stk.back().s.push_back(s[idx]);
+        idx++;
+      }
 
+      // start meet []
+      string cnt_str;
       while (isdigit(s[idx]))
-        cntStr.push_back(s[idx++]);
-      if (s[idx] == '[') {
-        isLBOn = true;
-        int cnt = stoi(cntStr);
-        stk.push_back(node(alphaStr, cnt));
-        cntStr.clear();
-        alphaStr.clear();
-        idx++;
-      }
+        cnt_str.push_back(s[idx++]);
 
+      if (s[idx] == '[')
+        stk.push_back(node(stoi(cnt_str)));
       if (s[idx] == ']') {
-        node tn = stk.back();
-        string st = tn.prestr;
-        if (alphaStr.empty()) {
-          st = "";
-          alphaStr = tn.prestr;
-        }
-        // 你这里有一个预设的前提, 就是alphaStr一定走过了一些字母,
-        // 然而可能出现两个]]紧挨着的情况
-        for (int i = 0; i < tn.cnt; ++i)
-          st += alphaStr;
+        string ts = "";
+        for (int i = 0; i < stk.back().n; ++i)
+          ts += stk.back().s;
         stk.pop_back();
-        if (stk.empty()) {
-          r += st;
-          isLBOn = false;
-        } else
-          stk.back().prestr += st;
-        alphaStr.clear();
-        cntStr.clear();
-        idx++;
+        stk.back().s += ts;
       }
+      idx++;
     }
 
-    return r;
+    return stk.back().s;
   }
 };
 
@@ -70,10 +51,26 @@ int main() {
   sv = "3[a]";
   sv = "3[a2[c]]";
   sv = "4[e1[f]]";
-  sv = "2[2[ye1[f]]]";
   // 两数字相连的时候出现问题
   // 问题在于你下面的1f算完之后直接贴给了ye, 中间没有X2
-  sv = "2[ye2[1[f]]]";
+  // 我的代码在连续的两个数字之后崩溃
+  // 根本原因还是核心的逻辑的理解不够
+  //
+  // --------------------------------------------------
+  // 这个是错误的例子我们跟一下
+  // sv = "2[ye2[1[f]]]" , 给出的答案 yefyefyefyef
+  // sv = "ye2[1[f]]"; // 这个是对的
+  // 找到问题了
+  // stk.back().prestr += st; 这个st 不能直接加给上一级的prestr,
+  // 因为st还应该有一个乘数的过程, st 应该是上一级的 alphaStr
+  // 先考虑为什么其他的测试例是对的
+  // sv = "2[ye2[1[f]]]";
+  // --------------------------------------------------
+  // 这个是对的
+  sv = "2[2[ye1[f]]]";
+  // 这个是错的
+  sv = "2[k2[ye1[f]]]";
+
   // 这个就暴露出来你代码的问题, 你把上级和下级的字符串放一起了
   // 逻辑理解顺序上有问题的代码是不能接受的
   // 写一个代码之前先用语言描述出来你的做题的逻辑过程
