@@ -33,6 +33,7 @@ public:
     return r;
   }
 };
+
 int main() {
   Solution s;
   vector<int> v = {73, 74, 75, 71, 69, 72, 76, 73};

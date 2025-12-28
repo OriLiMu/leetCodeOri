@@ -1,6 +1,6 @@
 class Solution {
 public:
-    string decodeString(string s) {
+    vector<int> dailyTemperatures(vector<int>& temperatures) {
         
     }
 };
