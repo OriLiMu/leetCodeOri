@@ -19,12 +19,16 @@ public:
     stack<int> stk;
     int i = 0;
     int maxv = 0;
+    heights.insert(heights.begin(), 0);
+    heights.push_back(0);
     for (int i = 0; i < heights.size(); i++) {
-      while (!stk.empty() && stk.top() > heights[i]) {
-        int w = i - stk.top();
-        maxv = max(maxv, w * heights[stk.top()]);
+      while (!stk.empty() && heights[stk.top()] > heights[i]) {
+        int h = heights[stk.top()];
         stk.pop();
+        int w = i - stk.top() - 1;
+        maxv = max(maxv, w * h);
       }
+      stk.push(i);
     }
     return maxv;
   }
@@ -32,6 +36,9 @@ public:
 
 int main() {
   Solution s;
-
-  cout << "hello" << endl;
+  vector<int> v = {2, 4, 0, 2, 0};
+  v = {0};
+  v = {2, 4};
+  v = {2, 1, 1, 2};
+  cout << s.largestRectangleArea(v);
 }
