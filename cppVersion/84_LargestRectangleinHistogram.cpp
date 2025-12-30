@@ -25,14 +25,22 @@ public:
     while (!heights[start])
       start++;
     end = start;
+    // start 往回退一个到边界之外
     start--;
     while (heights[end])
       end++;
+    // end已经超边界
     // 这里注意 start end都是超出范围的. 因为后面的应用的条件是 > or < ,
     // 不能取到边界
 
     // 把value和idx放到结构体里面存下来
+    vector<node> vn;
+    for (int i = start + 1; i < end - 1; ++i)
+      vn.push_back(node(heights[i], i));
+
     // 根据value排序
+    sort(vn.begin(), vn.end(),
+         [](const node &a, const node &b) { return a.v < b.v; });
     // 从最小值开始逐个计算max
     // 计算完毕的值就会变成新的边界
     // 然后在根据index排序
@@ -40,6 +48,7 @@ public:
     // 可以放到已经根据index排序好的数组里面确定左右边界就可以算出来对应的值
   }
 };
+
 int main() {
   Solution s;
   cout << "hello" << endl;
