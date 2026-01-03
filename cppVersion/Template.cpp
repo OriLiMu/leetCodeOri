@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int largestRectangleArea(vector<int>& heights) {
+    int findKthLargest(vector<int>& nums, int k) {
         
     }
 };
