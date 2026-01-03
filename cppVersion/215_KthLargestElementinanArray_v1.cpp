@@ -17,7 +17,10 @@ public:
   int findKthLargest(vector<int> &nums, int k) {
     priority_queue<int, vector<int>, greater<int>> minq;
     for (auto &n : nums) {
-      minq.push(n);
+      if (minq.empty())
+        minq.push(n);
+      else if (minq.top() > n)
+        minq.push(n);
       if (minq.size() > k)
         minq.pop();
     }
