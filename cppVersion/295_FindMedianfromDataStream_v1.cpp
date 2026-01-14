@@ -29,11 +29,10 @@ public:
     if (qsize % 2 == 0) {
       if (num >= maxhp.top())
         minhp.push(num);
-      else {
-        int t = maxhp.top();
+      else { // 从一堆数字里面拿出来一个数字再插入到另一个堆里
+        minhp.push(maxhp.top());
         maxhp.pop();
         maxhp.push(num);
-        minhp.push(t);
       }
     } else {
       if (num <= minhp.top())
