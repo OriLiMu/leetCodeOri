@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int findKthLargest(vector<int>& nums, int k) {
+    vector<int> topKFrequent(vector<int>& nums, int k) {
         
     }
 };
