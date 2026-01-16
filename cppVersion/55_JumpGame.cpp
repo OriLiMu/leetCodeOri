@@ -11,29 +11,23 @@
 #include <vector>
 
 using namespace std;
-
 class Solution {
 public:
-  int jump(vector<int> &nums) {
-    if (nums.size() == 1)
-      return 1;
-    int limit = nums[0], nextLimit = 0;
-    int r = 0;
+  bool canJump(vector<int> &nums) {
+    int limit = 0;
     for (int i = 0; i < nums.size() && i <= limit; i++) {
-      nextLimit = max(i + nums[i], nextLimit);
-      if (i == limit) {
-        limit = nextLimit;
-        r++;
-      }
+      int d = nums[i];
+      limit = max(limit, i + d);
+      if (limit >= nums.size() - 1)
+        return true;
     }
-
-    return r;
+    return false;
   }
 };
 
 int main() {
   Solution s;
   vector<int> v = {2, 3, 1, 1, 4};
-  v = {2, 3, 0, 1, 4};
-  cout << s.jump(v);
+  v = {3, 2, 1, 0, 4};
+  cout << s.canJump(v);
 }

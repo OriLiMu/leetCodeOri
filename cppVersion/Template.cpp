@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int maxProfit(vector<int>& prices) {
+    int jump(vector<int>& nums) {
         
     }
 };
