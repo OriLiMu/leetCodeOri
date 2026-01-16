@@ -19,9 +19,17 @@ public:
       return 0;
     int limit = nums[0], nextLimit = 0;
     int r = 0;
-    for (int i = 0; i < nums.size() && i <= limit; i++) {
-      nextLimit = max(i + nums[i], nextLimit);
-      if (i == limit) {
+    // 这里的条件不能太复杂.你的判断条件越复杂,出错的概率就越高.
+    for (int i = 1; i < nums.size() && i <= limit; i++) {
+      if (limit >= nums.size() - 1) {
+        r++;
+        break;
+      }
+
+      // nextLimit 也许比开始的 limit 还要小.
+      nextLimit = max(limit, max(i + nums[i], nextLimit));
+      // 这个代码本身就有问题，要敏感一些处理这个代码。
+      if (i == limit) { // 这里有可能，已经超出范围了，可以直接返回。
         limit = nextLimit;
         r++;
       }
@@ -35,5 +43,7 @@ int main() {
   Solution s;
   vector<int> v = {2, 3, 1, 1, 4};
   v = {2, 3, 0, 1, 4};
+  // v = {2, 1};
+  v = {1, 2, 3};
   cout << s.jump(v);
 }
