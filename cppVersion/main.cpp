@@ -1,48 +1,150 @@
-#include <algorithm>
-#include <climits>
-#include <cmath>
-#include <cstddef>
-#include <iostream>
-#include <iterator>
-#include <queue>
-#include <strings.h>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
+---
+id: OriTask
+aliases: []
+tags:
+  - Ori
+---
 
-using namespace std;
+## [[首要任务🎯]]
+- [ ] 笔记系统
+- [ ] [[算法游戏🎮]] 这个是非常的有用的东西, 而且前景也非常的好. 这个是重要的目标
+- [ ] 思考一个问题, 你今后的动力是什么, 如何处理整个的过程. 我觉得人生还是需要拼一次不能得过且过. :  这个东西看着挺有噱头实际上冒用没有, 你把今天的任务处理好就了不得了
+- [ ] 解决 [[做事原则方法]] 的问题. 做成一个流程
 
-class Solution {
-public:
-  int jump(vector<int> &nums) {
-    if (nums.size() == 1)
-      return 0;
-    int limit = nums[0], nextLimit = 0;
-    int r = 0;
-    for (int i = 1; i < nums.size() && i <= limit; i++) {
-      if (limit >= nums.size() - 1) {
-        r++;
-        break;
-      }
+# [[LeetCode]]
+## 更好的理解算法内容
 
-      // nextLimit 也许比开始的 limit 还要小.
-      nextLimit = max(limit, max(i + nums[i], nextLimit));
-      // 这个代码本身就有问题，要敏感一些处理这个代码。
-      if (i == limit) { // 这里有可能，已经超出范围了，可以直接返回。
-        limit = nextLimit;
-        r++;
-      }
-    }
+这个问题的关键在于提出问题
+- [ ] 我的笔记的理论都是正确的, 但是巧妇难为无米之炊, 我需要大量的实践的知识才能很好的构建我的知识网络
+  - [ ] 还是需要2000道题目打底
+- [ ] 笔记全部拆散整理 [[做事原则方法#分解目标]]
+  - [ ] [[📝笔记原则]] 整理. 这个东西过于宽泛, 需要实际例子来引导
+  - [ ] 这需要每道题都有足够多的记录
+- [ ] 把你的笔记记录成, 可以讲解的 ppt 的形式, 还是 [[笔记细分卡片化原子化⚛]] 尽量尽量的卡片化
+- [ ] 整理
+  - [ ] [[做事原则方法]]
+- [ ] 需要一些贴纸来帮助你回忆一些事情
+- [ ] if you have a task you want to  make itin 10 yrs, make it in 6 month
+- [ ] [[更快更好的处理算法问题]]
+- [ ] 保证睡眠的问题了
+- [ ] 最大堆的代码还需要在做一遍
+- [ ] 快速跳转文件夹的问题, 打开 Claude Code
+- [ ] flomo 日记都需要看看
+- [ ] douyin 总结工具 集成到哪个 summarize 里面
+- [ ] 整理算法思路
+- [ ] Youtube audo download
+- [ ] fix the autocmd
+- [ ] make the firefox title shorter
 
-    return r;
-  }
-};
 
-int main() {
-  Solution s;
-  vector<int> v = {2, 3, 1, 1, 4};
-  v = {2, 3, 0, 1, 4};
-  // v = {2, 1};
-  v = {1, 2, 3};
-  cout << s.jump(v);
-}
+## CodeTask
+> [!NOTE]
+> 如何迅速的沉下心来投入到解算法题的过程中 .
+- 第一步任务还是大量的做题, 这个没解决, 其他的都是sb
+- 开始记笔记. 描述你的心态
+- [ ] 做一个的 [[Ori任务管理器]] 这个很重要. 确定每天作什么. 这个东西先粗略的人工管理, 然后积累经验去做这个管理工具
+- [ ] 怎么才能 [[创意有趣的解决问题]]
+- [ ] 解决那个 [[438_找到字符串中所有字母异位词]] 这个仔细分析原因. 如何快速的解决
+- [ ] 递归到迭代的转换
+- [ ] [怎样准备面试中的手写算法 | 算法最优解](https://www.ldtiger.com/pages/3544a3/#_1-%E7%A1%AE%E5%AE%9A%E5%88%B7%E9%A2%98%E7%9A%84%E8%AF%AD%E8%A8%80)
+- [ ] 需要写一个深度剖析自己的文章, 不过现在好几个文章都能作为思想指导. [[做事原则方法]], [[日记.事件驱动]][[心态感悟]]
+- [ ] 做一个自我升级的系统, 主要包括心态和兴趣培养. [[Ori目标🎯]]. 找到什
+- [ ] 不能做太费眼的东西
+- [ ] make all the task done
+- [ ] 制定一个学习算法的计划, 那么每个学习的步骤你都要去记录下来
+- [ ] 去上一级的笔记中. 需要写这一个功能, 我准备按照主概念的模式处理整个问题. 比如 [[堆]]
+  - [ ] 就把所有的相关概念放到对应的 [[堆]] 中. 这样跳转上级笔记的需求就是需要的
+  - [ ] 也可以写一个结构文件
+- [ ] 如何高效的维持整洁 [[打扫卫生]]
+- [ ] 最大堆最小堆的代码
+- [ ] 自动玩游戏才是爹
+- [ ] 慢慢的一点一点的享受的处理问题. 喜欢上这个过程
+- [ ] 自己播视频
+- [ ] 就是两千分的问题, 剩下就没有问题了
+- [ ] 我的目标就是缩小教学上面的差距
+- [ ] 你自己现在就做一个算法的游戏, 这样才有意思. AI 没有那么好用, 适用于做一些简单的东西, 如果你总是在调试提示词, 那么你的成长就太低了. 况且你现在的游戏的问题, 还是照抄一边课件还是有问题
+- [ ] 你需要想一个事情, 你在和 AI 对话的问题的时候,第一个比较关键的点 你的问题要有针对性,这样的话你会得到比较详尽的回答.你的问题如果宽泛,得到的回答也宽泛,这样的话不太好. 你如何快速的去理解. AI 返回答案的意思,那 你需要在针对 AI 返回答案中的一些关键词,如果你不理解的话,还需要进一步的提问.就这样的一个关系.所以这时候考虑是不是做一个工具去 ,设置一下你提问的上下文,然后再进一步的去设置.进一步提问,也 跟进提问.保存 上下文.
+- [ ] 就是需要一个AI 再分析AI结果的东西. 提取关键术语
+- [ ] tell me which console run which Claude Code with what topic. you can use hook to do it
+- [ ] task creator. put in Obsidian.nvim or just make in the keymap
+
+
+# [[心态感悟]]
+# 任务 模板规范
+
+```dataview
+- [ ] list from #task and !#done
+where !contains(file.name, "taskTmpl")
+```
+
+
+
+# 主要任务列表
+- [ ] 制定每天详细的工作内容. 或者是运动的内容
+- [ ] [[日常生活的问题]]
+- [ ] [[归并排序]]
+- [ ] 游戏算法. 无数个细节
+- [ ] 我想做一个可以让学习 上瘾的学习工具. 笔记工具
+- [ ] 游戏美术是核心 学习游戏美术
+  - [ ] 如果你准备学游戏美术那是不是要又绕了一个球圈子, 先把你想做的的描述出来
+- [ ] 自己做一个冥想的工具, 和学习记录跟踪的工具 [[NotePrinciple_MyGame]]
+- [ ] 自己设计一个游戏
+- [ ] 我是真喜欢视觉特效啊 VFX [[游戏界面特效设计]]
+  - [ ] 武打的效果
+- [ ] 快速的解决算法的问题
+- [ ] 自动总结ytb的视频
+- [ ] notes are all execuate  https://x.com/kepano/status/2010723520809156910?s=20
+- [ ] I need a good blog
+- [ ] 我想做一个东西就是把我的代码输出给它然后给我转换成动画就是把我的代码转换成简单的动画
+- [ ] cpu流水线的问题
+- [ ] 121 的视频
+- [ ] simplify the code 121 and 45
+- [ ] AcWing 45 讲解
+- [ ] 小红书抓美女的程序
+- [ ] delete the unrelated note
+- [ ] 嵌套AI提问的问题, 我希望做一个东西, 如果我对一个问题进行了嵌套提问. 让 AI 帮我生成一个我嵌套嵌套提问之间的一个 关系表.延伸的关系知识图表. 比如我根据问题 A 提到了问题 B 提到了,再提到了问题 C 实际上 一个链式的下来给我.做成了一个表.
+  - [ ] 做成一个笔记网络 [[📝笔记原则]]
+
+
+# later task
+- [ ] 列出来详尽的任务记录, 做游戏
+- [ ] 1 万粉丝
+- [ ] [griffpatch Youtube](https://www.youtube.com/@griffpatch)
+- [ ] 数学建模
+- [ ] 物理动画
+- 做一个行为指导的软件
+- 物理引擎的游戏
+- 学习英文, 英文的阅读之类的东西, 文档之类的东西
+- [ ] 做一个自己喜欢玩的游戏, 挣钱就是自己喜欢玩的游戏?
+- [ ] 整理房间, 一个一个的来
+  - [ ] 面膜
+- [ ] Hello 算法, 做读书笔记
+  - [ ] 参考这个视频: [一条曲线的诞生](https://www.bilibili.com/video/BV1sG411b7U4/?spm_id_from=333.788.recommend_more_video.0&vd_source=595d55b50053eaf088d3202568f3a815)
+# 稍远一点的目标
+- 学习 ui 制作美工 [[LeetCode#漂亮的美工]]
+- [ ] [[杀戮尖塔]]: 过于繁琐. 先放弃. 现在可以考虑解决
+
+
+# 计算机相关
+- 学习的游戏
+  - 需要对游戏足够多细节的理解
+  - [[NotePrinciple_MyGame]]
+# 我觉得做动画和提升美感非常的重要
+- [[AE]] , [[PR]]
+做一个可以自我成长的游戏 [[NotePrinciple_MyGame]]
+针对什么的成长
+- [[聪明的使用电脑]] 不能一直看电脑, 不能一直看小字
+
+
+
+
+```tasks
+filter by function !task.isDone
+filename regex does not match /^STS/
+filename regex does not match /^卡牌/
+path does not include Math
+path does not include 人工智能
+```
+
+
+
