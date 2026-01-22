@@ -22,13 +22,13 @@ public:
         if (nums[i] + i >= v[j]) {
           while (v.size() > j + 1)
             v.pop_back();
-          v.push_back(nums[i]);
+          v.push_back(i);
           break;
         }
       }
     }
 
-    return v.size();
+    return v.size() - 1;
   }
 };
 int main() {

@@ -20,6 +20,8 @@ public:
     vector<int> v(nums.size());
     // 这个范围需要注意
     // 逻辑没问题, 但是参考 AcWin个的代码, 人家的更舒服. 就是针对一个变量e去修改
+    // 你这个代码有点两头堵, 同时维护s, e, 主要维护e, 这个动作比较大, 次要维护s
+    // 这样整体的逻辑比较清楚
     while (e < nums.size()) {
       while (nums[s] + s < e) {
         if (!v[++s])
