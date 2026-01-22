@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int jump(vector<int>& nums) {
+    vector<int> partitionLabels(string s) {
         
     }
 };
