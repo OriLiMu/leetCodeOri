@@ -1,6 +1,6 @@
 class Solution {
 public:
-    vector<int> partitionLabels(string s) {
+    int rob(vector<int>& nums) {
         
     }
 };
