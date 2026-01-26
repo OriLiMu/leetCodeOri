@@ -6,6 +6,7 @@ using namespace std;
 class Solution {
 public:
   int r = 0;
+  vector<int> v;
   void dfs(int sum, int pos, vector<int> &nums) {
     if (pos == nums.size() - 1 || pos == nums.size() - 2) {
       r = max(r, sum + nums[pos]);
