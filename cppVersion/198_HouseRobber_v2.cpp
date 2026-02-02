@@ -3,11 +3,15 @@
 #include <vector>
 
 using namespace std;
+// 这个代码有问题 在于, dfs是深度处理
+// 而这个题目的特性在于, 如果在某个位置你如果被筛选出去, 后面就没有参加的意义
 class Solution {
 public:
   int r = 0;
   vector<int> v;
   void dfs(int sum, int pos, vector<int> &nums) {
+    if (pos >= nums.size())
+      return;
     if (pos == nums.size() - 1 || pos == nums.size() - 2) {
       r = max(r, sum + nums[pos]);
       return;
@@ -18,8 +22,7 @@ public:
     sum += nums[pos];
 
     dfs(sum, pos + 2, nums);
-    if (pos + 3 < nums.size())
-      dfs(sum, pos + 3, nums);
+    dfs(sum, pos + 3, nums);
     return;
   }
 
