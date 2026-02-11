@@ -9,8 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 1. 强制设置构建类型为 Debug（关键：确保调试模式）
 set(CMAKE_BUILD_TYPE Debug)
 
-# 2. 设置编译器为 clang++（保持不变）
-set(CMAKE_CXX_COMPILER clang++)
+# 2. 使用系统默认编译器 (g++ or clang++)
+# set(CMAKE_CXX_COMPILER clang++)  # 注释掉，使用系统默认编译器
 
 # 3. 调试模式专用 Flags（核心优化点）
 # -O0：关闭所有优化（避免变量被编译器优化掉，确保变量存在于内存中）
