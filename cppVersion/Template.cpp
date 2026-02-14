@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int findDuplicate(vector<int>& nums) {
+    int numSquares(int n) {
         
     }
 };
