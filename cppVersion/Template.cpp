@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int numSquares(int n) {
+    int rob(vector<int>& nums) {
         
     }
 };
