@@ -27,6 +27,7 @@ public:
     for (int i = 1; i <= e; i++)
       func(n - i * i, step_cnt + 1);
   }
+
   int numSquares(int n) {
     func(n, 0);
     return r;
