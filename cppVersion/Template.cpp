@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int lengthOfLIS(vector<int>& nums) {
+    void nextPermutation(vector<int>& nums) {
         
     }
 };
