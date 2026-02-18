@@ -1,6 +1,6 @@
 class Solution {
 public:
-    void sortColors(vector<int>& nums) {
+    int maxProduct(vector<int>& nums) {
         
     }
 };
