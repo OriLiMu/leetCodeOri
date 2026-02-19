@@ -1,0 +1,48 @@
+#include <climits>
+#include <iostream>
+#include <strings.h>
+#include <vector>
+
+using namespace std;
+class Solution {
+public:
+  int maxProduct(vector<int> &nums) {
+    int r = nums[0];
+    int v1 = 1, v2 = 1, v3 = 1;
+    int neg1 = 1;
+    for (int i = 0; i < nums.size(); i++) {
+      if (nums[i] > 0) {
+        if (neg1 > 0)
+          v1 *= nums[i];
+        else
+          v2 *= nums[i];
+        r = max(r, max(v1, v2));
+      } else if (nums[i] == 0) {
+        v1 = 1, v2 = 1;
+        neg1 = 1;
+        r = max(0, r);
+      } else {
+        if (neg1 < 0) {
+          r = max(r, v1 * v2 * neg1 * nums[i]);
+          v1 = v2;
+          v2 = 1;
+        }
+
+        neg1 = nums[i];
+      }
+    }
+
+    return r;
+  }
+};
+int main() {
+  Solution s;
+  vector<int> v = {1, 2, 3};
+  // v = {2};
+  // v = {-2};
+  // v = {1, 2, 3, 0};
+  // v = {-1, -2, -4};
+  // 你这个逻辑的弱点就是有预设, 那么破除这个预设就会有问题
+  v = {-2, -3, 7};
+  cout << s.maxProduct(v);
+}
