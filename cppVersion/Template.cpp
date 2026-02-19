@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int maxProduct(vector<int>& nums) {
+    int minPathSum(vector<vector<int>>& grid) {
         
     }
 };
