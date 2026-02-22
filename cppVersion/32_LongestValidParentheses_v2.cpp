@@ -77,5 +77,6 @@ int main() {
   // 如果最长的str, 包括第一个字符, 当stack空的时候,
   // 实际上还有一个字符串你没处理
   str = "(()))())(";
+  // 最终五个测试例搞定
   cout << s.longestValidParentheses(str) << endl;
 }

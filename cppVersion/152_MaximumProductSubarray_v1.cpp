@@ -1,5 +1,4 @@
 #include <iostream>
-#include <ranges>
 #include <strings.h>
 #include <vector>
 
@@ -7,72 +6,80 @@ using namespace std;
 class Solution {
 public:
   int maxProduct(vector<int> &nums) {
-    int neg_cnt = 0, headn = 1, tailn = 1, headp = 1, tailp = 1;
-    int r = nums[0], cur_p = 1, cur_len = 0, headl = 0, taill = 0;
-
-    if (nums.size() == 1)
-      return nums[0];
-
-    for (auto &n : nums) {
-      if (n == 0) {
-        if (cur_len == 0)
-          continue;
-        if (headn < 0) {
-          if (neg_cnt % 2 == 0)
-            r = max(r, cur_p);
-          else {
-            if (headl > 0 && taill > 0)
-              r = max(r, max(cur_p / (headn * headp), cur_p / (tailn * tailp)));
-            else if (headl == 0 && taill > 0)
-              r = max(r, cur_p / (tailn * tailp));
-            else if (taill == 0 && headl > 0)
-              r = max(r, cur_p / (headn * headp));
-          }
+    int neg_cnt = 0, cur_max = nums[0], r = nums[0], cur_all = nums[0];
+    int v1 = 1, v2 = 1, neg1 = 1, neg2 = 1, l1 = 0, l2 = 0;
+    for (int i = 0; i < nums.size(); i++) {
+      int n = nums[i];
+      if (n < 0) {
+        if (neg1 > 0)
+          neg1 = n;
+        else {
+          neg2 = n;
+          v2 = 1;
+          l2 = 0;
         }
-        r = max(r, 0);
-        neg_cnt = 0, headn = 1, tailn = 1, headp = 1, tailp = 1, headl = 0,
-        taill = 0;
-        cur_p = 1;
-      } else if (n < 0) {
-        if (headn > 0)
-          headn = n;
-        tailn = n;
+        if (i > 0) {
+          cur_all *= n;
+          cur_max = max(n, cur_max * n);
+        }
         neg_cnt++;
-        cur_p *= n;
-        cur_len++;
-        r = max(r, cur_p);
-        tailp = 1;
-      } else {
-        if (headn > 0) {
-          headp *= n;
-          headl++;
+      } else if (n == 0) {
+        if (neg_cnt == 0 || neg_cnt % 2 == 0)
+          r = max(cur_max, r);
+        else if (neg_cnt == 1) {
+          if (l1 && l2)
+            r = max(max(v1, v2), r);
+          else if (l1)
+            r = max(v1, r);
+          else if (l2)
+            r = max(v2, r);
+          else
+            r = max(0, r);
         } else {
-          tailp *= n;
-          taill++;
+          if (l1 && l2)
+            r = max(r, max(cur_all / (v1 * neg1), cur_all / (v2 * neg2)));
+          else if (l1)
+            r = max(r, cur_all / (v1 * neg1));
+          else if (l2)
+            r = max(r, cur_all / (v2 * neg2));
+          else
+            r = max(r, 0);
         }
-        cur_p *= n;
-        cur_len++;
-        r = max(r, cur_p);
+        neg_cnt = 0, v1 = 1, v2 = 1, cur_all = 1, cur_max = 1, l1 = 0, l2 = 0;
+      } else {
+        if (neg1 > 0) {
+          v1 *= n;
+          l1++;
+        } else {
+          v2 *= n;
+          l2++;
+        }
+
+        cur_all *= n;
+        cur_max = max(n, cur_max * n);
       }
+
+      cout << "cur_all:" << cur_all << ", cur_max: " << cur_max << ", v1:" << v1
+           << ", v2:" << v2 << endl;
     }
 
-    cout << cur_p << ", " << headn << ", " << headp << ", " << tailn << ", "
-         << tailp << endl;
-    // 还需要判断 headp 和 tailp 的长度
-    if (neg_cnt % 2 == 0)
-      r = max(r, cur_p);
-    else {
-      if (headl > 0)
-        r = max(r, cur_p / (headn * headp));
-      if (taill > 0)
-        r = max(r, cur_p / (tailn * tailp));
+    if (neg_cnt == 0 || neg_cnt % 2 == 0)
+      r = max(cur_max, r);
+    else if (neg_cnt == 1) {
+      if (l1 && l2)
+        r = max(max(v1, v2), r);
+      else if (l1)
+        r = max(v1, r);
+      else if (l2)
+        r = max(v2, r);
+    } else {
+      if (l1 && l2)
+        r = max(r, max(cur_all / (v1 * neg1), cur_all / (v2 * neg2)));
+      else if (l1)
+        r = max(r, cur_all / (v1 * neg1));
+      else if (l2)
+        r = max(r, cur_all / (v2 * neg2));
     }
-    // 还是headn 和 tailn你写成了一个就会有问题
-    // 有便利也有麻烦
-    // 一般的思路还是分开处理
-    // 合并之后, 逻辑容易混乱
-    // 本质上你这种算法需要清楚负数的数量
-
     return r;
   }
 };
@@ -88,5 +95,7 @@ int main() {
   v = {2, 3, -2, 4};
   v = {-2, 0, -1};
   v = {1, 0, -1, 2, 3, -5, -2};
+  v = {-2, 0, -1}; // 返回的答案是1, 没有记录 v1 v2的长度
+  v = {0};
   cout << s.maxProduct(v) << endl;
 }

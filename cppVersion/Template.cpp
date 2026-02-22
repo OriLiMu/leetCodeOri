@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int maxProduct(vector<int>& nums) {
+    int longestValidParentheses(string s) {
         
     }
 };
