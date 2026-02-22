@@ -1,6 +1,6 @@
 class Solution {
 public:
-    string longestPalindrome(string s) {
+    int maxProduct(vector<int>& nums) {
         
     }
 };
