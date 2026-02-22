@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int minPathSum(vector<vector<int>>& grid) {
+    string longestPalindrome(string s) {
         
     }
 };
