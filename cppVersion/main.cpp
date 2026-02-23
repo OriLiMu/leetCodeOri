@@ -1,81 +1,108 @@
 #include <iostream>
-#include <iterator>
 #include <stack>
 #include <strings.h>
 #include <vector>
 
 using namespace std;
+
+// ANSI 颜色码
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BOLD "\033[1m"
+#define RESET "\033[0m"
 class Solution {
 public:
   int longestValidParentheses(string s) {
     stack<int> stk;
-    int result = 0;
-    bool isFirstRight = s[0] == ')';
-    for (int i = 0; i < s.size(); i++) {
-      if (s[i] == '(')
-        stk.push(i);
+    int r = 0;
+    for (int i = 0; i < s.size(); ++i) {
+      char c = s[i];
+      if (c == '(')
+        stk.push(i + 1);
       else {
-        // 这里的坐标可能 >= 0, 你的条件写错了. 注意如果是0,
-        // 就不能确定是左括号还是右括号 stk.pop();       // 这里不一定能pop
-        if (!stk.empty() && stk.top() > 0)
+        if (stk.empty() || stk.top() < 0)
+          stk.push(-i - 1);
+        else
           stk.pop();
-        else if (!stk.empty() && stk.top() == 0) {
-          if (isFirstRight)
-            stk.push(-1 * i);
-          else
-            stk.pop();
-        } else
-          stk.push(-1 * i);
       }
     }
 
-    int l = 0, r = s.size() - 1;
-
-    if (stk.empty())
-      return s.size();
-    while (!stk.empty() && r >= 0) {
-      while (!stk.empty() && r >= 0) {
-        if (abs(stk.top()) == r) {
-          stk.pop();
-          r--;
-        } else
-          break;
-      }
-
-      if (r < 0)
-        break;
-      int t;
-      if (stk.empty()) {
-        t = -1;
-      } else {
-        t = abs(stk.top());
-        stk.pop(); // 这个时候 stack可能空了, 但是实际上还有一个字符串你没处理
-      }
-      cout << "r: " << r << ", t:" << t << endl;
-      result = max(result, r - t);
-      r = t - 1;
-      if (stk.empty())
-        result = max(result, r + 1);
+    int last = s.size() + 1;
+    while (stk.size()) {
+      r = max(r, last - abs(stk.top()) - 1);
+      last = abs(stk.top());
+      stk.pop();
     }
 
-    return result;
+    r = max(r, last - 1);
+    return r;
   }
 };
 
-int main() {
-  Solution s;
-  string str = "(()";
-  str = ")()())";
-  str = "";
-  str = "(((((((()";
-  str = "(((((((()()()()()())(())";
-  // str = "()";  // 没考虑第一个0, 是左括号还是右括号
-  // str = ")()())"; // 在等于0的时候需要仔细的分类处理
-  // 没有考虑左边界, 你假象的情况是, 一定有一个左边界的值, 你可以处理
-  // 但是实际情况是, 左边界可能不会写到这个stack里面
-  str = "())";
-  // 如果最长的str, 包括第一个字符, 当stack空的时候,
-  // 实际上还有一个字符串你没处理
-  str = "(()))())(";
-  cout << s.longestValidParentheses(str) << endl;
+// 测试用例结构
+struct TestCase {
+  string input;
+  int expected;
+};
+
+void runTests() {
+  Solution sol;
+
+  // ========== 在这里添加你的测试用例 ==========
+  vector<TestCase> tests = {
+      {"(()", 2},
+      {")()())", 4},
+      {"", 0},
+      {"()()", 4},
+      {"((()))", 6},
+      {"(((((((()", 2},
+      {"(((((((()()()()()())(())", 18},
+      {"()", 2},
+      {"())", 2},
+      {"(()))())(", 4},
+      // 添加更多测试用例...
+  };
+  // ===========================================
+
+  int passed = 0;
+  vector<int> failedIndices;
+
+  for (int i = 0; i < tests.size(); i++) {
+    int result = sol.longestValidParentheses(tests[i].input);
+    bool ok = (result == tests[i].expected);
+
+    if (ok) {
+      cout << "Test " << i + 1 << ": ";
+      cout << "\"" << tests[i].input << "\" -> ";
+      cout << result << " [" << GREEN << "PASS" << RESET << "]" << endl;
+      passed++;
+    } else {
+      cout << RED << BOLD << ">>> [FAIL] Test " << i + 1 << ": \""
+           << tests[i].input << "\"" << RESET << endl;
+      cout << RED << "           Expected: " << tests[i].expected
+           << ", Got: " << result << RESET << endl;
+      failedIndices.push_back(i);
+    }
+  }
+
+  cout << "\n========== Result ==========" << endl;
+  if (passed == tests.size()) {
+    cout << GREEN << BOLD << "ALL PASSED: " << passed << "/" << tests.size()
+         << RESET << endl;
+  } else {
+    cout << RED << BOLD << "FAILED: " << (tests.size() - passed) << "/"
+         << tests.size() << RESET << endl;
+    cout << RED << BOLD << "\n======== FAILED CASES ========" << RESET << endl;
+    for (int idx : failedIndices) {
+      int result = sol.longestValidParentheses(tests[idx].input);
+      cout << RED << BOLD << "Test " << idx + 1 << RESET << endl;
+      cout << RED << "  Input:    \"" << tests[idx].input << "\"" << endl;
+      cout << RED << "  Expected: " << tests[idx].expected << endl;
+      cout << RED << "  Got:      " << result << RESET << endl;
+      cout << endl;
+    }
+  }
 }
+
+int main() { runTests(); }
