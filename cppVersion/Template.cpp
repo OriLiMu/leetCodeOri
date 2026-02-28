@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int longestValidParentheses(string s) {
+    bool canPartition(vector<int>& nums) {
         
     }
 };
