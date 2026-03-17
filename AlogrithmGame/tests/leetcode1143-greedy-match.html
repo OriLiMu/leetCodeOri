@@ -31,6 +31,11 @@
             --tile-match-text: #4f2b0a;
             --line-color: #f6bd60;
             --line-glow: rgba(246, 189, 96, 0.35);
+            --current-lcs-tile-1: #8be9a8;
+            --current-lcs-tile-2: #42b983;
+            --current-lcs-text: #0f3324;
+            --current-lcs-line: #6ee7b7;
+            --current-lcs-glow: rgba(110, 231, 183, 0.42);
         }
 
         * {
@@ -196,6 +201,15 @@
             animation: matchedPulse 0.55s ease;
         }
 
+        .letter-tile.is-current-lcs {
+            color: var(--current-lcs-text);
+            border-color: rgba(110, 231, 183, 0.62);
+            background: linear-gradient(180deg, var(--current-lcs-tile-1), var(--current-lcs-tile-2));
+            box-shadow:
+                0 16px 28px rgba(66, 185, 131, 0.22),
+                0 0 0 3px rgba(110, 231, 183, 0.12);
+        }
+
         .tile-index {
             font-size: 12px;
             opacity: 0.82;
@@ -216,6 +230,10 @@
 
         .letter-tile.is-matched .tile-state {
             background: rgba(79, 43, 10, 0.12);
+        }
+
+        .letter-tile.is-current-lcs .tile-state {
+            background: rgba(15, 51, 36, 0.12);
         }
 
         .overlay-svg {
@@ -254,6 +272,16 @@
         .match-dot.is-static {
             opacity: 1;
             animation: none;
+        }
+
+        .match-path.is-current-lcs {
+            stroke: var(--current-lcs-line);
+            filter: drop-shadow(0 0 10px var(--current-lcs-glow));
+        }
+
+        .match-dot.is-current-lcs {
+            fill: var(--current-lcs-line);
+            filter: drop-shadow(0 0 10px var(--current-lcs-glow));
         }
 
         .rule-chip {
@@ -393,6 +421,7 @@
                         <span class="rule-chip">按 A 从左到右扫描</span>
                         <span class="rule-chip">B 中优先匹配最靠前可用位置</span>
                         <span class="rule-chip">支持单步 / 清空 / 全部连线</span>
+                        <span class="rule-chip">绿色高亮 = 当前可见最优子序列</span>
                     </div>
 
                     <div class="scene-card hero-inline-scene rounded-[24px]">
@@ -458,7 +487,7 @@
                             <div id="match-count" class="stat-value text-success text-3xl">0</div>
                         </div>
                         <div class="stat bg-base-100/10 rounded-2xl px-4 py-3">
-                            <div class="stat-title text-white/60">最长长度</div>
+                            <div class="stat-title text-white/60">当前 / 最终 LCS</div>
                             <div id="lcs-length" class="stat-value text-secondary text-3xl">0</div>
                         </div>
                     </div>
@@ -474,7 +503,7 @@
                     <span class="badge badge-success badge-outline">按当前按钮进度展示</span>
                 </div>
                 <p class="mini-note mb-5">
-                    这里展示当前已经画出来的连线结果。点击“匹配一次”时，会按 A 的顺序推进，并在 B 中从左到右寻找第一个可用匹配。
+                    这里展示当前已经画出来的连线结果。绿色高亮的是“当前可见连线里能组成的最长公共子序列”，它会随着步骤推进继续变化，不一定已经是最终答案。
                 </p>
                 <div id="match-list" class="grid gap-3"></div>
             </aside>
@@ -509,9 +538,11 @@
             arrayB: [],
             allMatches: [],
             displayedMatches: [],
+            currentLcsMatches: [],
             allCommonSubsequences: [],
             visibleCommonSubsequences: [],
             lcsLength: 0,
+            currentLcsLength: 0,
             nextMatchIndex: 0,
             animatedFromIndex: 0
         };
@@ -725,13 +756,55 @@
             return new Set(matches.map((match) => match[key]));
         }
 
-        function createTile(char, index, rowName, matched, isNewMatch) {
+        function buildMatchKey(match) {
+            return `${match.indexA}-${match.indexB}`;
+        }
+
+        function buildCurrentLcsFromDisplayedMatches(displayedMatches) {
+            if (displayedMatches.length === 0) {
+                return [];
+            }
+
+            const bestLength = new Array(displayedMatches.length).fill(1);
+            const previousIndex = new Array(displayedMatches.length).fill(-1);
+            let bestEndIndex = 0;
+
+            for (let currentIndex = 0; currentIndex < displayedMatches.length; currentIndex += 1) {
+                for (let candidateIndex = 0; candidateIndex < currentIndex; candidateIndex += 1) {
+                    if (displayedMatches[candidateIndex].indexB >= displayedMatches[currentIndex].indexB) {
+                        continue;
+                    }
+
+                    if (bestLength[candidateIndex] + 1 > bestLength[currentIndex]) {
+                        bestLength[currentIndex] = bestLength[candidateIndex] + 1;
+                        previousIndex[currentIndex] = candidateIndex;
+                    }
+                }
+
+                if (bestLength[currentIndex] > bestLength[bestEndIndex]) {
+                    bestEndIndex = currentIndex;
+                }
+            }
+
+            const lcsMatches = [];
+            let walkIndex = bestEndIndex;
+
+            while (walkIndex !== -1) {
+                lcsMatches.push(displayedMatches[walkIndex]);
+                walkIndex = previousIndex[walkIndex];
+            }
+
+            return lcsMatches.reverse();
+        }
+
+        function createTile(char, index, rowName, matched, isNewMatch, isCurrentLcs) {
             const tile = document.createElement('div');
             tile.className = [
                 'letter-tile',
                 rowName === 'A' ? 'letter-tile-a' : 'letter-tile-b',
                 matched ? 'is-matched' : '',
-                isNewMatch ? 'is-new-match' : ''
+                isNewMatch ? 'is-new-match' : '',
+                isCurrentLcs ? 'is-current-lcs' : ''
             ].join(' ').trim();
             tile.dataset.row = rowName;
             tile.dataset.index = String(index);
@@ -752,7 +825,7 @@
             return tile;
         }
 
-        function renderSequence(container, array, rowName, matchedIndexes, animatedIndexes) {
+        function renderSequence(container, array, rowName, matchedIndexes, animatedIndexes, currentLcsIndexes) {
             container.innerHTML = '';
 
             array.forEach((char, index) => {
@@ -761,7 +834,8 @@
                     index,
                     rowName,
                     matchedIndexes.has(index),
-                    animatedIndexes.has(index)
+                    animatedIndexes.has(index),
+                    currentLcsIndexes.has(index)
                 );
                 container.appendChild(tile);
             });
@@ -799,16 +873,16 @@
             }
 
             if (displayedMatches === 0) {
-                progressNote.textContent = `准备开始：下一次会从 A[${state.allMatches[0].indexA}] 发起匹配。`;
+                progressNote.textContent = `准备开始：当前可见最长长度 0，最终长度 ${state.lcsLength}，下一次会从 A[${state.allMatches[0].indexA}] 发起匹配。`;
                 return;
             }
 
             if (displayedMatches < totalMatches) {
-                progressNote.textContent = `当前已经连上 ${displayedMatches} / ${totalMatches} 条，下一次会从 A[${state.allMatches[displayedMatches].indexA}] 继续。`;
+                progressNote.textContent = `当前已经连上 ${displayedMatches} / ${totalMatches} 条，当前可见最长长度 ${state.currentLcsLength}，最终长度 ${state.lcsLength}，下一次会从 A[${state.allMatches[displayedMatches].indexA}] 继续。`;
                 return;
             }
 
-            progressNote.textContent = `已经完成全部 ${totalMatches} 条可显示连线。`;
+            progressNote.textContent = `已经完成全部 ${totalMatches} 条可显示连线。当前可见最长长度 ${state.currentLcsLength}，最终长度 ${state.lcsLength}。`;
         }
 
         function syncControlState() {
@@ -852,6 +926,7 @@
 
             const sceneRect = sequenceScene.getBoundingClientRect();
             matchOverlay.setAttribute('viewBox', `0 0 ${sceneRect.width} ${sceneRect.height}`);
+            const currentLcsKeys = new Set(state.currentLcsMatches.map(buildMatchKey));
 
             state.displayedMatches.forEach((match, index) => {
                 const startTile = sequenceScene.querySelector(`[data-row="A"][data-index="${match.indexA}"]`);
@@ -869,19 +944,20 @@
                 const y2 = endRect.top - sceneRect.top;
                 const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 const isStatic = index < state.animatedFromIndex;
-                path.setAttribute('class', `match-path${isStatic ? ' is-static' : ''}`);
+                const isCurrentLcs = currentLcsKeys.has(buildMatchKey(match));
+                path.setAttribute('class', `match-path${isStatic ? ' is-static' : ''}${isCurrentLcs ? ' is-current-lcs' : ''}`);
                 path.setAttribute('style', `animation-delay:${(index - state.animatedFromIndex) * 90}ms`);
                 path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
 
                 const startDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                startDot.setAttribute('class', `match-dot${isStatic ? ' is-static' : ''}`);
+                startDot.setAttribute('class', `match-dot${isStatic ? ' is-static' : ''}${isCurrentLcs ? ' is-current-lcs' : ''}`);
                 startDot.setAttribute('style', `animation-delay:${150 + (index - state.animatedFromIndex) * 90}ms`);
                 startDot.setAttribute('cx', x1);
                 startDot.setAttribute('cy', y1);
                 startDot.setAttribute('r', '4.5');
 
                 const endDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                endDot.setAttribute('class', `match-dot${isStatic ? ' is-static' : ''}`);
+                endDot.setAttribute('class', `match-dot${isStatic ? ' is-static' : ''}${isCurrentLcs ? ' is-current-lcs' : ''}`);
                 endDot.setAttribute('style', `animation-delay:${220 + (index - state.animatedFromIndex) * 90}ms`);
                 endDot.setAttribute('cx', x2);
                 endDot.setAttribute('cy', y2);
@@ -897,16 +973,18 @@
             const animatedMatches = state.displayedMatches.slice(state.animatedFromIndex);
             const animatedAIndexes = buildMatchedIndexSet(animatedMatches, 'indexA');
             const animatedBIndexes = buildMatchedIndexSet(animatedMatches, 'indexB');
+            const currentLcsAIndexes = buildMatchedIndexSet(state.currentLcsMatches, 'indexA');
+            const currentLcsBIndexes = buildMatchedIndexSet(state.currentLcsMatches, 'indexB');
 
             lengthAValue.textContent = String(state.arrayA.length);
             lengthBValue.textContent = String(state.arrayB.length);
             matchCountValue.textContent = `${state.displayedMatches.length}/${state.allMatches.length}`;
-            lcsLengthValue.textContent = String(state.lcsLength);
+            lcsLengthValue.textContent = `${state.currentLcsLength}/${state.lcsLength}`;
             arrayAText.textContent = `[ ${state.arrayA.join('  ')} ]`;
             arrayBText.textContent = `[ ${state.arrayB.join('  ')} ]`;
 
-            renderSequence(rowA, state.arrayA, 'A', matchedAIndexes, animatedAIndexes);
-            renderSequence(rowB, state.arrayB, 'B', matchedBIndexes, animatedBIndexes);
+            renderSequence(rowA, state.arrayA, 'A', matchedAIndexes, animatedAIndexes, currentLcsAIndexes);
+            renderSequence(rowB, state.arrayB, 'B', matchedBIndexes, animatedBIndexes, currentLcsBIndexes);
             renderMatchList(state.displayedMatches, state.allMatches.length);
             renderSubsequenceList(state.visibleCommonSubsequences, state.lcsLength, state.allCommonSubsequences.length);
             renderProgress(state.allMatches.length, state.displayedMatches.length);
@@ -917,6 +995,8 @@
 
         function clearDisplayedMatches() {
             state.displayedMatches = [];
+            state.currentLcsMatches = [];
+            state.currentLcsLength = 0;
             state.nextMatchIndex = 0;
             state.animatedFromIndex = 0;
             render();
@@ -928,6 +1008,8 @@
             }
 
             state.displayedMatches = state.allMatches.slice(0, state.nextMatchIndex + 1);
+            state.currentLcsMatches = buildCurrentLcsFromDisplayedMatches(state.displayedMatches);
+            state.currentLcsLength = state.currentLcsMatches.length;
             state.nextMatchIndex += 1;
             state.animatedFromIndex = Math.max(0, state.displayedMatches.length - 1);
             render();
@@ -935,6 +1017,8 @@
 
         function connectAllMatches() {
             state.displayedMatches = [...state.allMatches];
+            state.currentLcsMatches = buildCurrentLcsFromDisplayedMatches(state.displayedMatches);
+            state.currentLcsLength = state.currentLcsMatches.length;
             state.nextMatchIndex = state.allMatches.length;
             state.animatedFromIndex = 0;
             render();
@@ -947,8 +1031,10 @@
             state.arrayB = arrayB;
             state.allMatches = buildGreedyMatches(arrayA, arrayB);
             state.displayedMatches = [];
+            state.currentLcsMatches = [];
             state.allCommonSubsequences = allCommonSubsequences;
             state.lcsLength = allCommonSubsequences[0]?.length ?? 0;
+            state.currentLcsLength = 0;
             state.visibleCommonSubsequences = pickVisibleSubsequences(allCommonSubsequences, state.lcsLength);
             state.nextMatchIndex = 0;
             state.animatedFromIndex = 0;
