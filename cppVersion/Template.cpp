@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int lengthOfLIS(vector<int>& nums) {
+    int longestCommonSubsequence(string text1, string text2) {
         
     }
 };
