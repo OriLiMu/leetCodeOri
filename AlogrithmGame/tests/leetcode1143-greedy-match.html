@@ -265,6 +265,37 @@
             color: #ffd98e;
         }
 
+        .subsequence-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .subsequence-item.is-longest {
+            border-color: rgba(255, 209, 102, 0.42);
+            background: rgba(255, 209, 102, 0.08);
+            box-shadow: inset 0 0 0 1px rgba(255, 209, 102, 0.08);
+        }
+
+        .subsequence-seq {
+            letter-spacing: 0.08em;
+            color: #fff0cd;
+            font-weight: 700;
+        }
+
+        .subsequence-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
         .empty-state {
             padding: 18px;
             border-radius: 18px;
@@ -334,6 +365,7 @@
                     <div class="flex flex-wrap gap-3">
                         <span class="rule-chip">规则：按 A 从左到右扫描</span>
                         <span class="rule-chip">规则：优先匹配 B 中最靠前且未占用的同字母</span>
+                        <span class="rule-chip">样例：故意加入重复字母与交错顺序</span>
                         <span class="rule-chip">说明：这是预匹配，不等于最终真实 LCS</span>
                     </div>
                 </div>
@@ -356,15 +388,15 @@
                             <div id="match-count" class="stat-value text-success text-3xl">0</div>
                         </div>
                         <div class="stat bg-base-100/10 rounded-2xl px-4 py-3">
-                            <div class="stat-title text-white/60">当前视图</div>
-                            <div class="stat-value text-secondary text-xl">贪心前匹配</div>
+                            <div class="stat-title text-white/60">最长长度</div>
+                            <div id="lcs-length" class="stat-value text-secondary text-3xl">0</div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <section class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
             <div class="scene-card rounded-[28px]">
                 <div class="sequence-scene" id="sequence-scene">
                     <svg id="match-overlay" class="overlay-svg" aria-hidden="true"></svg>
@@ -395,37 +427,65 @@
                 </div>
             </div>
 
-            <aside class="match-list-card rounded-[28px] p-6">
-                <div class="flex items-center justify-between gap-3 mb-4">
-                    <h2 class="text-2xl font-bold">当前配对结果</h2>
-                    <span class="badge badge-success badge-outline">按 A 的顺序展示</span>
-                </div>
-                <p class="mini-note mb-5">
-                    这里展示的是当前这一步真正连出来的配对。只要某个 B 位置已经被占用，后面相同字母就不能再重复连过去。
-                </p>
-                <div id="match-list" class="grid gap-3"></div>
-            </aside>
+            <div class="grid gap-6">
+                <aside class="match-list-card rounded-[28px] p-6">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <h2 class="text-2xl font-bold">当前配对结果</h2>
+                        <span class="badge badge-success badge-outline">按 A 的顺序展示</span>
+                    </div>
+                    <p class="mini-note mb-5">
+                        这里展示的是当前这一步真正连出来的配对。只要某个 B 位置已经被占用，后面相同字母就不能再重复连过去。
+                    </p>
+                    <div id="match-list" class="grid gap-3"></div>
+                </aside>
+
+                <aside class="match-list-card rounded-[28px] p-6">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <h2 class="text-2xl font-bold">候选公共子序列</h2>
+                        <span id="candidate-count-badge" class="badge badge-warning badge-outline">0 条候选</span>
+                    </div>
+                    <p class="mini-note mb-5">
+                        这里不是只给一条答案，而是展示当前样例里真实存在的多组公共子序列候选。
+                        长度最长的候选会单独标亮，帮助你看出“为什么这题要找最长”。
+                    </p>
+                    <div id="subsequence-list" class="grid gap-3"></div>
+                </aside>
+            </div>
         </section>
     </main>
 
     <script>
         const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ'.split('');
+        const COMPLEX_BLUEPRINTS = [
+            { arrayA: 'ABCBDAB', arrayB: 'BDCABA' },
+            { arrayA: 'CABDABC', arrayB: 'BDCABAC' },
+            { arrayA: 'AABCDAF', arrayB: 'BADCAAF' },
+            { arrayA: 'ABCDAB', arrayB: 'BACDBA' },
+            { arrayA: 'AABBCAD', arrayB: 'BACABDA' },
+            { arrayA: 'ABACBAD', arrayB: 'BACABAD' }
+        ];
 
         const state = {
             arrayA: [],
             arrayB: [],
-            matches: []
+            matches: [],
+            allCommonSubsequences: [],
+            visibleCommonSubsequences: [],
+            lcsLength: 0
         };
 
         const generateBtn = document.getElementById('generate-btn');
         const lengthAValue = document.getElementById('length-a');
         const lengthBValue = document.getElementById('length-b');
         const matchCountValue = document.getElementById('match-count');
+        const lcsLengthValue = document.getElementById('lcs-length');
         const rowA = document.getElementById('row-a');
         const rowB = document.getElementById('row-b');
         const matchOverlay = document.getElementById('match-overlay');
         const sequenceScene = document.getElementById('sequence-scene');
         const matchList = document.getElementById('match-list');
+        const subsequenceList = document.getElementById('subsequence-list');
+        const candidateCountBadge = document.getElementById('candidate-count-badge');
         const arrayAText = document.getElementById('array-a-text');
         const arrayBText = document.getElementById('array-b-text');
 
@@ -448,59 +508,27 @@
             return result;
         }
 
-        function buildLengths() {
-            const lengthA = randomInt(5, 9);
-            let lengthB = randomInt(5, 9);
-
-            while (Math.abs(lengthA - lengthB) > 3) {
-                lengthB = randomInt(5, 9);
-            }
-
-            return { lengthA, lengthB };
+        function insertAtRandom(list, value) {
+            const result = [...list];
+            const insertIndex = randomInt(0, result.length);
+            result.splice(insertIndex, 0, value);
+            return result;
         }
 
-        function buildSharedBag(sharedPool, count) {
-            const bag = [];
-
-            for (let index = 0; index < count; index += 1) {
-                bag.push(pickRandom(sharedPool));
-            }
-
-            return bag;
-        }
-
-        function buildRandomArrays() {
-            const { lengthA, lengthB } = buildLengths();
-            const minLength = Math.min(lengthA, lengthB);
-            const alphabetPool = shuffle(ALPHABET);
-            const sharedPool = alphabetPool.slice(0, 7);
-            const aOnlyPool = alphabetPool.slice(7, 12);
-            const bOnlyPool = alphabetPool.slice(12, 17);
-            const sharedCount = randomInt(Math.max(3, Math.floor(minLength / 2)), Math.max(3, minLength - 1));
-            const sharedBag = buildSharedBag(sharedPool, sharedCount);
-            const arrayA = [...sharedBag];
-            const arrayB = [...sharedBag];
-
-            while (arrayA.length < lengthA) {
-                const sourcePool = Math.random() < 0.4 ? sharedPool : aOnlyPool;
-                arrayA.push(pickRandom(sourcePool));
-            }
-
-            while (arrayB.length < lengthB) {
-                const sourcePool = Math.random() < 0.4 ? sharedPool : bOnlyPool;
-                arrayB.push(pickRandom(sourcePool));
-            }
-
-            const shuffledA = shuffle(arrayA);
-            const shuffledB = shuffle(arrayB);
-
-            if (shuffledA.join('') === shuffledB.join('')) {
-                shuffledB[shuffledB.length - 1] = pickRandom(bOnlyPool);
-            }
+        function remapBlueprint(blueprint) {
+            const uniqueTokens = [...new Set(`${blueprint.arrayA}${blueprint.arrayB}`.split(''))];
+            const remappedLetters = shuffle(ALPHABET).slice(0, uniqueTokens.length + 4);
+            const tokenMap = new Map(uniqueTokens.map((token, index) => [token, remappedLetters[index]]));
+            const arrayA = blueprint.arrayA.split('').map((token) => tokenMap.get(token));
+            const arrayB = blueprint.arrayB.split('').map((token) => tokenMap.get(token));
+            const sharedPool = uniqueTokens.map((token) => tokenMap.get(token));
+            const noisePool = remappedLetters.slice(uniqueTokens.length);
 
             return {
-                arrayA: shuffledA,
-                arrayB: shuffledB
+                arrayA,
+                arrayB,
+                sharedPool,
+                noisePool
             };
         }
 
@@ -529,6 +557,122 @@
             });
 
             return matches;
+        }
+
+        function isSubsequence(candidate, source) {
+            let candidateIndex = 0;
+
+            for (const char of source) {
+                if (char === candidate[candidateIndex]) {
+                    candidateIndex += 1;
+                }
+
+                if (candidateIndex === candidate.length) {
+                    return true;
+                }
+            }
+
+            return candidateIndex === candidate.length;
+        }
+
+        function enumerateCommonSubsequences(arrayA, arrayB) {
+            const subsequences = new Set();
+            const totalMasks = 1 << arrayA.length;
+
+            for (let mask = 1; mask < totalMasks; mask += 1) {
+                const candidate = [];
+
+                for (let index = 0; index < arrayA.length; index += 1) {
+                    if ((mask & (1 << index)) !== 0) {
+                        candidate.push(arrayA[index]);
+                    }
+                }
+
+                if (candidate.length < 2) {
+                    continue;
+                }
+
+                if (isSubsequence(candidate, arrayB)) {
+                    subsequences.add(candidate.join(''));
+                }
+            }
+
+            return [...subsequences]
+                .map((sequence) => sequence.split(''))
+                .sort((left, right) => {
+                    if (right.length !== left.length) {
+                        return right.length - left.length;
+                    }
+
+                    return left.join('').localeCompare(right.join(''));
+                });
+        }
+
+        function pickVisibleSubsequences(allCommonSubsequences, lcsLength) {
+            const visible = [];
+            const seen = new Set();
+            const minVisibleLength = Math.max(2, lcsLength - 1);
+            const filtered = allCommonSubsequences.filter((sequence) => sequence.length >= minVisibleLength);
+
+            filtered.forEach((sequence) => {
+                const key = sequence.join('');
+
+                if (seen.has(key)) {
+                    return;
+                }
+
+                if (visible.length >= 8) {
+                    return;
+                }
+
+                seen.add(key);
+                visible.push(sequence);
+            });
+
+            return visible;
+        }
+
+        function buildComplexArrays() {
+            for (let attempt = 0; attempt < 40; attempt += 1) {
+                const blueprint = pickRandom(COMPLEX_BLUEPRINTS);
+                const remapped = remapBlueprint(blueprint);
+                let arrayA = [...remapped.arrayA];
+                let arrayB = [...remapped.arrayB];
+
+                if (arrayA.length < 9 && Math.random() < 0.85) {
+                    arrayA = insertAtRandom(arrayA, pickRandom(remapped.sharedPool));
+                }
+
+                if (arrayB.length < 9 && Math.random() < 0.85) {
+                    arrayB = insertAtRandom(arrayB, pickRandom(remapped.sharedPool));
+                }
+
+                if (arrayA.length < 9 && Math.random() < 0.45) {
+                    arrayA = insertAtRandom(arrayA, pickRandom(remapped.noisePool));
+                }
+
+                if (arrayB.length < 9 && Math.random() < 0.45) {
+                    arrayB = insertAtRandom(arrayB, pickRandom(remapped.noisePool));
+                }
+
+                const allCommonSubsequences = enumerateCommonSubsequences(arrayA, arrayB);
+                const lcsLength = allCommonSubsequences[0]?.length ?? 0;
+                const denseCandidates = allCommonSubsequences.filter((sequence) => sequence.length >= Math.max(2, lcsLength - 1));
+                const longestCount = allCommonSubsequences.filter((sequence) => sequence.length === lcsLength).length;
+
+                if (lcsLength >= 4 && denseCandidates.length >= 5 && longestCount >= 1 && allCommonSubsequences.length >= 12) {
+                    return {
+                        arrayA,
+                        arrayB
+                    };
+                }
+            }
+
+            const fallback = remapBlueprint(COMPLEX_BLUEPRINTS[0]);
+            return {
+                arrayA: fallback.arrayA,
+                arrayB: fallback.arrayB
+            };
         }
 
         function buildMatchedIndexSet(matches, key) {
@@ -593,6 +737,33 @@
             });
         }
 
+        function renderSubsequenceList(visibleCommonSubsequences, lcsLength, totalCount) {
+            subsequenceList.innerHTML = '';
+            candidateCountBadge.textContent = `${totalCount} 条候选`;
+
+            if (visibleCommonSubsequences.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = '当前样例没有可展示的公共子序列候选。';
+                subsequenceList.appendChild(empty);
+                return;
+            }
+
+            visibleCommonSubsequences.forEach((sequence, index) => {
+                const item = document.createElement('div');
+                const isLongest = sequence.length === lcsLength;
+                item.className = `subsequence-item${isLongest ? ' is-longest' : ''}`;
+                item.innerHTML = `
+                    <span>${index + 1}. <span class="subsequence-seq">${sequence.join(' ')}</span></span>
+                    <span class="subsequence-meta">
+                        <span class="badge badge-ghost">长度 ${sequence.length}</span>
+                        ${isLongest ? '<span class="badge badge-warning">最长候选</span>' : '<span class="badge badge-outline">候选</span>'}
+                    </span>
+                `;
+                subsequenceList.appendChild(item);
+            });
+        }
+
         function drawMatchLines() {
             matchOverlay.innerHTML = '';
 
@@ -643,21 +814,27 @@
             lengthAValue.textContent = String(state.arrayA.length);
             lengthBValue.textContent = String(state.arrayB.length);
             matchCountValue.textContent = String(state.matches.length);
+            lcsLengthValue.textContent = String(state.lcsLength);
             arrayAText.textContent = `[ ${state.arrayA.join('  ')} ]`;
             arrayBText.textContent = `[ ${state.arrayB.join('  ')} ]`;
 
             renderSequence(rowA, state.arrayA, 'A', matchedAIndexes);
             renderSequence(rowB, state.arrayB, 'B', matchedBIndexes);
             renderMatchList(state.matches);
+            renderSubsequenceList(state.visibleCommonSubsequences, state.lcsLength, state.allCommonSubsequences.length);
 
             requestAnimationFrame(drawMatchLines);
         }
 
         function regenerate() {
-            const { arrayA, arrayB } = buildRandomArrays();
+            const { arrayA, arrayB } = buildComplexArrays();
+            const allCommonSubsequences = enumerateCommonSubsequences(arrayA, arrayB);
             state.arrayA = arrayA;
             state.arrayB = arrayB;
             state.matches = buildGreedyMatches(arrayA, arrayB);
+            state.allCommonSubsequences = allCommonSubsequences;
+            state.lcsLength = allCommonSubsequences[0]?.length ?? 0;
+            state.visibleCommonSubsequences = pickVisibleSubsequences(allCommonSubsequences, state.lcsLength);
             render();
         }
 
