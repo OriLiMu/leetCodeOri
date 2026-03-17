@@ -72,6 +72,12 @@
             overflow: hidden;
         }
 
+        .hero-main {
+            display: grid;
+            gap: 24px;
+            align-items: start;
+        }
+
         .hero-card::after {
             content: "";
             position: absolute;
@@ -98,6 +104,10 @@
             background-size: 24px 24px;
             opacity: 0.28;
             pointer-events: none;
+        }
+
+        .hero-inline-scene {
+            margin-top: 8px;
         }
 
         .sequence-scene {
@@ -350,6 +360,10 @@
                 padding-top: 18px;
             }
 
+            .hero-main {
+                gap: 18px;
+            }
+
             .sequence-scene {
                 padding: 18px 14px 22px;
             }
@@ -368,20 +382,47 @@
 <body>
     <main class="page-shell">
         <section class="hero-card rounded-[28px] p-6 md:p-8 mb-6">
-            <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                <div class="max-w-3xl">
+            <div class="hero-main xl:grid-cols-[minmax(0,1fr)_320px]">
+                <div class="min-w-0 flex flex-col gap-4">
                     <div class="badge badge-warning badge-outline mb-4">LeetCode 1143 · 第一步</div>
-                    <h1 class="text-3xl md:text-4xl font-bold mb-4">最长公共子序列的预匹配视图</h1>
-                    <p class="mini-note mb-4">
-                        先不要进入 DP 表。我们先看两个字符数组里，哪些字母在“从前往后且不重复占用”的规则下可以被配对。
-                        这一步的目标是建立直觉：公共子序列是如何从两条序列里被“挑出来”的。
+                    <h1 class="text-3xl md:text-4xl font-bold">最长公共子序列的预匹配视图</h1>
+                    <p class="mini-note">
+                        先看 A 如何按顺序去 B 里找第一个可用匹配，并把连线一步步画出来。
                     </p>
                     <div class="flex flex-wrap gap-3">
-                        <span class="rule-chip">规则：按 A 从左到右扫描</span>
-                        <span class="rule-chip">规则：优先匹配 B 中最靠前且未占用的同字母</span>
-                        <span class="rule-chip">交互：支持单步匹配、清空和全部连线</span>
-                        <span class="rule-chip">样例：故意加入重复字母与交错顺序</span>
-                        <span class="rule-chip">说明：这是预匹配，不等于最终真实 LCS</span>
+                        <span class="rule-chip">按 A 从左到右扫描</span>
+                        <span class="rule-chip">B 中优先匹配最靠前可用位置</span>
+                        <span class="rule-chip">支持单步 / 清空 / 全部连线</span>
+                    </div>
+
+                    <div class="scene-card hero-inline-scene rounded-[24px]">
+                        <div class="sequence-scene" id="sequence-scene">
+                            <svg id="match-overlay" class="overlay-svg" aria-hidden="true"></svg>
+
+                            <div class="sequence-panel">
+                                <div class="sequence-track">
+                                    <div class="track-head">
+                                        <div class="flex items-center gap-3 flex-wrap">
+                                            <span class="badge badge-warning badge-lg">序列 A</span>
+                                            <span id="array-a-text" class="text-sm text-white/70"></span>
+                                        </div>
+                                        <span class="text-sm text-white/60">从左到右扫描并发起匹配</span>
+                                    </div>
+                                    <div id="row-a" class="sequence-row"></div>
+                                </div>
+
+                                <div class="sequence-track">
+                                    <div class="track-head">
+                                        <div class="flex items-center gap-3 flex-wrap">
+                                            <span class="badge badge-info badge-lg">序列 B</span>
+                                            <span id="array-b-text" class="text-sm text-white/70"></span>
+                                        </div>
+                                        <span class="text-sm text-white/60">每个位置最多被占用一次</span>
+                                    </div>
+                                    <div id="row-b" class="sequence-row"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -423,63 +464,32 @@
                     </div>
                 </div>
             </div>
+
         </section>
 
-        <section class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-            <div class="scene-card rounded-[28px]">
-                <div class="sequence-scene" id="sequence-scene">
-                    <svg id="match-overlay" class="overlay-svg" aria-hidden="true"></svg>
-
-                    <div class="sequence-panel">
-                        <div class="sequence-track">
-                            <div class="track-head">
-                                <div class="flex items-center gap-3 flex-wrap">
-                                    <span class="badge badge-warning badge-lg">序列 A</span>
-                                    <span id="array-a-text" class="text-sm text-white/70"></span>
-                                </div>
-                                <span class="text-sm text-white/60">从左到右扫描并发起匹配</span>
-                            </div>
-                            <div id="row-a" class="sequence-row"></div>
-                        </div>
-
-                        <div class="sequence-track">
-                            <div class="track-head">
-                                <div class="flex items-center gap-3 flex-wrap">
-                                    <span class="badge badge-info badge-lg">序列 B</span>
-                                    <span id="array-b-text" class="text-sm text-white/70"></span>
-                                </div>
-                                <span class="text-sm text-white/60">每个位置最多被占用一次</span>
-                            </div>
-                            <div id="row-b" class="sequence-row"></div>
-                        </div>
-                    </div>
+        <section class="grid gap-6 lg:grid-cols-2">
+            <aside class="match-list-card rounded-[28px] p-6">
+                <div class="flex items-center justify-between gap-3 mb-4">
+                    <h2 class="text-2xl font-bold">当前配对结果</h2>
+                    <span class="badge badge-success badge-outline">按当前按钮进度展示</span>
                 </div>
-            </div>
+                <p class="mini-note mb-5">
+                    这里展示当前已经画出来的连线结果。点击“匹配一次”时，会按 A 的顺序推进，并在 B 中从左到右寻找第一个可用匹配。
+                </p>
+                <div id="match-list" class="grid gap-3"></div>
+            </aside>
 
-            <div class="grid gap-6">
-                <aside class="match-list-card rounded-[28px] p-6">
-                    <div class="flex items-center justify-between gap-3 mb-4">
-                        <h2 class="text-2xl font-bold">当前配对结果</h2>
-                        <span class="badge badge-success badge-outline">按当前按钮进度展示</span>
-                    </div>
-                    <p class="mini-note mb-5">
-                        这里展示当前已经画出来的连线结果。点击“匹配一次”时，会按 A 的顺序推进，并在 B 中从左到右寻找第一个可用匹配。
-                    </p>
-                    <div id="match-list" class="grid gap-3"></div>
-                </aside>
-
-                <aside class="match-list-card rounded-[28px] p-6">
-                    <div class="flex items-center justify-between gap-3 mb-4">
-                        <h2 class="text-2xl font-bold">候选公共子序列</h2>
-                        <span id="candidate-count-badge" class="badge badge-warning badge-outline">0 条候选</span>
-                    </div>
-                    <p class="mini-note mb-5">
-                        这里不是只给一条答案，而是展示当前样例里真实存在的多组公共子序列候选。
-                        长度最长的候选会单独标亮，帮助你看出“为什么这题要找最长”。
-                    </p>
-                    <div id="subsequence-list" class="grid gap-3"></div>
-                </aside>
-            </div>
+            <aside class="match-list-card rounded-[28px] p-6">
+                <div class="flex items-center justify-between gap-3 mb-4">
+                    <h2 class="text-2xl font-bold">候选公共子序列</h2>
+                    <span id="candidate-count-badge" class="badge badge-warning badge-outline">0 条候选</span>
+                </div>
+                <p class="mini-note mb-5">
+                    这里不是只给一条答案，而是展示当前样例里真实存在的多组公共子序列候选。
+                    长度最长的候选会单独标亮，帮助你看出“为什么这题要找最长”。
+                </p>
+                <div id="subsequence-list" class="grid gap-3"></div>
+            </aside>
         </section>
     </main>
 
