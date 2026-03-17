@@ -53,7 +53,7 @@
         }
 
         .page-shell {
-            width: min(1180px, calc(100% - 32px));
+            width: min(1460px, calc(100% - 32px));
             margin: 0 auto;
             padding: 28px 0 40px;
         }
@@ -84,7 +84,8 @@
 
         .scene-card {
             position: relative;
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
 
         .scene-card::before {
@@ -101,6 +102,8 @@
 
         .sequence-scene {
             position: relative;
+            width: max-content;
+            min-width: 100%;
             padding: 24px 20px 28px;
         }
 
@@ -109,10 +112,14 @@
             z-index: 2;
             display: grid;
             gap: 18px;
+            width: max-content;
+            min-width: 100%;
         }
 
         .sequence-track {
             position: relative;
+            width: max-content;
+            min-width: 100%;
             padding: 18px;
             border-radius: 20px;
             background: rgba(255, 255, 255, 0.03);
@@ -131,7 +138,7 @@
         .sequence-row {
             display: flex;
             gap: 12px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             min-height: 86px;
             align-items: flex-start;
         }
@@ -357,7 +364,7 @@
             </div>
         </section>
 
-        <section class="grid gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(320px,0.9fr)]">
+        <section class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
             <div class="scene-card rounded-[28px]">
                 <div class="sequence-scene" id="sequence-scene">
                     <svg id="match-overlay" class="overlay-svg" aria-hidden="true"></svg>
@@ -606,12 +613,10 @@
                 const y1 = startRect.bottom - sceneRect.top;
                 const x2 = endRect.left + endRect.width / 2 - sceneRect.left;
                 const y2 = endRect.top - sceneRect.top;
-                const curveDepth = Math.max(44, (y2 - y1) * 0.58);
-
                 const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 path.setAttribute('class', 'match-path');
                 path.setAttribute('style', `animation-delay:${index * 90}ms`);
-                path.setAttribute('d', `M ${x1} ${y1} C ${x1} ${y1 + curveDepth}, ${x2} ${y2 - curveDepth}, ${x2} ${y2}`);
+                path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
 
                 const startDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 startDot.setAttribute('class', 'match-dot');
