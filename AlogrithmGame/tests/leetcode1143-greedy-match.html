@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="coffee">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode 1143 - 最长公共子序列预匹配</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style>
+        @font-face {
+            font-family: 'Sauce Code Pro NF';
+            src: url('../assets/Sauce Code Pro NF.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --page-bg-1: #1b1410;
+            --page-bg-2: #2a1e16;
+            --panel-bg: rgba(31, 24, 19, 0.88);
+            --panel-border: rgba(244, 205, 118, 0.12);
+            --tile-a: #355c7d;
+            --tile-b: #2f4858;
+            --tile-text: #fff9ef;
+            --tile-match-1: #ffd166;
+            --tile-match-2: #f4a261;
+            --tile-match-text: #4f2b0a;
+            --line-color: #f6bd60;
+            --line-glow: rgba(246, 189, 96, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Sauce Code Pro NF', monospace;
+            color: #fff7ea;
+            background:
+                radial-gradient(circle at top left, rgba(232, 177, 58, 0.12), transparent 30%),
+                radial-gradient(circle at top right, rgba(85, 129, 149, 0.18), transparent 28%),
+                linear-gradient(145deg, var(--page-bg-1), var(--page-bg-2));
+        }
+
+        .page-shell {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 28px 0 40px;
+        }
+
+        .hero-card,
+        .scene-card,
+        .match-list-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+            backdrop-filter: blur(14px);
+        }
+
+        .hero-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::after {
+            content: "";
+            position: absolute;
+            inset: auto -80px -110px auto;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(246, 189, 96, 0.22), transparent 68%);
+            pointer-events: none;
+        }
+
+        .scene-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scene-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.28;
+            pointer-events: none;
+        }
+
+        .sequence-scene {
+            position: relative;
+            padding: 24px 20px 28px;
+        }
+
+        .sequence-panel {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            gap: 18px;
+        }
+
+        .sequence-track {
+            position: relative;
+            padding: 18px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .track-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .sequence-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            min-height: 86px;
+            align-items: flex-start;
+        }
+
+        .letter-tile {
+            width: 72px;
+            min-height: 78px;
+            padding: 10px 8px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: var(--tile-text);
+            user-select: none;
+            transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .letter-tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+        }
+
+        .letter-tile-a {
+            background: linear-gradient(180deg, rgba(83, 128, 173, 0.92), rgba(53, 92, 125, 0.92));
+        }
+
+        .letter-tile-b {
+            background: linear-gradient(180deg, rgba(66, 101, 124, 0.92), rgba(47, 72, 88, 0.92));
+        }
+
+        .letter-tile.is-matched {
+            color: var(--tile-match-text);
+            border-color: rgba(255, 209, 102, 0.62);
+            background: linear-gradient(180deg, var(--tile-match-1), var(--tile-match-2));
+            box-shadow:
+                0 14px 24px rgba(244, 162, 97, 0.25),
+                0 0 0 3px rgba(246, 189, 96, 0.12);
+            animation: matchedPulse 0.55s ease;
+        }
+
+        .tile-index {
+            font-size: 12px;
+            opacity: 0.82;
+        }
+
+        .tile-char {
+            font-size: 30px;
+            line-height: 1;
+            font-weight: 700;
+        }
+
+        .tile-state {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.14);
+        }
+
+        .letter-tile.is-matched .tile-state {
+            background: rgba(79, 43, 10, 0.12);
+        }
+
+        .overlay-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .match-path {
+            fill: none;
+            stroke: var(--line-color);
+            stroke-width: 3.5;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px var(--line-glow));
+            stroke-dasharray: 480;
+            stroke-dashoffset: 480;
+            animation: drawLine 0.68s ease forwards;
+        }
+
+        .match-dot {
+            fill: var(--line-color);
+            filter: drop-shadow(0 0 8px var(--line-glow));
+            opacity: 0;
+            animation: fadeDot 0.25s ease forwards;
+        }
+
+        .rule-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #ffe8c2;
+            font-size: 13px;
+        }
+
+        .mini-note {
+            color: rgba(255, 245, 230, 0.74);
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        .match-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .match-item strong {
+            color: #ffd98e;
+        }
+
+        .empty-state {
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 244, 228, 0.72);
+            text-align: center;
+        }
+
+        @keyframes drawLine {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes fadeDot {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes matchedPulse {
+            0% {
+                transform: scale(0.92);
+            }
+
+            60% {
+                transform: scale(1.04);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-shell {
+                width: min(100% - 20px, 100%);
+                padding-top: 18px;
+            }
+
+            .sequence-scene {
+                padding: 18px 14px 22px;
+            }
+
+            .letter-tile {
+                width: 62px;
+                min-height: 72px;
+            }
+
+            .tile-char {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page-shell">
+        <section class="hero-card rounded-[28px] p-6 md:p-8 mb-6">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <div class="max-w-3xl">
+                    <div class="badge badge-warning badge-outline mb-4">LeetCode 1143 · 第一步</div>
+                    <h1 class="text-3xl md:text-4xl font-bold mb-4">最长公共子序列的预匹配视图</h1>
+                    <p class="mini-note mb-4">
+                        先不要进入 DP 表。我们先看两个字符数组里，哪些字母在“从前往后且不重复占用”的规则下可以被配对。
+                        这一步的目标是建立直觉：公共子序列是如何从两条序列里被“挑出来”的。
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="rule-chip">规则：按 A 从左到右扫描</span>
+                        <span class="rule-chip">规则：优先匹配 B 中最靠前且未占用的同字母</span>
+                        <span class="rule-chip">说明：这是预匹配，不等于最终真实 LCS</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3 min-w-[260px]">
+                    <button id="generate-btn" class="btn btn-warning btn-lg">
+                        重新随机生成
+                    </button>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="stat bg-base-100/10 rounded-2xl px-4 py-3">
+                            <div class="stat-title text-white/60">数组 A 长度</div>
+                            <div id="length-a" class="stat-value text-warning text-3xl">0</div>
+                        </div>
+                        <div class="stat bg-base-100/10 rounded-2xl px-4 py-3">
+                            <div class="stat-title text-white/60">数组 B 长度</div>
+                            <div id="length-b" class="stat-value text-info text-3xl">0</div>
+                        </div>
+                        <div class="stat bg-base-100/10 rounded-2xl px-4 py-3">
+                            <div class="stat-title text-white/60">成功配对</div>
+                            <div id="match-count" class="stat-value text-success text-3xl">0</div>
+                        </div>
+                        <div class="stat bg-base-100/10 rounded-2xl px-4 py-3">
+                            <div class="stat-title text-white/60">当前视图</div>
+                            <div class="stat-value text-secondary text-xl">贪心前匹配</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(320px,0.9fr)]">
+            <div class="scene-card rounded-[28px]">
+                <div class="sequence-scene" id="sequence-scene">
+                    <svg id="match-overlay" class="overlay-svg" aria-hidden="true"></svg>
+
+                    <div class="sequence-panel">
+                        <div class="sequence-track">
+                            <div class="track-head">
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    <span class="badge badge-warning badge-lg">序列 A</span>
+                                    <span id="array-a-text" class="text-sm text-white/70"></span>
+                                </div>
+                                <span class="text-sm text-white/60">从左到右扫描并发起匹配</span>
+                            </div>
+                            <div id="row-a" class="sequence-row"></div>
+                        </div>
+
+                        <div class="sequence-track">
+                            <div class="track-head">
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    <span class="badge badge-info badge-lg">序列 B</span>
+                                    <span id="array-b-text" class="text-sm text-white/70"></span>
+                                </div>
+                                <span class="text-sm text-white/60">每个位置最多被占用一次</span>
+                            </div>
+                            <div id="row-b" class="sequence-row"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="match-list-card rounded-[28px] p-6">
+                <div class="flex items-center justify-between gap-3 mb-4">
+                    <h2 class="text-2xl font-bold">当前配对结果</h2>
+                    <span class="badge badge-success badge-outline">按 A 的顺序展示</span>
+                </div>
+                <p class="mini-note mb-5">
+                    这里展示的是当前这一步真正连出来的配对。只要某个 B 位置已经被占用，后面相同字母就不能再重复连过去。
+                </p>
+                <div id="match-list" class="grid gap-3"></div>
+            </aside>
+        </section>
+    </main>
+
+    <script>
+        const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ'.split('');
+
+        const state = {
+            arrayA: [],
+            arrayB: [],
+            matches: []
+        };
+
+        const generateBtn = document.getElementById('generate-btn');
+        const lengthAValue = document.getElementById('length-a');
+        const lengthBValue = document.getElementById('length-b');
+        const matchCountValue = document.getElementById('match-count');
+        const rowA = document.getElementById('row-a');
+        const rowB = document.getElementById('row-b');
+        const matchOverlay = document.getElementById('match-overlay');
+        const sequenceScene = document.getElementById('sequence-scene');
+        const matchList = document.getElementById('match-list');
+        const arrayAText = document.getElementById('array-a-text');
+        const arrayBText = document.getElementById('array-b-text');
+
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function pickRandom(list) {
+            return list[randomInt(0, list.length - 1)];
+        }
+
+        function shuffle(list) {
+            const result = [...list];
+
+            for (let index = result.length - 1; index > 0; index -= 1) {
+                const swapIndex = randomInt(0, index);
+                [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+            }
+
+            return result;
+        }
+
+        function buildLengths() {
+            const lengthA = randomInt(5, 9);
+            let lengthB = randomInt(5, 9);
+
+            while (Math.abs(lengthA - lengthB) > 3) {
+                lengthB = randomInt(5, 9);
+            }
+
+            return { lengthA, lengthB };
+        }
+
+        function buildSharedBag(sharedPool, count) {
+            const bag = [];
+
+            for (let index = 0; index < count; index += 1) {
+                bag.push(pickRandom(sharedPool));
+            }
+
+            return bag;
+        }
+
+        function buildRandomArrays() {
+            const { lengthA, lengthB } = buildLengths();
+            const minLength = Math.min(lengthA, lengthB);
+            const alphabetPool = shuffle(ALPHABET);
+            const sharedPool = alphabetPool.slice(0, 7);
+            const aOnlyPool = alphabetPool.slice(7, 12);
+            const bOnlyPool = alphabetPool.slice(12, 17);
+            const sharedCount = randomInt(Math.max(3, Math.floor(minLength / 2)), Math.max(3, minLength - 1));
+            const sharedBag = buildSharedBag(sharedPool, sharedCount);
+            const arrayA = [...sharedBag];
+            const arrayB = [...sharedBag];
+
+            while (arrayA.length < lengthA) {
+                const sourcePool = Math.random() < 0.4 ? sharedPool : aOnlyPool;
+                arrayA.push(pickRandom(sourcePool));
+            }
+
+            while (arrayB.length < lengthB) {
+                const sourcePool = Math.random() < 0.4 ? sharedPool : bOnlyPool;
+                arrayB.push(pickRandom(sourcePool));
+            }
+
+            const shuffledA = shuffle(arrayA);
+            const shuffledB = shuffle(arrayB);
+
+            if (shuffledA.join('') === shuffledB.join('')) {
+                shuffledB[shuffledB.length - 1] = pickRandom(bOnlyPool);
+            }
+
+            return {
+                arrayA: shuffledA,
+                arrayB: shuffledB
+            };
+        }
+
+        function buildGreedyMatches(arrayA, arrayB) {
+            const usedBIndexes = new Set();
+            const matches = [];
+
+            arrayA.forEach((char, indexA) => {
+                for (let indexB = 0; indexB < arrayB.length; indexB += 1) {
+                    if (usedBIndexes.has(indexB)) {
+                        continue;
+                    }
+
+                    if (arrayB[indexB] !== char) {
+                        continue;
+                    }
+
+                    usedBIndexes.add(indexB);
+                    matches.push({
+                        indexA,
+                        indexB,
+                        char
+                    });
+                    break;
+                }
+            });
+
+            return matches;
+        }
+
+        function buildMatchedIndexSet(matches, key) {
+            return new Set(matches.map((match) => match[key]));
+        }
+
+        function createTile(char, index, rowName, matched) {
+            const tile = document.createElement('div');
+            tile.className = [
+                'letter-tile',
+                rowName === 'A' ? 'letter-tile-a' : 'letter-tile-b',
+                matched ? 'is-matched' : ''
+            ].join(' ').trim();
+            tile.dataset.row = rowName;
+            tile.dataset.index = String(index);
+
+            const indexLabel = document.createElement('div');
+            indexLabel.className = 'tile-index';
+            indexLabel.textContent = `${rowName}[${index}]`;
+
+            const charLabel = document.createElement('div');
+            charLabel.className = 'tile-char';
+            charLabel.textContent = char;
+
+            const stateLabel = document.createElement('div');
+            stateLabel.className = 'tile-state';
+            stateLabel.textContent = matched ? '已配对' : '未配对';
+
+            tile.append(indexLabel, charLabel, stateLabel);
+            return tile;
+        }
+
+        function renderSequence(container, array, rowName, matchedIndexes) {
+            container.innerHTML = '';
+
+            array.forEach((char, index) => {
+                const tile = createTile(char, index, rowName, matchedIndexes.has(index));
+                container.appendChild(tile);
+            });
+        }
+
+        function renderMatchList(matches) {
+            matchList.innerHTML = '';
+
+            if (matches.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = '当前这组数据没有形成可连接的前向配对。';
+                matchList.appendChild(empty);
+                return;
+            }
+
+            matches.forEach((match, order) => {
+                const item = document.createElement('div');
+                item.className = 'match-item';
+                item.innerHTML = `
+                    <span>第 ${order + 1} 对</span>
+                    <span><strong>${match.char}</strong></span>
+                    <span>A[${match.indexA}] → B[${match.indexB}]</span>
+                `;
+                matchList.appendChild(item);
+            });
+        }
+
+        function drawMatchLines() {
+            matchOverlay.innerHTML = '';
+
+            const sceneRect = sequenceScene.getBoundingClientRect();
+            matchOverlay.setAttribute('viewBox', `0 0 ${sceneRect.width} ${sceneRect.height}`);
+
+            state.matches.forEach((match, index) => {
+                const startTile = sequenceScene.querySelector(`[data-row="A"][data-index="${match.indexA}"]`);
+                const endTile = sequenceScene.querySelector(`[data-row="B"][data-index="${match.indexB}"]`);
+
+                if (!startTile || !endTile) {
+                    return;
+                }
+
+                const startRect = startTile.getBoundingClientRect();
+                const endRect = endTile.getBoundingClientRect();
+                const x1 = startRect.left + startRect.width / 2 - sceneRect.left;
+                const y1 = startRect.bottom - sceneRect.top;
+                const x2 = endRect.left + endRect.width / 2 - sceneRect.left;
+                const y2 = endRect.top - sceneRect.top;
+                const curveDepth = Math.max(44, (y2 - y1) * 0.58);
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('class', 'match-path');
+                path.setAttribute('style', `animation-delay:${index * 90}ms`);
+                path.setAttribute('d', `M ${x1} ${y1} C ${x1} ${y1 + curveDepth}, ${x2} ${y2 - curveDepth}, ${x2} ${y2}`);
+
+                const startDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                startDot.setAttribute('class', 'match-dot');
+                startDot.setAttribute('style', `animation-delay:${150 + index * 90}ms`);
+                startDot.setAttribute('cx', x1);
+                startDot.setAttribute('cy', y1);
+                startDot.setAttribute('r', '4.5');
+
+                const endDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                endDot.setAttribute('class', 'match-dot');
+                endDot.setAttribute('style', `animation-delay:${220 + index * 90}ms`);
+                endDot.setAttribute('cx', x2);
+                endDot.setAttribute('cy', y2);
+                endDot.setAttribute('r', '4.5');
+
+                matchOverlay.append(path, startDot, endDot);
+            });
+        }
+
+        function render() {
+            const matchedAIndexes = buildMatchedIndexSet(state.matches, 'indexA');
+            const matchedBIndexes = buildMatchedIndexSet(state.matches, 'indexB');
+
+            lengthAValue.textContent = String(state.arrayA.length);
+            lengthBValue.textContent = String(state.arrayB.length);
+            matchCountValue.textContent = String(state.matches.length);
+            arrayAText.textContent = `[ ${state.arrayA.join('  ')} ]`;
+            arrayBText.textContent = `[ ${state.arrayB.join('  ')} ]`;
+
+            renderSequence(rowA, state.arrayA, 'A', matchedAIndexes);
+            renderSequence(rowB, state.arrayB, 'B', matchedBIndexes);
+            renderMatchList(state.matches);
+
+            requestAnimationFrame(drawMatchLines);
+        }
+
+        function regenerate() {
+            const { arrayA, arrayB } = buildRandomArrays();
+            state.arrayA = arrayA;
+            state.arrayB = arrayB;
+            state.matches = buildGreedyMatches(arrayA, arrayB);
+            render();
+        }
+
+        let resizeTimer = null;
+
+        window.addEventListener('resize', () => {
+            window.clearTimeout(resizeTimer);
+            resizeTimer = window.setTimeout(drawMatchLines, 80);
+        });
+
+        generateBtn.addEventListener('click', regenerate);
+
+        regenerate();
+    </script>
+</body>
+</html>
