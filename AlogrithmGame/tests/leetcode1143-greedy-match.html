@@ -180,6 +180,9 @@
             box-shadow:
                 0 14px 24px rgba(244, 162, 97, 0.25),
                 0 0 0 3px rgba(246, 189, 96, 0.12);
+        }
+
+        .letter-tile.is-new-match {
             animation: matchedPulse 0.55s ease;
         }
 
@@ -230,6 +233,17 @@
             filter: drop-shadow(0 0 8px var(--line-glow));
             opacity: 0;
             animation: fadeDot 0.25s ease forwards;
+        }
+
+        .match-path.is-static {
+            stroke-dasharray: none;
+            stroke-dashoffset: 0;
+            animation: none;
+        }
+
+        .match-dot.is-static {
+            opacity: 1;
+            animation: none;
         }
 
         .rule-chip {
@@ -365,6 +379,7 @@
                     <div class="flex flex-wrap gap-3">
                         <span class="rule-chip">规则：按 A 从左到右扫描</span>
                         <span class="rule-chip">规则：优先匹配 B 中最靠前且未占用的同字母</span>
+                        <span class="rule-chip">交互：支持单步匹配、清空和全部连线</span>
                         <span class="rule-chip">样例：故意加入重复字母与交错顺序</span>
                         <span class="rule-chip">说明：这是预匹配，不等于最终真实 LCS</span>
                     </div>
@@ -374,6 +389,20 @@
                     <button id="generate-btn" class="btn btn-warning btn-lg">
                         重新随机生成
                     </button>
+                    <button id="step-match-btn" class="btn btn-primary">
+                        匹配一次
+                    </button>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="connect-all-btn" class="btn btn-outline btn-success">
+                            全部连上
+                        </button>
+                        <button id="clear-lines-btn" class="btn btn-outline btn-error">
+                            清空连线
+                        </button>
+                    </div>
+                    <div id="progress-note" class="mini-note rounded-2xl border border-white/8 bg-base-100/8 px-4 py-3">
+                        当前还没有显示任何连线。
+                    </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div class="stat bg-base-100/10 rounded-2xl px-4 py-3">
                             <div class="stat-title text-white/60">数组 A 长度</div>
@@ -384,7 +413,7 @@
                             <div id="length-b" class="stat-value text-info text-3xl">0</div>
                         </div>
                         <div class="stat bg-base-100/10 rounded-2xl px-4 py-3">
-                            <div class="stat-title text-white/60">成功配对</div>
+                            <div class="stat-title text-white/60">已连线 / 总匹配</div>
                             <div id="match-count" class="stat-value text-success text-3xl">0</div>
                         </div>
                         <div class="stat bg-base-100/10 rounded-2xl px-4 py-3">
@@ -431,10 +460,10 @@
                 <aside class="match-list-card rounded-[28px] p-6">
                     <div class="flex items-center justify-between gap-3 mb-4">
                         <h2 class="text-2xl font-bold">当前配对结果</h2>
-                        <span class="badge badge-success badge-outline">按 A 的顺序展示</span>
+                        <span class="badge badge-success badge-outline">按当前按钮进度展示</span>
                     </div>
                     <p class="mini-note mb-5">
-                        这里展示的是当前这一步真正连出来的配对。只要某个 B 位置已经被占用，后面相同字母就不能再重复连过去。
+                        这里展示当前已经画出来的连线结果。点击“匹配一次”时，会按 A 的顺序推进，并在 B 中从左到右寻找第一个可用匹配。
                     </p>
                     <div id="match-list" class="grid gap-3"></div>
                 </aside>
@@ -468,13 +497,20 @@
         const state = {
             arrayA: [],
             arrayB: [],
-            matches: [],
+            allMatches: [],
+            displayedMatches: [],
             allCommonSubsequences: [],
             visibleCommonSubsequences: [],
-            lcsLength: 0
+            lcsLength: 0,
+            nextMatchIndex: 0,
+            animatedFromIndex: 0
         };
 
         const generateBtn = document.getElementById('generate-btn');
+        const stepMatchBtn = document.getElementById('step-match-btn');
+        const connectAllBtn = document.getElementById('connect-all-btn');
+        const clearLinesBtn = document.getElementById('clear-lines-btn');
+        const progressNote = document.getElementById('progress-note');
         const lengthAValue = document.getElementById('length-a');
         const lengthBValue = document.getElementById('length-b');
         const matchCountValue = document.getElementById('match-count');
@@ -679,12 +715,13 @@
             return new Set(matches.map((match) => match[key]));
         }
 
-        function createTile(char, index, rowName, matched) {
+        function createTile(char, index, rowName, matched, isNewMatch) {
             const tile = document.createElement('div');
             tile.className = [
                 'letter-tile',
                 rowName === 'A' ? 'letter-tile-a' : 'letter-tile-b',
-                matched ? 'is-matched' : ''
+                matched ? 'is-matched' : '',
+                isNewMatch ? 'is-new-match' : ''
             ].join(' ').trim();
             tile.dataset.row = rowName;
             tile.dataset.index = String(index);
@@ -705,27 +742,35 @@
             return tile;
         }
 
-        function renderSequence(container, array, rowName, matchedIndexes) {
+        function renderSequence(container, array, rowName, matchedIndexes, animatedIndexes) {
             container.innerHTML = '';
 
             array.forEach((char, index) => {
-                const tile = createTile(char, index, rowName, matchedIndexes.has(index));
+                const tile = createTile(
+                    char,
+                    index,
+                    rowName,
+                    matchedIndexes.has(index),
+                    animatedIndexes.has(index)
+                );
                 container.appendChild(tile);
             });
         }
 
-        function renderMatchList(matches) {
+        function renderMatchList(displayedMatches, totalMatches) {
             matchList.innerHTML = '';
 
-            if (matches.length === 0) {
+            if (displayedMatches.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-state';
-                empty.textContent = '当前这组数据没有形成可连接的前向配对。';
+                empty.textContent = totalMatches === 0
+                    ? '当前这组数据没有形成可连接的前向配对。'
+                    : '当前还没有显示任何连线，点击“匹配一次”或“全部连上”开始演示。';
                 matchList.appendChild(empty);
                 return;
             }
 
-            matches.forEach((match, order) => {
+            displayedMatches.forEach((match, order) => {
                 const item = document.createElement('div');
                 item.className = 'match-item';
                 item.innerHTML = `
@@ -735,6 +780,34 @@
                 `;
                 matchList.appendChild(item);
             });
+        }
+
+        function renderProgress(totalMatches, displayedMatches) {
+            if (totalMatches === 0) {
+                progressNote.textContent = '这组数据没有可连线的贪心匹配。';
+                return;
+            }
+
+            if (displayedMatches === 0) {
+                progressNote.textContent = `准备开始：下一次会从 A[${state.allMatches[0].indexA}] 发起匹配。`;
+                return;
+            }
+
+            if (displayedMatches < totalMatches) {
+                progressNote.textContent = `当前已经连上 ${displayedMatches} / ${totalMatches} 条，下一次会从 A[${state.allMatches[displayedMatches].indexA}] 继续。`;
+                return;
+            }
+
+            progressNote.textContent = `已经完成全部 ${totalMatches} 条可显示连线。`;
+        }
+
+        function syncControlState() {
+            const totalMatches = state.allMatches.length;
+            const displayedCount = state.displayedMatches.length;
+
+            stepMatchBtn.disabled = totalMatches === 0 || displayedCount >= totalMatches;
+            connectAllBtn.disabled = totalMatches === 0 || displayedCount >= totalMatches;
+            clearLinesBtn.disabled = displayedCount === 0;
         }
 
         function renderSubsequenceList(visibleCommonSubsequences, lcsLength, totalCount) {
@@ -770,7 +843,7 @@
             const sceneRect = sequenceScene.getBoundingClientRect();
             matchOverlay.setAttribute('viewBox', `0 0 ${sceneRect.width} ${sceneRect.height}`);
 
-            state.matches.forEach((match, index) => {
+            state.displayedMatches.forEach((match, index) => {
                 const startTile = sequenceScene.querySelector(`[data-row="A"][data-index="${match.indexA}"]`);
                 const endTile = sequenceScene.querySelector(`[data-row="B"][data-index="${match.indexB}"]`);
 
@@ -785,20 +858,21 @@
                 const x2 = endRect.left + endRect.width / 2 - sceneRect.left;
                 const y2 = endRect.top - sceneRect.top;
                 const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                path.setAttribute('class', 'match-path');
-                path.setAttribute('style', `animation-delay:${index * 90}ms`);
+                const isStatic = index < state.animatedFromIndex;
+                path.setAttribute('class', `match-path${isStatic ? ' is-static' : ''}`);
+                path.setAttribute('style', `animation-delay:${(index - state.animatedFromIndex) * 90}ms`);
                 path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
 
                 const startDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                startDot.setAttribute('class', 'match-dot');
-                startDot.setAttribute('style', `animation-delay:${150 + index * 90}ms`);
+                startDot.setAttribute('class', `match-dot${isStatic ? ' is-static' : ''}`);
+                startDot.setAttribute('style', `animation-delay:${150 + (index - state.animatedFromIndex) * 90}ms`);
                 startDot.setAttribute('cx', x1);
                 startDot.setAttribute('cy', y1);
                 startDot.setAttribute('r', '4.5');
 
                 const endDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                endDot.setAttribute('class', 'match-dot');
-                endDot.setAttribute('style', `animation-delay:${220 + index * 90}ms`);
+                endDot.setAttribute('class', `match-dot${isStatic ? ' is-static' : ''}`);
+                endDot.setAttribute('style', `animation-delay:${220 + (index - state.animatedFromIndex) * 90}ms`);
                 endDot.setAttribute('cx', x2);
                 endDot.setAttribute('cy', y2);
                 endDot.setAttribute('r', '4.5');
@@ -808,22 +882,52 @@
         }
 
         function render() {
-            const matchedAIndexes = buildMatchedIndexSet(state.matches, 'indexA');
-            const matchedBIndexes = buildMatchedIndexSet(state.matches, 'indexB');
+            const matchedAIndexes = buildMatchedIndexSet(state.displayedMatches, 'indexA');
+            const matchedBIndexes = buildMatchedIndexSet(state.displayedMatches, 'indexB');
+            const animatedMatches = state.displayedMatches.slice(state.animatedFromIndex);
+            const animatedAIndexes = buildMatchedIndexSet(animatedMatches, 'indexA');
+            const animatedBIndexes = buildMatchedIndexSet(animatedMatches, 'indexB');
 
             lengthAValue.textContent = String(state.arrayA.length);
             lengthBValue.textContent = String(state.arrayB.length);
-            matchCountValue.textContent = String(state.matches.length);
+            matchCountValue.textContent = `${state.displayedMatches.length}/${state.allMatches.length}`;
             lcsLengthValue.textContent = String(state.lcsLength);
             arrayAText.textContent = `[ ${state.arrayA.join('  ')} ]`;
             arrayBText.textContent = `[ ${state.arrayB.join('  ')} ]`;
 
-            renderSequence(rowA, state.arrayA, 'A', matchedAIndexes);
-            renderSequence(rowB, state.arrayB, 'B', matchedBIndexes);
-            renderMatchList(state.matches);
+            renderSequence(rowA, state.arrayA, 'A', matchedAIndexes, animatedAIndexes);
+            renderSequence(rowB, state.arrayB, 'B', matchedBIndexes, animatedBIndexes);
+            renderMatchList(state.displayedMatches, state.allMatches.length);
             renderSubsequenceList(state.visibleCommonSubsequences, state.lcsLength, state.allCommonSubsequences.length);
+            renderProgress(state.allMatches.length, state.displayedMatches.length);
+            syncControlState();
 
             requestAnimationFrame(drawMatchLines);
+        }
+
+        function clearDisplayedMatches() {
+            state.displayedMatches = [];
+            state.nextMatchIndex = 0;
+            state.animatedFromIndex = 0;
+            render();
+        }
+
+        function connectNextMatch() {
+            if (state.nextMatchIndex >= state.allMatches.length) {
+                return;
+            }
+
+            state.displayedMatches = state.allMatches.slice(0, state.nextMatchIndex + 1);
+            state.nextMatchIndex += 1;
+            state.animatedFromIndex = Math.max(0, state.displayedMatches.length - 1);
+            render();
+        }
+
+        function connectAllMatches() {
+            state.displayedMatches = [...state.allMatches];
+            state.nextMatchIndex = state.allMatches.length;
+            state.animatedFromIndex = 0;
+            render();
         }
 
         function regenerate() {
@@ -831,10 +935,13 @@
             const allCommonSubsequences = enumerateCommonSubsequences(arrayA, arrayB);
             state.arrayA = arrayA;
             state.arrayB = arrayB;
-            state.matches = buildGreedyMatches(arrayA, arrayB);
+            state.allMatches = buildGreedyMatches(arrayA, arrayB);
+            state.displayedMatches = [];
             state.allCommonSubsequences = allCommonSubsequences;
             state.lcsLength = allCommonSubsequences[0]?.length ?? 0;
             state.visibleCommonSubsequences = pickVisibleSubsequences(allCommonSubsequences, state.lcsLength);
+            state.nextMatchIndex = 0;
+            state.animatedFromIndex = 0;
             render();
         }
 
@@ -846,6 +953,9 @@
         });
 
         generateBtn.addEventListener('click', regenerate);
+        stepMatchBtn.addEventListener('click', connectNextMatch);
+        connectAllBtn.addEventListener('click', connectAllMatches);
+        clearLinesBtn.addEventListener('click', clearDisplayedMatches);
 
         regenerate();
     </script>
