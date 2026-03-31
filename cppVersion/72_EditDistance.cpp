@@ -19,7 +19,7 @@ public:
           dp[i][k] = dp[i - 1][k - 1];
         else {
           // insert
-          int t = min(dp[i - 1][k], dp[i][k - 1]) + 1;
+          // int t = min(dp[i - 1][k], dp[i][k - 1]) + 1;
           // remove 这一步理解比较有意思, 就是类似于哪个烧水的数学思想,
           // 既然当前的char不相等, 那么删掉之后回到之前的状态,
           // 发现这种处理方法和上面的insert的一样, 所以可以省略
