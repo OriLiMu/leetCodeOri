@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int longestCommonSubsequence(string text1, string text2) {
+    int minDistance(string word1, string word2) {
         
     }
 };
