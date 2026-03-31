@@ -6,15 +6,16 @@ using namespace std;
 class Solution {
 public:
   int minDistance(string s1, string s2) {
+    if (!s1.size() || !s2.size())
+      return max(s1.size(), s2.size());
     vector<vector<int>> dp(s1.size() + 1, vector<int>(s2.size() + 1));
-    dp[0][0] = 0;
-    for (int i = 1; i <= s1.size(); i++)
-      dp[i][0] = 1;
+    for (int i = 0; i <= s1.size(); i++)
+      dp[i][0] = i;
     for (int i = 1; i <= s2.size(); i++)
-      dp[0][i] = 1;
+      dp[0][i] = i;
     for (int i = 1; i <= s1.size(); i++) {
       for (int k = 1; k <= s2.size(); k++) {
-        // 这里应该-1
+        // 这里应该-1, 这个是很容易犯的错误
         if (s1[i - 1] == s2[k - 1])
           dp[i][k] = dp[i - 1][k - 1];
         else {
@@ -46,5 +47,13 @@ int main() {
   string s2 = "ros";
   s1 = "intention";
   s2 = "execution";
+  // 这个报错, 没考虑空串, 需要特殊处理
+  s1 = "";
+  s2 = "anything";
+
+  // 初始值定义错了
+  s1 = "plasma";
+  s2 = "altruism";
+
   cout << s.minDistance(s1, s2) << endl;
 }
