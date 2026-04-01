@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int minDistance(string word1, string word2) {
+    vector<int> twoSum(vector<int>& nums, int target) {
         
     }
 };
