@@ -13,16 +13,17 @@ public:
     for (auto &str : strs) {
       string sorted = str;
       sort(sorted.begin(), sorted.end());
-      u[sorted].push_back(str);
+      u[sorted].emplace_back(str);
     }
 
     for (auto &it : u) {
-      r.push_back(it.second);
+      r.emplace_back(it.second);
     }
 
     return r;
   }
 };
+
 int main() {
   Solution s;
   vector<string> v = {"eat", "tea", "tan", "ate", "nat", "bat"};
