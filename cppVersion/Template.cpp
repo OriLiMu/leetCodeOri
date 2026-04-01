@@ -1,6 +1,6 @@
 class Solution {
 public:
-    vector<int> twoSum(vector<int>& nums, int target) {
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
         
     }
 };
