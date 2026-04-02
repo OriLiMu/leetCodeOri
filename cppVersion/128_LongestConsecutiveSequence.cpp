@@ -16,6 +16,7 @@ public:
       // 这样想如果使用 erase是否是逻辑更加清楚的做法
       if (u.contains(n))
         continue;
+      //
       bool le = u.contains(n + 1);
       bool re = u.contains(n - 1);
       if (le && re) {
