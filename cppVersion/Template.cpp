@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int longestConsecutive(vector<int>& nums) {
+    void moveZeroes(vector<int>& nums) {
         
     }
 };
