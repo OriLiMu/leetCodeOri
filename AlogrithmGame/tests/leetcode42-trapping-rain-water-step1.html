@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LeetCode 42 - 接雨水（步骤一）</title>
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --panel: #ffffff;
+            --text: #1f2937;
+            --muted: #64748b;
+            --bar: #3b82f6;
+            --bar-soft: #dbeafe;
+            --border: #d7deea;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle at 20% 10%, #eef4ff 0%, var(--bg) 58%);
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: var(--text);
+        }
+
+        .card {
+            width: min(900px, 92vw);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            background: var(--panel);
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        .title {
+            margin: 0 0 8px;
+            font-size: 26px;
+            line-height: 1.2;
+        }
+
+        .desc {
+            margin: 0 0 22px;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .bars-wrap {
+            height: 360px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: linear-gradient(180deg, #f8fbff 0%, #f1f5f9 100%);
+            padding: 24px 28px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: clamp(14px, 4vw, 36px);
+        }
+
+        .bar-item {
+            width: clamp(58px, 10vw, 88px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .value {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .bar {
+            width: 100%;
+            min-height: 24px;
+            border: 1px solid #7eb3ff;
+            border-radius: 10px 10px 6px 6px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0) 30%),
+                linear-gradient(180deg, var(--bar-soft) 0%, var(--bar) 100%);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+        }
+
+        .index {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <h1 class="title">LeetCode 42：接雨水</h1>
+        <p class="desc">步骤一：先放入 4 个从大到小的数值，并用 4 个长方形柱子表示。</p>
+
+        <section class="bars-wrap" id="barsWrap" aria-label="高度柱形图"></section>
+    </main>
+
+    <script>
+        // 第一步固定数据：从大到小
+        const heights = [8, 6, 4, 2];
+        const maxHeight = Math.max(...heights);
+        const wrap = document.getElementById("barsWrap");
+
+        heights.forEach((value, index) => {
+            const item = document.createElement("div");
+            item.className = "bar-item";
+
+            const label = document.createElement("div");
+            label.className = "value";
+            label.textContent = String(value);
+
+            const bar = document.createElement("div");
+            bar.className = "bar";
+            bar.style.height = `${(value / maxHeight) * 240}px`;
+
+            const idx = document.createElement("div");
+            idx.className = "index";
+            idx.textContent = `索引 ${index}`;
+
+            item.append(label, bar, idx);
+            wrap.appendChild(item);
+        });
+    </script>
+</body>
+</html>
