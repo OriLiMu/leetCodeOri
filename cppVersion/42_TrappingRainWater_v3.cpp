@@ -5,29 +5,24 @@
 using namespace std;
 class Solution {
 public:
-  struct st {
-    int startIdx;
-    int len;
-  };
   int trap(vector<int> &nums) {
-    int lastH = nums[0], idx = 0;
-    int rst = 0;
     stack<int> s;
+    int lastH = 0;
+    int rst = 0;
     s.push(0);
     for (int i = 0; i < nums.size(); i++) {
-      while (!s.empty() && nums[s.top()] <= nums[i]) {
-        rst += (nums[s.top()] - lastH) * (i - s.top() - 1);
-        lastH = nums[s.top()];
-        s.pop();
+      if (nums[i] <= nums[s.top()])
+        s.push(i);
+      else {
+        while (!s.empty() && nums[i] >= nums[s.top()]) {
+          rst += (nums[s.top()] - lastH) * (i - s.top() - 1);
+          lastH = nums[s.top()];
+          s.pop();
+        }
+        if (!s.empty())
+          rst += (i - s.top() - 1) * (nums[i] - lastH);
+        s.push(i);
       }
-
-      // 这里不是左面的最高值减去当前值
-      // 左面的最高值是没有对应高度匹配的,
-      // 计算水容量应该用两个边之中比较短的哪个来计算
-      if (!s.empty())
-        rst += (nums[i] - lastH) * (i - s.top() - 1);
-
-      s.push(i);
     }
 
     return rst;
