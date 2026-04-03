@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LeetCode 42 - 接雨水（步骤一）</title>
+    <title>LeetCode 42 - 接雨水（步骤演示）</title>
     <style>
         :root {
             --bg: #ffffff;
             --panel: #ffffff;
             --text: #111111;
-            --muted: #aaaaaa;
+            --muted: #666666;
             --bar: #0074d9;
             --border: #dddddd;
             --bar-edge: #001f3f;
+            --water-step-1: #7fdbff;
+            --water-step-2: #39cccc;
         }
 
         * {
@@ -30,7 +32,7 @@
         }
 
         .card {
-            width: min(900px, 92vw);
+            width: min(920px, 92vw);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 28px;
@@ -44,9 +46,38 @@
         }
 
         .desc {
-            margin: 0 0 22px;
+            margin: 0 0 14px;
             color: var(--muted);
             font-size: 15px;
+        }
+
+        .toolbar {
+            margin: 0 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            border: 1px solid var(--bar-edge);
+            background: var(--panel);
+            color: var(--bar-edge);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .step-text {
+            margin-left: 8px;
+            font-size: 14px;
+            color: var(--muted);
         }
 
         .bars-wrap {
@@ -74,58 +105,210 @@
             font-size: 16px;
         }
 
-        .bar {
+        .column {
+            position: relative;
             width: 100%;
+            height: 340px;
+            overflow: hidden;
+        }
+
+        .bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
             min-height: 20px;
             border: 2px solid var(--bar-edge);
             border-radius: 0;
             background: var(--bar);
+            z-index: 2;
         }
 
-        .bar-item + .bar-item .bar {
+        .bar-item + .bar-item .column {
             margin-left: -2px;
         }
 
+        .water {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .water.show {
+            opacity: 1;
+        }
+
+        .water-step-1 {
+            background: var(--water-step-1);
+        }
+
+        .water-step-2 {
+            background: var(--water-step-2);
+        }
+
         .index {
-            color: var(--muted);
+            color: #888888;
             font-size: 13px;
             font-weight: 600;
+        }
+
+        .legend {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: var(--muted);
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .legend-chip {
+            width: 14px;
+            height: 14px;
+            display: inline-block;
+            border: 1px solid #777777;
+            vertical-align: -2px;
+            margin-right: 6px;
         }
     </style>
 </head>
 <body>
     <main class="card">
         <h1 class="title">LeetCode 42：接雨水</h1>
-        <p class="desc">步骤一：显示 5 根柱子（新增第 5 根高度为 5），柱子紧贴排列。</p>
+        <p class="desc">点击“下一步”逐步填水，点击“上一步”回退上一次填水。</p>
+        <div class="toolbar">
+            <button class="btn" id="prevBtn" type="button">上一步</button>
+            <button class="btn" id="nextBtn" type="button">下一步</button>
+            <span class="step-text" id="stepText"></span>
+        </div>
 
         <section class="bars-wrap" id="barsWrap" aria-label="高度柱形图"></section>
+
+        <div class="legend">
+            <span><i class="legend-chip water-step-1"></i>第一步填水：4 和 5 之间</span>
+            <span><i class="legend-chip water-step-2"></i>第二步填水：6 和 5 之间</span>
+        </div>
     </main>
 
     <script>
         // 固定五个柱子高度，第五根为 5
         const heights = [8, 6, 4, 2, 5];
         const maxHeight = Math.max(...heights);
+        const chartHeightPx = 340;
+
         const wrap = document.getElementById("barsWrap");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const stepText = document.getElementById("stepText");
 
-        heights.forEach((value, index) => {
-            const item = document.createElement("div");
-            item.className = "bar-item";
+        // 需求指定的两步填水区域，使用不同颜色区分
+        const fillSteps = [
+            {
+                name: "第 1 步：填充 4 和 5 之间",
+                className: "water-step-1",
+                fills: [
+                    { index: 3, from: 2, to: 4 }
+                ]
+            },
+            {
+                name: "第 2 步：填充 6 和 5 之间",
+                className: "water-step-2",
+                fills: [
+                    { index: 2, from: 4, to: 5 },
+                    { index: 3, from: 4, to: 5 }
+                ]
+            }
+        ];
 
-            const label = document.createElement("div");
-            label.className = "value";
-            label.textContent = String(value);
+        let currentStep = 0;
+        const columns = [];
+        const waterLayersByStep = fillSteps.map(() => []);
 
-            const bar = document.createElement("div");
-            bar.className = "bar";
-            bar.style.height = `${(value / maxHeight) * 340}px`;
+        function unitToPx(value) {
+            return (value / maxHeight) * chartHeightPx;
+        }
 
-            const idx = document.createElement("div");
-            idx.className = "index";
-            idx.textContent = `索引 ${index}`;
+        function createBars() {
+            heights.forEach((value, index) => {
+                const item = document.createElement("div");
+                item.className = "bar-item";
 
-            item.append(label, bar, idx);
-            wrap.appendChild(item);
+                const label = document.createElement("div");
+                label.className = "value";
+                label.textContent = String(value);
+
+                const column = document.createElement("div");
+                column.className = "column";
+
+                const bar = document.createElement("div");
+                bar.className = "bar";
+                bar.style.height = `${unitToPx(value)}px`;
+
+                const idx = document.createElement("div");
+                idx.className = "index";
+                idx.textContent = `索引 ${index}`;
+
+                column.appendChild(bar);
+                item.append(label, column, idx);
+                wrap.appendChild(item);
+                columns.push(column);
+            });
+        }
+
+        function createWaterLayers() {
+            fillSteps.forEach((step, stepIndex) => {
+                step.fills.forEach((fill) => {
+                    const layer = document.createElement("div");
+                    layer.className = `water ${step.className}`;
+                    layer.style.bottom = `${unitToPx(fill.from)}px`;
+                    layer.style.height = `${unitToPx(fill.to - fill.from)}px`;
+
+                    columns[fill.index].appendChild(layer);
+                    waterLayersByStep[stepIndex].push(layer);
+                });
+            });
+        }
+
+        function renderStep() {
+            fillSteps.forEach((_, stepIndex) => {
+                waterLayersByStep[stepIndex].forEach((layer) => {
+                    if (stepIndex < currentStep) {
+                        layer.classList.add("show");
+                    } else {
+                        layer.classList.remove("show");
+                    }
+                });
+            });
+
+            if (currentStep === 0) {
+                stepText.textContent = "当前：初始状态（未填水）";
+            } else {
+                stepText.textContent = `当前：${fillSteps[currentStep - 1].name}`;
+            }
+
+            prevBtn.disabled = currentStep === 0;
+            nextBtn.disabled = currentStep === fillSteps.length;
+        }
+
+        prevBtn.addEventListener("click", () => {
+            if (currentStep > 0) {
+                currentStep -= 1;
+                renderStep();
+            }
         });
+
+        nextBtn.addEventListener("click", () => {
+            if (currentStep < fillSteps.length) {
+                currentStep += 1;
+                renderStep();
+            }
+        });
+
+        createBars();
+        createWaterLayers();
+        renderStep();
     </script>
 </body>
 </html>
