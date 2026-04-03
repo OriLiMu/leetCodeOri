@@ -12,16 +12,24 @@ public:
     int r = 0;
     lstk.push(0);
     for (int i = 1; i < nums.size(); i++) {
-      while (!lstk.empty() && nums[lstk.top()] <= nums[i]) {
-        for (int k = lstk.top(); k < i; k++)
-          r += nums[i] - nums[k];
-        lstk.pop();
+      int cur = nums[i];
+      int t = lstk.top();
+      if (cur <= nums[lstk.top()])
+        lstk.push(i);
+      else {
+        while (!lstk.empty() && nums[lstk.top()] <= cur) {
+          r += cur - nums[lstk.top()];
+          lstk.pop();
+        }
       }
-      lstk.push(nums[i]);
     }
+
+    return r;
   }
 };
+
 int main() {
   Solution s;
-  cout << "hello" << endl;
+  vector<int> v = {0, 1, 0, 2};
+  cout << s.trap(v) << endl;
 }

@@ -1,32 +1,43 @@
 #include <iostream>
-#include <strings.h>
+#include <stack>
 #include <vector>
 
 using namespace std;
 class Solution {
 public:
-  int maxArea(vector<int> &nums) {
-    int l = 0, r = nums.size() - 1;
-    int m = 0;
-    while (l < r) {
-      m = max(min(nums[l], nums[r]) * (r - l), m);
-      if (nums[l] <= nums[r]) {
-        int t = nums[l];
-        while (l < nums.size() && nums[l] <= t)
-          l++;
-      } else {
-        int t = nums[r];
-        while (0 <= r && t >= nums[r])
-          r--;
+  int trap(vector<int> &nums) {
+    if (nums.size() == 0)
+      return 0;
+    stack<int> lstk;
+    int r = 0;
+    lstk.push(0);
+    for (int i = 1; i < nums.size(); i++) {
+      int t = lstk.top();
+      if (!lstk.empty() && nums[lstk.top()] <= nums[i]) {
+        for (int k = lstk.top(); k < i; k++)
+          r += nums[i] - nums[k];
+        lstk.pop();
       }
+      while (!lstk.empty() && nums[lstk.top()] <= nums[i]) {
+        int m = lstk.top();
+        lstk.pop();
+        if (lstk.empty())
+          break;
+        r += (t - lstk.top() - 1) * (nums[i] - nums[t]) + nums[i] -
+             nums[lstk.top()];
+        t = lstk.top();
+        lstk.pop();
+      }
+
+      lstk.push(i);
     }
 
-    return m;
+    return r;
   }
 };
+
 int main() {
   Solution s;
-  vector<int> v = {1, 8, 6, 2, 5, 4, 8, 3, 7};
-  v = {1, 2, 4, 4};
-  cout << s.maxArea(v) << endl;
+  vector<int> v = {0, 1, 0, 2};
+  cout << s.trap(v) << endl;
 }
