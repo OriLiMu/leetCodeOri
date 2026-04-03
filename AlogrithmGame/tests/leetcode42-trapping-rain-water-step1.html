@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LeetCode 42 - 接雨水（步骤演示）</title>
+    <title>LeetCode 42 - 接雨水（随机序列准备）</title>
     <style>
         :root {
             --bg: #ffffff;
@@ -11,10 +11,9 @@
             --text: #111111;
             --muted: #666666;
             --bar: #0074d9;
-            --border: #dddddd;
             --bar-edge: #001f3f;
-            --water-step-1: #7fdbff;
-            --water-step-2: #39cccc;
+            --border: #dddddd;
+            --focus: #ff851b;
         }
 
         * {
@@ -32,10 +31,10 @@
         }
 
         .card {
-            width: min(920px, 92vw);
+            width: min(980px, 94vw);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 28px;
+            padding: 24px;
             background: var(--panel);
         }
 
@@ -46,16 +45,17 @@
         }
 
         .desc {
-            margin: 0 0 14px;
+            margin: 0 0 12px;
             color: var(--muted);
             font-size: 15px;
         }
 
         .toolbar {
-            margin: 0 0 14px;
+            margin: 0 0 10px;
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -70,14 +70,21 @@
         }
 
         .btn:disabled {
-            opacity: 0.45;
+            opacity: 0.4;
             cursor: not-allowed;
         }
 
         .step-text {
-            margin-left: 8px;
+            margin-left: 4px;
             font-size: 14px;
             color: var(--muted);
+        }
+
+        .array-text {
+            margin: 0 0 14px;
+            color: #444444;
+            font-size: 14px;
+            word-break: break-all;
         }
 
         .bars-wrap {
@@ -85,31 +92,34 @@
             border: 1px solid var(--border);
             border-radius: 14px;
             background: var(--panel);
-            padding: 24px 28px;
+            padding: 24px 20px;
             display: flex;
             align-items: flex-end;
             justify-content: center;
             gap: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
 
         .bar-item {
-            width: clamp(34px, 5.4vw, 48px);
+            width: clamp(28px, 3.2vw, 36px);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            flex: 0 0 auto;
         }
 
         .value {
             font-weight: 700;
-            font-size: 16px;
+            font-size: 14px;
+            line-height: 1;
         }
 
         .column {
             position: relative;
             width: 100%;
             height: 340px;
-            overflow: hidden;
         }
 
         .bar {
@@ -117,120 +127,102 @@
             left: 0;
             right: 0;
             bottom: 0;
-            min-height: 20px;
+            min-height: 18px;
             border: 2px solid var(--bar-edge);
             border-radius: 0;
             background: var(--bar);
-            z-index: 2;
         }
 
         .bar-item + .bar-item .column {
             margin-left: -2px;
         }
 
-        .water {
-            position: absolute;
-            left: 2px;
-            right: 2px;
-            opacity: 0;
-            z-index: 1;
+        .bar-item.focus .bar {
+            outline: 3px solid var(--focus);
+            outline-offset: -3px;
         }
 
-        .water.show {
-            opacity: 1;
-        }
-
-        .water-step-1 {
-            background: var(--water-step-1);
-        }
-
-        .water-step-2 {
-            background: var(--water-step-2);
+        .bar-item.focus .value,
+        .bar-item.focus .index {
+            color: var(--focus);
         }
 
         .index {
             color: #888888;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-        }
-
-        .legend {
-            margin-top: 12px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            color: var(--muted);
-            font-size: 13px;
-            flex-wrap: wrap;
-        }
-
-        .legend-chip {
-            width: 14px;
-            height: 14px;
-            display: inline-block;
-            border: 1px solid #777777;
-            vertical-align: -2px;
-            margin-right: 6px;
+            line-height: 1;
         }
     </style>
 </head>
 <body>
     <main class="card">
         <h1 class="title">LeetCode 42：接雨水</h1>
-        <p class="desc">点击“下一步”逐步填水，点击“上一步”回退上一次填水。</p>
+        <p class="desc">当前先做随机序列与步骤控制，不做填水渲染。后续再接入分步填水。</p>
         <div class="toolbar">
             <button class="btn" id="prevBtn" type="button">上一步</button>
             <button class="btn" id="nextBtn" type="button">下一步</button>
+            <button class="btn" id="randomBtn" type="button">随机生成</button>
             <span class="step-text" id="stepText"></span>
         </div>
+        <p class="array-text" id="arrayText"></p>
 
-        <section class="bars-wrap" id="barsWrap" aria-label="高度柱形图"></section>
-
-        <div class="legend">
-            <span><i class="legend-chip water-step-1"></i>第一步填水：4 和 5 之间</span>
-            <span><i class="legend-chip water-step-2"></i>第二步填水：6 和 5 之间</span>
-        </div>
+        <section class="bars-wrap" id="barsWrap" aria-label="随机高度柱形图"></section>
     </main>
 
     <script>
-        // 固定五个柱子高度，第五根为 5
-        const heights = [8, 6, 4, 2, 5];
-        const maxHeight = Math.max(...heights);
-        const chartHeightPx = 340;
+        // 随机数据配置：数量更多，但高度范围不大
+        const MIN_LEN = 10;
+        const MAX_LEN = 14;
+        const MIN_HEIGHT = 2;
+        const MAX_HEIGHT = 9;
+        const CHART_HEIGHT_PX = 340;
 
         const wrap = document.getElementById("barsWrap");
         const prevBtn = document.getElementById("prevBtn");
         const nextBtn = document.getElementById("nextBtn");
+        const randomBtn = document.getElementById("randomBtn");
         const stepText = document.getElementById("stepText");
+        const arrayText = document.getElementById("arrayText");
 
-        // 需求指定的两步填水区域，使用不同颜色区分
-        const fillSteps = [
-            {
-                name: "第 1 步：填充 4 和 5 之间",
-                className: "water-step-1",
-                fills: [
-                    { index: 3, from: 2, to: 4 }
-                ]
-            },
-            {
-                name: "第 2 步：填充 6 和 5 之间",
-                className: "water-step-2",
-                fills: [
-                    { index: 2, from: 4, to: 5 },
-                    { index: 3, from: 4, to: 5 }
-                ]
-            }
-        ];
-
+        let heights = [];
         let currentStep = 0;
-        const columns = [];
-        const waterLayersByStep = fillSteps.map(() => []);
+        const barItems = [];
 
-        function unitToPx(value) {
-            return (value / maxHeight) * chartHeightPx;
+        function randInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        function createBars() {
+        function createRandomHeights() {
+            const length = randInt(MIN_LEN, MAX_LEN);
+            const arr = Array.from({ length }, () => randInt(MIN_HEIGHT, MAX_HEIGHT));
+
+            // 两端略高，给后续填水演示留空间
+            arr[0] = Math.max(arr[0], 6);
+            arr[arr.length - 1] = Math.max(arr[arr.length - 1], 5);
+            return arr;
+        }
+
+        function getTotalSteps() {
+            return Math.max(0, heights.length - 2);
+        }
+
+        function getTargetIndex() {
+            if (getTotalSteps() === 0) {
+                return -1;
+            }
+            return Math.min(currentStep + 1, heights.length - 2);
+        }
+
+        function unitToPx(value, maxHeight) {
+            return (value / maxHeight) * CHART_HEIGHT_PX;
+        }
+
+        function renderBars() {
+            wrap.replaceChildren();
+            barItems.length = 0;
+
+            const maxHeight = Math.max(...heights);
             heights.forEach((value, index) => {
                 const item = document.createElement("div");
                 item.className = "bar-item";
@@ -244,71 +236,66 @@
 
                 const bar = document.createElement("div");
                 bar.className = "bar";
-                bar.style.height = `${unitToPx(value)}px`;
+                bar.style.height = `${unitToPx(value, maxHeight)}px`;
 
                 const idx = document.createElement("div");
                 idx.className = "index";
-                idx.textContent = `索引 ${index}`;
+                idx.textContent = `i${index}`;
 
                 column.appendChild(bar);
                 item.append(label, column, idx);
                 wrap.appendChild(item);
-                columns.push(column);
+                barItems.push(item);
             });
         }
 
-        function createWaterLayers() {
-            fillSteps.forEach((step, stepIndex) => {
-                step.fills.forEach((fill) => {
-                    const layer = document.createElement("div");
-                    layer.className = `water ${step.className}`;
-                    layer.style.bottom = `${unitToPx(fill.from)}px`;
-                    layer.style.height = `${unitToPx(fill.to - fill.from)}px`;
+        function updateUI() {
+            const total = getTotalSteps();
+            const targetIndex = getTargetIndex();
 
-                    columns[fill.index].appendChild(layer);
-                    waterLayersByStep[stepIndex].push(layer);
-                });
-            });
-        }
-
-        function renderStep() {
-            fillSteps.forEach((_, stepIndex) => {
-                waterLayersByStep[stepIndex].forEach((layer) => {
-                    if (stepIndex < currentStep) {
-                        layer.classList.add("show");
-                    } else {
-                        layer.classList.remove("show");
-                    }
-                });
+            barItems.forEach((item, index) => {
+                item.classList.toggle("focus", index === targetIndex);
             });
 
-            if (currentStep === 0) {
-                stepText.textContent = "当前：初始状态（未填水）";
+            if (total === 0) {
+                stepText.textContent = "步骤：0/0";
             } else {
-                stepText.textContent = `当前：${fillSteps[currentStep - 1].name}`;
+                stepText.textContent = `步骤：${currentStep}/${total}（当前定位索引 ${targetIndex}）`;
             }
 
+            arrayText.textContent = `当前序列（长度 ${heights.length}）：[${heights.join(", ")}]`;
+
             prevBtn.disabled = currentStep === 0;
-            nextBtn.disabled = currentStep === fillSteps.length;
+            nextBtn.disabled = currentStep === total;
+        }
+
+        function regenerate() {
+            heights = createRandomHeights();
+            currentStep = 0;
+            renderBars();
+            updateUI();
         }
 
         prevBtn.addEventListener("click", () => {
             if (currentStep > 0) {
                 currentStep -= 1;
-                renderStep();
+                updateUI();
             }
         });
 
         nextBtn.addEventListener("click", () => {
-            if (currentStep < fillSteps.length) {
+            const total = getTotalSteps();
+            if (currentStep < total) {
                 currentStep += 1;
-                renderStep();
+                updateUI();
             }
         });
 
-        createBars();
-        createWaterLayers();
-        renderStep();
+        randomBtn.addEventListener("click", () => {
+            regenerate();
+        });
+
+        regenerate();
     </script>
 </body>
 </html>
