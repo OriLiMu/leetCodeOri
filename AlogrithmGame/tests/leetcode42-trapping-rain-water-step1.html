@@ -49,28 +49,6 @@
             font-size: 15px;
         }
 
-        .toolbar {
-            margin: 0 0 14px;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .btn {
-            border: 1px solid var(--bar-edge);
-            background: var(--panel);
-            color: var(--bar-edge);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn:disabled {
-            cursor: not-allowed;
-            opacity: 0.45;
-        }
-
         .bars-wrap {
             height: 460px;
             border: 1px solid var(--border);
@@ -80,11 +58,11 @@
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            gap: clamp(20px, 6vw, 60px);
+            gap: 0;
         }
 
         .bar-item {
-            width: clamp(32px, 5vw, 44px);
+            width: clamp(34px, 5.4vw, 48px);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -100,9 +78,12 @@
             width: 100%;
             min-height: 20px;
             border: 2px solid var(--bar-edge);
-            border-radius: 4px;
+            border-radius: 0;
             background: var(--bar);
-            transition: height 420ms ease;
+        }
+
+        .bar-item + .bar-item .bar {
+            margin-left: -2px;
         }
 
         .index {
@@ -115,30 +96,18 @@
 <body>
     <main class="card">
         <h1 class="title">LeetCode 42：接雨水</h1>
-        <p class="desc">步骤一：先放入 4 个从大到小的数值，再按顺序插入 4 个长方形柱子。</p>
-        <div class="toolbar">
-            <button class="btn" id="replayBtn" type="button">重播插入</button>
-        </div>
+        <p class="desc">步骤一：显示 5 根柱子（新增第 5 根高度为 5），柱子紧贴排列。</p>
 
         <section class="bars-wrap" id="barsWrap" aria-label="高度柱形图"></section>
     </main>
 
     <script>
-        // 固定四个从大到小的高度数据
-        const heights = [8, 6, 4, 2];
+        // 固定五个柱子高度，第五根为 5
+        const heights = [8, 6, 4, 2, 5];
         const maxHeight = Math.max(...heights);
         const wrap = document.getElementById("barsWrap");
-        const replayBtn = document.getElementById("replayBtn");
-        const growDurationMs = 420;
-        const gapMs = 160;
 
-        function wait(ms) {
-            return new Promise((resolve) => {
-                setTimeout(resolve, ms);
-            });
-        }
-
-        function createBarItem(value, index) {
+        heights.forEach((value, index) => {
             const item = document.createElement("div");
             item.className = "bar-item";
 
@@ -148,41 +117,15 @@
 
             const bar = document.createElement("div");
             bar.className = "bar";
-            bar.style.height = "20px";
+            bar.style.height = `${(value / maxHeight) * 340}px`;
 
             const idx = document.createElement("div");
             idx.className = "index";
             idx.textContent = `索引 ${index}`;
 
             item.append(label, bar, idx);
-            return { item, bar };
-        }
-
-        async function playInsertAnimation() {
-            replayBtn.disabled = true;
-            wrap.replaceChildren();
-
-            for (let i = 0; i < heights.length; i += 1) {
-                const value = heights[i];
-                const { item, bar } = createBarItem(value, i);
-                wrap.appendChild(item);
-
-                const targetHeight = `${(value / maxHeight) * 340}px`;
-                requestAnimationFrame(() => {
-                    bar.style.height = targetHeight;
-                });
-
-                await wait(growDurationMs + gapMs);
-            }
-
-            replayBtn.disabled = false;
-        }
-
-        replayBtn.addEventListener("click", () => {
-            playInsertAnimation();
+            wrap.appendChild(item);
         });
-
-        playInsertAnimation();
     </script>
 </body>
 </html>
