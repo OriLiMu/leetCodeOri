@@ -15,8 +15,11 @@ public:
       bool le = u.contains(n + 1);
       bool re = u.contains(n - 1);
       if (le && re) {
-        u[u[n - 1]] = u[n + 1];
-        u[u[n + 1]] = u[n - 1];
+        int head = u[n - 1], tail = u[n + 1];
+        u[u[n - 1]] = tail;
+        u[u[n + 1]] = head;
+        cout << "***" << u[n + 1] << ", " << u[n - 1] << ", " << u[u[n - 1]]
+             << ", " << u[u[n + 1]] << endl;
       } else if (le) {
         u[n] = u[n + 1];
         u[u[n + 1]] = n;
@@ -46,5 +49,7 @@ int main() {
   vector<int> v = {4, 1, 3, 2};
   v = {0, 3, 7, 2, 5, 8, 4, 6, 0, 1};
   v = {1, 0, 1, 2};
+  // 经典错误
+  v = {1, 3, 5, 2, 4};
   cout << s.longestConsecutive(v) << endl;
 }
