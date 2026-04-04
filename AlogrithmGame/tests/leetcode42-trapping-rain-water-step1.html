@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LeetCode 42 - 接雨水（单调栈步进演示）</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --panel: #ffffff;
+            --text: #111111;
+            --muted: #666666;
+            --bar: #0074d9;
+            --bar-edge: #001f3f;
+            --border: #dddddd;
+            --focus-current: #ff851b;
+            --focus-pop: #ff4136;
+            --focus-left: #2ecc40;
+            --focus-right: #39cccc;
+            --focus-stack: #111111;
+            --water-1: #7fdbff;
+            --water-2: #39cccc;
+            --water-3: #2ecc40;
+            --water-4: #01ff70;
+            --water-5: #3d9970;
+            --water-6: #66c2ff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: var(--bg);
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: var(--text);
+        }
+
+        .card {
+            width: min(1160px, 96vw);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+            background: var(--panel);
+        }
+
+        .title {
+            margin: 0 0 8px;
+            font-size: 26px;
+            line-height: 1.2;
+        }
+
+        .desc {
+            margin: 0 0 12px;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .toolbar {
+            margin: 0 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: 1px solid var(--bar-edge);
+            background: var(--panel);
+            color: var(--bar-edge);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .meta-row {
+            margin: 0 0 10px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(220px, 1fr));
+            gap: 6px 14px;
+            color: #444444;
+            font-size: 14px;
+        }
+
+        .meta-item {
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .array-text {
+            margin: 0 0 12px;
+            color: #444444;
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .workbench {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 260px;
+            gap: 12px;
+        }
+
+        .chart-pane {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--panel);
+            padding: 14px 14px 10px;
+        }
+
+        .bars-wrap {
+            height: 430px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+            position: relative;
+        }
+
+        .line-overlay {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        .line-compare {
+            stroke: #ff851b;
+            stroke-width: 2.2;
+            stroke-dasharray: 6 4;
+            fill: none;
+        }
+
+        .line-water {
+            stroke: #2ecc40;
+            stroke-width: 2.4;
+            fill: none;
+        }
+
+        .line-water-top {
+            stroke: #39cccc;
+            stroke-width: 2.4;
+            fill: none;
+        }
+
+        .line-pop {
+            stroke: #ff4136;
+            stroke-width: 2.4;
+            fill: none;
+        }
+
+        .line-label {
+            font-size: 11px;
+            font-weight: 700;
+            fill: #333333;
+        }
+
+        .bar-item {
+            width: clamp(24px, 2.8vw, 30px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 0 0 auto;
+        }
+
+        .value {
+            font-weight: 700;
+            font-size: 13px;
+            line-height: 1;
+        }
+
+        .column {
+            position: relative;
+            width: 100%;
+            height: 330px;
+            overflow: hidden;
+        }
+
+        .water-host {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .water-layer {
+            position: absolute;
+            left: -1px;
+            right: -1px;
+        }
+
+        .water-c1 {
+            background: var(--water-1);
+        }
+
+        .water-c2 {
+            background: var(--water-2);
+        }
+
+        .water-c3 {
+            background: var(--water-3);
+        }
+
+        .water-c4 {
+            background: var(--water-4);
+        }
+
+        .water-c5 {
+            background: var(--water-5);
+        }
+
+        .water-c6 {
+            background: var(--water-6);
+        }
+
+        .bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            min-height: 14px;
+            border: 2px solid var(--bar-edge);
+            border-radius: 0;
+            background: var(--bar);
+            z-index: 2;
+        }
+
+        .bar-item + .bar-item .column {
+            margin-left: -2px;
+        }
+
+        .bar-item.current .bar {
+            box-shadow: inset 0 0 0 2px var(--focus-current);
+        }
+
+        .bar-item.in-stack .bar {
+            border-color: var(--focus-stack);
+        }
+
+        .bar-item.stack-top .bar {
+            box-shadow: inset 0 0 0 2px #000000;
+        }
+
+        .bar-item.pop-target .bar {
+            box-shadow: inset 0 0 0 2px var(--focus-pop);
+        }
+
+        .bar-item.push-target .bar {
+            box-shadow: inset 0 0 0 2px var(--focus-current);
+        }
+
+        .bar-item.left-boundary .bar {
+            box-shadow: inset 0 0 0 2px var(--focus-left);
+        }
+
+        .bar-item.right-boundary .bar {
+            box-shadow: inset 0 0 0 2px var(--focus-right);
+        }
+
+        .bar-item.current .value,
+        .bar-item.current .index {
+            color: var(--focus-current);
+        }
+
+        .index {
+            color: #888888;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .stack-pane {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--panel);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 430px;
+        }
+
+        .stack-title {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .stack-subtitle {
+            margin: 0;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .stack-list {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            min-height: 286px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            justify-content: flex-start;
+            overflow: auto;
+        }
+
+        .stack-empty {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .stack-item {
+            border: 1px solid #bfc9d6;
+            border-radius: 8px;
+            padding: 6px 8px;
+            font-size: 13px;
+            color: #222222;
+            background: #f8fbff;
+        }
+
+        .stack-item.top {
+            border-color: #111111;
+            font-weight: 700;
+            background: #eef5ff;
+        }
+
+        .stack-op {
+            margin: 0;
+            font-size: 13px;
+            color: #555555;
+            min-height: 18px;
+        }
+
+        .legend {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #666666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 980px) {
+            .workbench {
+                grid-template-columns: 1fr;
+            }
+
+            .stack-pane {
+                min-height: 0;
+            }
+
+            .meta-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <h1 class="title">LeetCode 42：接雨水（单调栈）</h1>
+        <p class="desc">每次点击“下一步”只执行一个算法动作：查看、比较、弹栈、计算新增积水、入栈。点击“上一步”可精确回退一个动作。</p>
+
+        <div class="toolbar">
+            <button class="btn" id="prevBtn" type="button">上一步</button>
+            <button class="btn" id="nextBtn" type="button">下一步</button>
+            <button class="btn" id="randomBtn" type="button">随机新序列</button>
+            <button class="btn" id="replayBtn" type="button">重放当前 seed</button>
+        </div>
+
+        <div class="meta-row">
+            <p class="meta-item" id="stepText"></p>
+            <p class="meta-item" id="waterText"></p>
+            <p class="meta-item" id="eventText"></p>
+            <p class="meta-item" id="seedText"></p>
+        </div>
+        <p class="array-text" id="arrayText"></p>
+
+        <div class="workbench">
+            <section class="chart-pane">
+                <section class="bars-wrap" id="barsWrap" aria-label="单调栈演示柱形图">
+                    <svg class="line-overlay" id="lineOverlay" aria-hidden="true"></svg>
+                </section>
+            </section>
+
+            <aside class="stack-pane">
+                <h2 class="stack-title">单调递减栈</h2>
+                <p class="stack-subtitle">显示索引与高度（顶部是栈顶）</p>
+                <div class="stack-list" id="stackList"></div>
+                <p class="stack-op" id="stackOpText"></p>
+                <div class="legend">
+                    绿色边框：当前接水左边界<br />
+                    青色边框：当前接水右边界<br />
+                    红色边框：本步弹出的凹槽底
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script>
+        const MIN_LEN = 10;
+        const MAX_LEN = 14;
+        const MIN_HEIGHT = 2;
+        const MAX_HEIGHT = 9;
+        const CHART_HEIGHT_PX = 330;
+        const WATER_COLOR_CLASSES = [
+            "water-c1",
+            "water-c2",
+            "water-c3",
+            "water-c4",
+            "water-c5",
+            "water-c6"
+        ];
+        const SVG_NS = "http://www.w3.org/2000/svg";
+
+        const wrap = document.getElementById("barsWrap");
+        const lineOverlay = document.getElementById("lineOverlay");
+        const stackList = document.getElementById("stackList");
+        const stackOpText = document.getElementById("stackOpText");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const randomBtn = document.getElementById("randomBtn");
+        const replayBtn = document.getElementById("replayBtn");
+        const stepText = document.getElementById("stepText");
+        const waterText = document.getElementById("waterText");
+        const eventText = document.getElementById("eventText");
+        const seedText = document.getElementById("seedText");
+        const arrayText = document.getElementById("arrayText");
+
+        let heights = [];
+        let events = [];
+        let eventCursor = 0;
+        let currentSeed = 1;
+        let currentMaxHeight = 1;
+        const barItems = [];
+        const waterHosts = [];
+        const barColumns = [];
+        const barNodes = [];
+
+        function createSeed() {
+            return (Math.random() * 0xffffffff) >>> 0;
+        }
+
+        function createRng(seed) {
+            let t = seed >>> 0;
+            return () => {
+                t += 0x6d2b79f5;
+                let r = Math.imul(t ^ (t >>> 15), t | 1);
+                r ^= r + Math.imul(r ^ (r >>> 7), r | 61);
+                return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+
+        function randInt(rng, min, max) {
+            return Math.floor(rng() * (max - min + 1)) + min;
+        }
+
+        function hasBasin(arr) {
+            if (arr.length < 3) {
+                return false;
+            }
+            const leftMax = Array(arr.length).fill(0);
+            const rightMax = Array(arr.length).fill(0);
+
+            leftMax[0] = arr[0];
+            for (let i = 1; i < arr.length; i += 1) {
+                leftMax[i] = Math.max(leftMax[i - 1], arr[i]);
+            }
+
+            rightMax[arr.length - 1] = arr[arr.length - 1];
+            for (let i = arr.length - 2; i >= 0; i -= 1) {
+                rightMax[i] = Math.max(rightMax[i + 1], arr[i]);
+            }
+
+            for (let i = 1; i < arr.length - 1; i += 1) {
+                if (Math.min(leftMax[i], rightMax[i]) > arr[i]) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function createRandomHeights(seed) {
+            const rng = createRng(seed);
+            const length = randInt(rng, MIN_LEN, MAX_LEN);
+            const arr = Array.from({ length }, () => randInt(rng, MIN_HEIGHT, MAX_HEIGHT));
+
+            arr[0] = Math.max(arr[0], 6);
+            arr[arr.length - 1] = Math.max(arr[arr.length - 1], 5);
+
+            if (!hasBasin(arr)) {
+                const mid = Math.floor(arr.length / 2);
+                arr[mid - 1] = Math.max(arr[mid - 1], 7);
+                arr[mid] = Math.min(arr[mid], 3);
+                arr[mid + 1] = Math.max(arr[mid + 1], 6);
+            }
+
+            return arr;
+        }
+
+        function unitToPx(value) {
+            return (value / currentMaxHeight) * CHART_HEIGHT_PX;
+        }
+
+        function buildStepEvents(arr) {
+            const list = [];
+            const stack = [];
+            let colorCursor = 0;
+
+            const cloneStack = () => stack.slice();
+
+            const pushEvent = (event) => {
+                list.push({ id: list.length, ...event });
+            };
+
+            for (let i = 0; i < arr.length; i += 1) {
+                pushEvent({
+                    type: "inspect",
+                    i,
+                    stackBefore: cloneStack(),
+                    stackAfter: cloneStack(),
+                    message: `查看 i${i}（h=${arr[i]}），准备与栈顶比较`
+                });
+
+                while (stack.length > 0) {
+                    const topIndex = stack[stack.length - 1];
+                    const willPop = arr[i] > arr[topIndex];
+
+                    pushEvent({
+                        type: "compare",
+                        i,
+                        topIndex,
+                        willPop,
+                        stackBefore: cloneStack(),
+                        stackAfter: cloneStack(),
+                        message: willPop
+                            ? `h[i${i}]=${arr[i]} > h[i${topIndex}]=${arr[topIndex]}，触发弹栈`
+                            : `h[i${i}]=${arr[i]} <= h[i${topIndex}]=${arr[topIndex]}，停止弹栈`
+                    });
+
+                    if (!willPop) {
+                        break;
+                    }
+
+                    const beforePop = cloneStack();
+                    const popIndex = stack.pop();
+
+                    pushEvent({
+                        type: "pop",
+                        i,
+                        popIndex,
+                        stackBefore: beforePop,
+                        stackAfter: cloneStack(),
+                        message: `弹出凹槽底 i${popIndex}（h=${arr[popIndex]}）`
+                    });
+
+                    if (stack.length === 0) {
+                        pushEvent({
+                            type: "no_left_boundary",
+                            i,
+                            popIndex,
+                            stackBefore: cloneStack(),
+                            stackAfter: cloneStack(),
+                            message: "弹出后栈为空，缺少左边界，本轮无法接水"
+                        });
+                        continue;
+                    }
+
+                    const leftIndex = stack[stack.length - 1];
+                    const rightIndex = i;
+                    const bottomHeight = arr[popIndex];
+                    const waterLine = Math.min(arr[leftIndex], arr[rightIndex]);
+                    const segments = [];
+                    let waterDelta = 0;
+
+                    for (let x = leftIndex + 1; x < rightIndex; x += 1) {
+                        const from = Math.max(arr[x], bottomHeight);
+                        const to = waterLine;
+                        if (to > from) {
+                            const unit = to - from;
+                            waterDelta += unit;
+                            segments.push({ index: x, from, to, unit });
+                        }
+                    }
+
+                    if (waterDelta > 0) {
+                        const colorClass = WATER_COLOR_CLASSES[colorCursor % WATER_COLOR_CLASSES.length];
+                        colorCursor += 1;
+
+                        pushEvent({
+                            type: "water",
+                            i,
+                            leftIndex,
+                            rightIndex,
+                            bottomIndex: popIndex,
+                            waterDelta,
+                            segments,
+                            colorClass,
+                            stackBefore: cloneStack(),
+                            stackAfter: cloneStack(),
+                            message: `左 i${leftIndex} 与右 i${rightIndex} 形成接水，新增 ${waterDelta}`
+                        });
+                    } else {
+                        pushEvent({
+                            type: "water_skip",
+                            i,
+                            leftIndex,
+                            rightIndex,
+                            bottomIndex: popIndex,
+                            stackBefore: cloneStack(),
+                            stackAfter: cloneStack(),
+                            message: "本轮未产生新增积水"
+                        });
+                    }
+                }
+
+                const beforePush = cloneStack();
+                stack.push(i);
+                pushEvent({
+                    type: "push",
+                    i,
+                    pushIndex: i,
+                    stackBefore: beforePush,
+                    stackAfter: cloneStack(),
+                    message: `i${i}（h=${arr[i]}）入栈`
+                });
+            }
+
+            pushEvent({
+                type: "done",
+                i: arr.length - 1,
+                stackBefore: stack.slice(),
+                stackAfter: stack.slice(),
+                message: "遍历结束"
+            });
+
+            return list;
+        }
+
+        function createBar(index, value) {
+            const item = document.createElement("div");
+            item.className = "bar-item";
+
+            const label = document.createElement("div");
+            label.className = "value";
+            label.textContent = String(value);
+
+            const column = document.createElement("div");
+            column.className = "column";
+
+            const waterHost = document.createElement("div");
+            waterHost.className = "water-host";
+
+            const bar = document.createElement("div");
+            bar.className = "bar";
+            bar.style.height = `${unitToPx(value)}px`;
+
+            const idx = document.createElement("div");
+            idx.className = "index";
+            idx.textContent = `i${index}`;
+
+            column.append(waterHost, bar);
+            item.append(label, column, idx);
+
+            return { item, waterHost, column, bar };
+        }
+
+        function renderBarsStructure() {
+            wrap.replaceChildren(lineOverlay);
+            barItems.length = 0;
+            waterHosts.length = 0;
+            barColumns.length = 0;
+            barNodes.length = 0;
+
+            heights.forEach((value, index) => {
+                const { item, waterHost, column, bar } = createBar(index, value);
+                wrap.appendChild(item);
+                barItems.push(item);
+                waterHosts.push(waterHost);
+                barColumns.push(column);
+                barNodes.push(bar);
+            });
+
+            syncOverlaySize();
+        }
+
+        function clearDynamicVisuals() {
+            const classes = [
+                "current",
+                "in-stack",
+                "stack-top",
+                "push-target",
+                "pop-target",
+                "left-boundary",
+                "right-boundary"
+            ];
+
+            barItems.forEach((item) => {
+                item.classList.remove(...classes);
+            });
+
+            waterHosts.forEach((host) => {
+                host.replaceChildren();
+            });
+
+            lineOverlay.replaceChildren();
+        }
+
+        function renderStackPanel(stackSnapshot, lastEvent) {
+            stackList.replaceChildren();
+
+            if (stackSnapshot.length === 0) {
+                const empty = document.createElement("div");
+                empty.className = "stack-empty";
+                empty.textContent = "栈为空";
+                stackList.appendChild(empty);
+            } else {
+                for (let pos = stackSnapshot.length - 1; pos >= 0; pos -= 1) {
+                    const idx = stackSnapshot[pos];
+                    const item = document.createElement("div");
+                    item.className = "stack-item";
+                    if (pos === stackSnapshot.length - 1) {
+                        item.classList.add("top");
+                    }
+                    item.textContent = `i${idx} · h=${heights[idx]}`;
+                    stackList.appendChild(item);
+                }
+            }
+
+            if (!lastEvent) {
+                stackOpText.textContent = "最近操作：尚未开始";
+                return;
+            }
+
+            if (lastEvent.type === "pop") {
+                stackOpText.textContent = `最近操作：弹出 i${lastEvent.popIndex}`;
+            } else if (lastEvent.type === "push") {
+                stackOpText.textContent = `最近操作：压入 i${lastEvent.pushIndex}`;
+            } else if (lastEvent.type === "water") {
+                stackOpText.textContent = `最近操作：新增积水 ${lastEvent.waterDelta}`;
+            } else {
+                stackOpText.textContent = `最近操作：${lastEvent.type}`;
+            }
+        }
+
+        function syncOverlaySize() {
+            const width = Math.max(wrap.scrollWidth, wrap.clientWidth);
+            const height = wrap.clientHeight;
+            lineOverlay.setAttribute("width", String(width));
+            lineOverlay.setAttribute("height", String(height));
+            lineOverlay.setAttribute("viewBox", `0 0 ${width} ${height}`);
+            lineOverlay.setAttribute("preserveAspectRatio", "none");
+        }
+
+        function createSvgNode(tag, attrs) {
+            const node = document.createElementNS(SVG_NS, tag);
+            Object.entries(attrs).forEach(([key, value]) => {
+                node.setAttribute(key, String(value));
+            });
+            return node;
+        }
+
+        function getCenterX(index) {
+            return barItems[index].offsetLeft + barItems[index].offsetWidth / 2;
+        }
+
+        function getBarTopY(index) {
+            return barColumns[index].offsetTop + barNodes[index].offsetTop;
+        }
+
+        function getYAtHeight(index, heightValue) {
+            const columnBottom = barColumns[index].offsetTop + barColumns[index].offsetHeight;
+            return columnBottom - unitToPx(heightValue);
+        }
+
+        function drawCurrentEventLines(event) {
+            if (!event) {
+                return;
+            }
+
+            if (event.type === "compare" && typeof event.topIndex === "number") {
+                const x1 = getCenterX(event.topIndex);
+                const y1 = getBarTopY(event.topIndex);
+                const x2 = getCenterX(event.i);
+                const y2 = getBarTopY(event.i);
+                const line = createSvgNode("line", {
+                    x1,
+                    y1,
+                    x2,
+                    y2,
+                    class: "line-compare"
+                });
+                lineOverlay.appendChild(line);
+
+                const tag = event.willPop ? ">" : "<=";
+                const text = createSvgNode("text", {
+                    x: (x1 + x2) / 2 + 4,
+                    y: (y1 + y2) / 2 - 6,
+                    class: "line-label"
+                });
+                text.textContent = tag;
+                lineOverlay.appendChild(text);
+                return;
+            }
+
+            if (event.type === "pop" && typeof event.popIndex === "number") {
+                const x = getCenterX(event.popIndex);
+                const yTop = getBarTopY(event.popIndex);
+                const yUp = Math.max(14, yTop - 34);
+                const line = createSvgNode("line", {
+                    x1: x,
+                    y1: yUp,
+                    x2: x,
+                    y2: yTop,
+                    class: "line-pop"
+                });
+                const dot = createSvgNode("circle", {
+                    cx: x,
+                    cy: yTop,
+                    r: 4.3,
+                    fill: "#ff4136"
+                });
+                const text = createSvgNode("text", {
+                    x: x + 6,
+                    y: yUp - 2,
+                    class: "line-label"
+                });
+                text.textContent = `pop i${event.popIndex}`;
+                lineOverlay.append(line, dot, text);
+                return;
+            }
+
+            if ((event.type === "water" || event.type === "water_skip") &&
+                typeof event.leftIndex === "number" &&
+                typeof event.rightIndex === "number" &&
+                typeof event.bottomIndex === "number") {
+                const xLeft = getCenterX(event.leftIndex);
+                const xRight = getCenterX(event.rightIndex);
+                const yWater = getYAtHeight(event.leftIndex, Math.min(heights[event.leftIndex], heights[event.rightIndex]));
+                const yBottom = getBarTopY(event.bottomIndex);
+
+                const topLine = createSvgNode("line", {
+                    x1: xLeft,
+                    y1: yWater,
+                    x2: xRight,
+                    y2: yWater,
+                    class: "line-water-top"
+                });
+                const leftLine = createSvgNode("line", {
+                    x1: xLeft,
+                    y1: yWater,
+                    x2: xLeft,
+                    y2: yBottom,
+                    class: "line-water"
+                });
+                const rightLine = createSvgNode("line", {
+                    x1: xRight,
+                    y1: yWater,
+                    x2: xRight,
+                    y2: yBottom,
+                    class: "line-water"
+                });
+                const bottomDot = createSvgNode("circle", {
+                    cx: getCenterX(event.bottomIndex),
+                    cy: yBottom,
+                    r: 4.3,
+                    fill: "#ff4136"
+                });
+                lineOverlay.append(topLine, leftLine, rightLine, bottomDot);
+
+                const text = createSvgNode("text", {
+                    x: (xLeft + xRight) / 2 + 6,
+                    y: yWater - 6,
+                    class: "line-label"
+                });
+                text.textContent = event.type === "water" ? `+${event.waterDelta}` : "+0";
+                lineOverlay.appendChild(text);
+            }
+        }
+
+        function renderFromCursor() {
+            clearDynamicVisuals();
+            syncOverlaySize();
+
+            let stackSnapshot = [];
+            let totalWater = 0;
+            let currentIndex = -1;
+            let lastEvent = null;
+
+            for (let i = 0; i < eventCursor; i += 1) {
+                const event = events[i];
+                lastEvent = event;
+                stackSnapshot = event.stackAfter.slice();
+
+                if (typeof event.i === "number") {
+                    currentIndex = event.i;
+                }
+
+                if (event.type === "water") {
+                    totalWater += event.waterDelta;
+                    event.segments.forEach((seg) => {
+                        const layer = document.createElement("div");
+                        layer.className = `water-layer ${event.colorClass}`;
+                        layer.style.bottom = `${unitToPx(seg.from)}px`;
+                        layer.style.height = `${unitToPx(seg.to - seg.from)}px`;
+                        waterHosts[seg.index].appendChild(layer);
+                    });
+                }
+            }
+
+            if (currentIndex >= 0 && currentIndex < barItems.length) {
+                barItems[currentIndex].classList.add("current");
+            }
+
+            stackSnapshot.forEach((idx, pos) => {
+                if (idx >= 0 && idx < barItems.length) {
+                    barItems[idx].classList.add("in-stack");
+                    if (pos === stackSnapshot.length - 1) {
+                        barItems[idx].classList.add("stack-top");
+                    }
+                }
+            });
+
+            if (lastEvent) {
+                if (typeof lastEvent.pushIndex === "number") {
+                    barItems[lastEvent.pushIndex]?.classList.add("push-target");
+                }
+                if (typeof lastEvent.popIndex === "number") {
+                    barItems[lastEvent.popIndex]?.classList.add("pop-target");
+                }
+                if (typeof lastEvent.leftIndex === "number") {
+                    barItems[lastEvent.leftIndex]?.classList.add("left-boundary");
+                }
+                if (typeof lastEvent.rightIndex === "number") {
+                    barItems[lastEvent.rightIndex]?.classList.add("right-boundary");
+                }
+            }
+
+            stepText.textContent = `动作进度：${eventCursor}/${events.length}`;
+            waterText.textContent = `累计积水：${totalWater}`;
+            eventText.textContent = `当前动作：${lastEvent ? lastEvent.message : "尚未开始"}`;
+            seedText.textContent = `seed：${currentSeed}`;
+            arrayText.textContent = `当前序列（长度 ${heights.length}）：[${heights.join(", ")}]`;
+
+            prevBtn.disabled = eventCursor === 0;
+            nextBtn.disabled = eventCursor === events.length;
+
+            renderStackPanel(stackSnapshot, lastEvent);
+            drawCurrentEventLines(lastEvent);
+        }
+
+        function rebuildWithSeed(seed) {
+            currentSeed = seed >>> 0;
+            heights = createRandomHeights(currentSeed);
+            currentMaxHeight = Math.max(...heights);
+            events = buildStepEvents(heights);
+            eventCursor = 0;
+            renderBarsStructure();
+            renderFromCursor();
+        }
+
+        prevBtn.addEventListener("click", () => {
+            if (eventCursor > 0) {
+                eventCursor -= 1;
+                renderFromCursor();
+            }
+        });
+
+        nextBtn.addEventListener("click", () => {
+            if (eventCursor < events.length) {
+                eventCursor += 1;
+                renderFromCursor();
+            }
+        });
+
+        randomBtn.addEventListener("click", () => {
+            rebuildWithSeed(createSeed());
+        });
+
+        replayBtn.addEventListener("click", () => {
+            rebuildWithSeed(currentSeed);
+        });
+
+        wrap.addEventListener("scroll", () => {
+            renderFromCursor();
+        });
+
+        window.addEventListener("resize", () => {
+            renderFromCursor();
+        });
+
+        rebuildWithSeed(createSeed());
+    </script>
+</body>
+</html>

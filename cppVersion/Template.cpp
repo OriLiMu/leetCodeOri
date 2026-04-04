@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int longestConsecutive(vector<int>& nums) {
+    vector<int> findAnagrams(string s, string p) {
         
     }
 };
