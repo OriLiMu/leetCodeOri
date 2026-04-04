@@ -128,6 +128,47 @@
             gap: 0;
             overflow-x: auto;
             overflow-y: hidden;
+            position: relative;
+        }
+
+        .line-overlay {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        .line-compare {
+            stroke: #ff851b;
+            stroke-width: 2.2;
+            stroke-dasharray: 6 4;
+            fill: none;
+        }
+
+        .line-water {
+            stroke: #2ecc40;
+            stroke-width: 2.4;
+            fill: none;
+        }
+
+        .line-water-top {
+            stroke: #39cccc;
+            stroke-width: 2.4;
+            fill: none;
+        }
+
+        .line-pop {
+            stroke: #ff4136;
+            stroke-width: 2.4;
+            fill: none;
+        }
+
+        .line-label {
+            font-size: 11px;
+            font-weight: 700;
+            fill: #333333;
         }
 
         .bar-item {
@@ -351,7 +392,9 @@
 
         <div class="workbench">
             <section class="chart-pane">
-                <section class="bars-wrap" id="barsWrap" aria-label="单调栈演示柱形图"></section>
+                <section class="bars-wrap" id="barsWrap" aria-label="单调栈演示柱形图">
+                    <svg class="line-overlay" id="lineOverlay" aria-hidden="true"></svg>
+                </section>
             </section>
 
             <aside class="stack-pane">
@@ -382,8 +425,10 @@
             "water-c5",
             "water-c6"
         ];
+        const SVG_NS = "http://www.w3.org/2000/svg";
 
         const wrap = document.getElementById("barsWrap");
+        const lineOverlay = document.getElementById("lineOverlay");
         const stackList = document.getElementById("stackList");
         const stackOpText = document.getElementById("stackOpText");
         const prevBtn = document.getElementById("prevBtn");
@@ -403,6 +448,8 @@
         let currentMaxHeight = 1;
         const barItems = [];
         const waterHosts = [];
+        const barColumns = [];
+        const barNodes = [];
 
         function createSeed() {
             return (Math.random() * 0xffffffff) >>> 0;
@@ -630,20 +677,26 @@
             column.append(waterHost, bar);
             item.append(label, column, idx);
 
-            return { item, waterHost };
+            return { item, waterHost, column, bar };
         }
 
         function renderBarsStructure() {
-            wrap.replaceChildren();
+            wrap.replaceChildren(lineOverlay);
             barItems.length = 0;
             waterHosts.length = 0;
+            barColumns.length = 0;
+            barNodes.length = 0;
 
             heights.forEach((value, index) => {
-                const { item, waterHost } = createBar(index, value);
+                const { item, waterHost, column, bar } = createBar(index, value);
                 wrap.appendChild(item);
                 barItems.push(item);
                 waterHosts.push(waterHost);
+                barColumns.push(column);
+                barNodes.push(bar);
             });
+
+            syncOverlaySize();
         }
 
         function clearDynamicVisuals() {
@@ -664,6 +717,8 @@
             waterHosts.forEach((host) => {
                 host.replaceChildren();
             });
+
+            lineOverlay.replaceChildren();
         }
 
         function renderStackPanel(stackSnapshot, lastEvent) {
@@ -703,8 +758,144 @@
             }
         }
 
+        function syncOverlaySize() {
+            const width = Math.max(wrap.scrollWidth, wrap.clientWidth);
+            const height = wrap.clientHeight;
+            lineOverlay.setAttribute("width", String(width));
+            lineOverlay.setAttribute("height", String(height));
+            lineOverlay.setAttribute("viewBox", `0 0 ${width} ${height}`);
+            lineOverlay.setAttribute("preserveAspectRatio", "none");
+        }
+
+        function createSvgNode(tag, attrs) {
+            const node = document.createElementNS(SVG_NS, tag);
+            Object.entries(attrs).forEach(([key, value]) => {
+                node.setAttribute(key, String(value));
+            });
+            return node;
+        }
+
+        function getCenterX(index) {
+            return barItems[index].offsetLeft + barItems[index].offsetWidth / 2;
+        }
+
+        function getBarTopY(index) {
+            return barColumns[index].offsetTop + barNodes[index].offsetTop;
+        }
+
+        function getYAtHeight(index, heightValue) {
+            const columnBottom = barColumns[index].offsetTop + barColumns[index].offsetHeight;
+            return columnBottom - unitToPx(heightValue);
+        }
+
+        function drawCurrentEventLines(event) {
+            if (!event) {
+                return;
+            }
+
+            if (event.type === "compare" && typeof event.topIndex === "number") {
+                const x1 = getCenterX(event.topIndex);
+                const y1 = getBarTopY(event.topIndex);
+                const x2 = getCenterX(event.i);
+                const y2 = getBarTopY(event.i);
+                const line = createSvgNode("line", {
+                    x1,
+                    y1,
+                    x2,
+                    y2,
+                    class: "line-compare"
+                });
+                lineOverlay.appendChild(line);
+
+                const tag = event.willPop ? ">" : "<=";
+                const text = createSvgNode("text", {
+                    x: (x1 + x2) / 2 + 4,
+                    y: (y1 + y2) / 2 - 6,
+                    class: "line-label"
+                });
+                text.textContent = tag;
+                lineOverlay.appendChild(text);
+                return;
+            }
+
+            if (event.type === "pop" && typeof event.popIndex === "number") {
+                const x = getCenterX(event.popIndex);
+                const yTop = getBarTopY(event.popIndex);
+                const yUp = Math.max(14, yTop - 34);
+                const line = createSvgNode("line", {
+                    x1: x,
+                    y1: yUp,
+                    x2: x,
+                    y2: yTop,
+                    class: "line-pop"
+                });
+                const dot = createSvgNode("circle", {
+                    cx: x,
+                    cy: yTop,
+                    r: 4.3,
+                    fill: "#ff4136"
+                });
+                const text = createSvgNode("text", {
+                    x: x + 6,
+                    y: yUp - 2,
+                    class: "line-label"
+                });
+                text.textContent = `pop i${event.popIndex}`;
+                lineOverlay.append(line, dot, text);
+                return;
+            }
+
+            if ((event.type === "water" || event.type === "water_skip") &&
+                typeof event.leftIndex === "number" &&
+                typeof event.rightIndex === "number" &&
+                typeof event.bottomIndex === "number") {
+                const xLeft = getCenterX(event.leftIndex);
+                const xRight = getCenterX(event.rightIndex);
+                const yWater = getYAtHeight(event.leftIndex, Math.min(heights[event.leftIndex], heights[event.rightIndex]));
+                const yBottom = getBarTopY(event.bottomIndex);
+
+                const topLine = createSvgNode("line", {
+                    x1: xLeft,
+                    y1: yWater,
+                    x2: xRight,
+                    y2: yWater,
+                    class: "line-water-top"
+                });
+                const leftLine = createSvgNode("line", {
+                    x1: xLeft,
+                    y1: yWater,
+                    x2: xLeft,
+                    y2: yBottom,
+                    class: "line-water"
+                });
+                const rightLine = createSvgNode("line", {
+                    x1: xRight,
+                    y1: yWater,
+                    x2: xRight,
+                    y2: yBottom,
+                    class: "line-water"
+                });
+                const bottomDot = createSvgNode("circle", {
+                    cx: getCenterX(event.bottomIndex),
+                    cy: yBottom,
+                    r: 4.3,
+                    fill: "#ff4136"
+                });
+                lineOverlay.append(topLine, leftLine, rightLine, bottomDot);
+
+                const text = createSvgNode("text", {
+                    x: (xLeft + xRight) / 2 + 6,
+                    y: yWater - 6,
+                    class: "line-label"
+                });
+                text.textContent = event.type === "water" ? `+${event.waterDelta}` : "+0";
+                lineOverlay.appendChild(text);
+            }
+        }
+
         function renderFromCursor() {
             clearDynamicVisuals();
+            syncOverlaySize();
 
             let stackSnapshot = [];
             let totalWater = 0;
@@ -770,6 +961,7 @@
             nextBtn.disabled = eventCursor === events.length;
 
             renderStackPanel(stackSnapshot, lastEvent);
+            drawCurrentEventLines(lastEvent);
         }
 
         function rebuildWithSeed(seed) {
@@ -802,6 +994,14 @@
 
         replayBtn.addEventListener("click", () => {
             rebuildWithSeed(currentSeed);
+        });
+
+        wrap.addEventListener("scroll", () => {
+            renderFromCursor();
+        });
+
+        window.addEventListener("resize", () => {
+            renderFromCursor();
         });
 
         rebuildWithSeed(createSeed());

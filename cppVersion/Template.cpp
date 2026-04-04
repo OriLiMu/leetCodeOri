@@ -1,6 +1,6 @@
 class Solution {
 public:
-    vector<vector<int>> threeSum(vector<int>& nums) {
+    vector<int> findAnagrams(string s, string p) {
         
     }
 };

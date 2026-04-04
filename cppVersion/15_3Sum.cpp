@@ -10,11 +10,11 @@ public:
   vector<vector<int>> threeSum(vector<int> &nums) {
     sort(nums.begin(), nums.end());
     vector<vector<int>> rst;
-    for (int i = 1; i < nums.size() - 1; i++) {
-      int l = 0, r = nums.size() - 1, target = 0 - nums[i];
+    for (int i = 0; i < nums.size() - 1; i++) {
       if (i && nums[i] == nums[i - 1])
         continue;
-      while (l < i && i < r) {
+      int l = i + 1, r = nums.size() - 1, target = 0 - nums[i];
+      while (l < nums.size() && l < r) {
         if (nums[l] + nums[r] > target)
           r--;
         else if (nums[l] + nums[r] < target)
@@ -23,7 +23,7 @@ public:
           rst.push_back({nums[l], nums[r], nums[i]});
           l++;
           r--;
-          while (l < i && nums[l] == nums[l - 1])
+          while (l < r && nums[l] == nums[l - 1])
             l++;
         }
       }
@@ -36,6 +36,8 @@ public:
 int main() {
   Solution s;
   vector<int> v = {-1, 0, 1, 2, -1, -4};
+  v = {0, 0, 0};
+  v = {1, 2, 0, 1, 0, 0, 0, 0};
   vector<vector<int>> r = s.threeSum(v);
   for (const auto &row : r) {
     for (const auto &elem : row) {

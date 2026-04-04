@@ -31,6 +31,6 @@ int main() {
   string str = "abcabcbb";
   str = "bbbbb";
   str = "a";
-  str = "abccbaacabdcea bdea ";
+  str = "abccbaacabdceabdea";
   cout << s.lengthOfLongestSubstring(str) << endl;
 }
