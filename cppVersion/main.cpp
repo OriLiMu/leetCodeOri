@@ -1,58 +1,50 @@
 #include <iostream>
 #include <strings.h>
+#include <type_traits>
+#include <unordered_map>
 #include <vector>
 
 using namespace std;
 class Solution {
 public:
-  int minDistance(string s1, string s2) {
-    if (!s1.size() || !s2.size())
-      return max(s1.size(), s2.size());
-    vector<vector<int>> dp(s1.size() + 1, vector<int>(s2.size() + 1));
-    for (int i = 0; i <= s1.size(); i++)
-      dp[i][0] = i;
-    for (int i = 1; i <= s2.size(); i++)
-      dp[0][i] = i;
-    for (int i = 1; i <= s1.size(); i++) {
-      for (int k = 1; k <= s2.size(); k++) {
-        // 这里应该-1, 这个是很容易犯的错误
-        if (s1[i - 1] == s2[k - 1])
-          dp[i][k] = dp[i - 1][k - 1];
-        else {
-          // insert
-          // int t = min(dp[i - 1][k], dp[i][k - 1]) + 1;
-          // remove 这一步理解比较有意思, 就是类似于哪个烧水的数学思想,
-          // 既然当前的char不相等, 那么删掉之后回到之前的状态,
-          // 发现这种处理方法和上面的insert的一样, 所以可以省略
-          // dp[i][k] = min(dp[i - 1][k], dp[i][k - 1]) + 1;
-          // change
-          dp[i][k] = min(dp[i - 1][k - 1], min(dp[i - 1][k], dp[i][k - 1])) + 1;
-        }
-      }
-    }
-
-    for (const auto &row : dp) {
-      for (const auto &elem : row) {
-        cout << elem << " ";
-      }
+  int longestConsecutive(vector<int> &nums) {
+    unordered_map<int, int> u;
+    for (auto &n : nums) {
+      if (u.contains(n))
+        continue;
+      bool le = u.contains(n + 1);
+      bool re = u.contains(n - 1);
+      if (le && re) {
+        u[u[n - 1]] = u[n + 1];
+        u[u[n + 1]] = u[n - 1];
+      } else if (le) {
+        u[n] = u[n + 1];
+        u[u[n + 1]] = n;
+      } else if (re) {
+        u[n] = u[n - 1];
+        // 还有一个重复值的问题, 会修改之前已经设置好的数据
+        // 可能 u[n - 1] 和 u[u[n - 1]] 是一个东西. 所以需要先给 u-n 赋值
+        // 这个确实特别容易出错
+        u[u[n - 1]] = n;
+      } else
+        u[n] = n;
+      cout << "n: " << n << endl;
+      for (const auto &elem : u)
+        cout << elem.first << "-" << elem.second << ", ";
       cout << endl;
     }
-    return dp[s1.size()][s2.size()];
+
+    int rst = 0;
+    for (auto &kv : u)
+      rst = max(rst, abs(kv.first - kv.second) + 1);
+    return rst;
   }
 };
 
 int main() {
   Solution s;
-  string s1 = "horse";
-  string s2 = "ros";
-  s1 = "intention";
-  s2 = "execution";
-  // 这个报错, 没考虑空串, 需要特殊处理
-  s1 = "";
-  s2 = "anything";
-
-  s1 = "plasma";
-  s2 = "altruism";
-
-  cout << s.minDistance(s1, s2) << endl;
+  vector<int> v = {4, 1, 3, 2};
+  v = {0, 3, 7, 2, 5, 8, 4, 6, 0, 1};
+  v = {1, 0, 1, 2};
+  cout << s.longestConsecutive(v) << endl;
 }
