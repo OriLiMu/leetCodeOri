@@ -1,6 +1,6 @@
 class Solution {
 public:
-    int subarraySum(vector<int>& nums, int k) {
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
         
     }
 };
