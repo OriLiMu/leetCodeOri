@@ -1,6 +1,6 @@
 class Solution {
 public:
-    vector<int> findAnagrams(string s, string p) {
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
         
     }
 };
