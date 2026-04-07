@@ -1,6 +1,5 @@
 #include <iostream>
 #include <strings.h>
-#include <type_traits>
 #include <unordered_map>
 #include <vector>
 
@@ -18,11 +17,11 @@ public:
         // 还是这个同值的问题,
         // 当一个点原本就是单一值的时候 u[u[n-1]] 就是 u[n-1]
         // 这个会给 代码带来比较大的迷惑性.
+        // 所以需要把值先存起来
         int head = u[n - 1], tail = u[n + 1];
         u[u[n - 1]] = tail;
         u[u[n + 1]] = head;
-        cout << "***" << u[n + 1] << ", " << u[n - 1] << ", " << u[u[n - 1]]
-             << ", " << u[u[n + 1]] << endl;
+        u[n] = n;
       } else if (le) {
         u[n] = u[n + 1];
         u[u[n + 1]] = n;
@@ -36,7 +35,7 @@ public:
         u[n] = n;
       cout << "n: " << n << endl;
       for (const auto &elem : u)
-        cout << elem.first << "-" << elem.second << ", ";
+        cout << elem.first << "*" << elem.second << ", ";
       cout << endl;
     }
 
@@ -52,7 +51,10 @@ int main() {
   vector<int> v = {4, 1, 3, 2};
   v = {0, 3, 7, 2, 5, 8, 4, 6, 0, 1};
   v = {1, 0, 1, 2};
-  // 经典错误
+  // 经典错误, u[u[n - 1]] == u[n - 1] 的问题. 如果一开始就一个点
   v = {1, 3, 5, 2, 4};
+  // 在左右都需要衔接的情况下 没添加 n,
+  v = {-6, 6, -9, -7, 0,  3, 4,  -2, 2,  -1, 9, -9, 5, -3,
+       6,  1, 5,  -1, -2, 9, -9, -4, -6, -5, 6, -1, 3};
   cout << s.longestConsecutive(v) << endl;
 }
