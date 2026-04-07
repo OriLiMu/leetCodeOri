@@ -1,6 +1,6 @@
 class Solution {
 public:
-    string minWindow(string s, string t) {
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
         
     }
 };
